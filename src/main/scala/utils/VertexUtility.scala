@@ -16,7 +16,7 @@ object VertexUtility {
       val columnType = value match {
         case valueString: String => ColumnTypeString(ColumnLength(valueString.length))
         case valueInt: Int => ColumnTypeInt(ColumnLength(valueInt.toString.length))
-        case _: Double => ColumnTypeDouble
+        case valueDouble: Double => ColumnTypeDouble(ColumnLength(valueDouble.toString.replaceAll("0*$", "").length))
         case _: Boolean => ColumnTypeBoolean
         case _ => ColumnTypeUnknown // TODO: classify the type in detail
       }
