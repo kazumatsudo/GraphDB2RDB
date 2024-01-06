@@ -9,7 +9,15 @@ lazy val root = (project in file("."))
     name := "GraphDB2RDB"
   )
 
+// main
 libraryDependencies ++= Seq(
+  "com.michaelpollmeier" %% "gremlin-scala" % "3.5.3.7",
   "org.apache.tinkerpop" % "gremlin-driver" % "3.6.2",
+  "org.apache.tinkerpop" % "tinkergraph-gremlin" % "3.6.2",
   "org.janusgraph" % "janusgraph-driver" % "1.0.0"
+)
+
+// test
+libraryDependencies ++= Seq(
+  "org.scalatest" %% "scalatest" % "3.2.17" % Test
 )
