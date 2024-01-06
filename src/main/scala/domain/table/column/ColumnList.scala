@@ -1,7 +1,5 @@
 package domain.table.column
 
-import scala.collection.mutable
-
 case class ColumnList(private val value: Map[ColumnName, ColumnType]) extends AnyVal {
 
   /** merges columnList in two columns into one
