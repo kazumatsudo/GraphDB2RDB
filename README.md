@@ -22,13 +22,20 @@ To be described after first release
 
 ### command
 
+#### GraphDB (JanusGraph/Berkeley DB)
+
 ```shell
-# launch GraphDB (JanusGraph/Berkeley DB)
+# launch GraphDB
 docker compose up -d
 
-# access GraphDB Server (Gremlin console)
+# connect to Gremlin Server
+# https://docs.janusgraph.org/v0.3/basics/server/#connecting-to-gremlin-server
 docker compose exec janusgraph ./bin/gremlin.sh
+gremlin> :remote connect tinkerpop.server conf/remote.yaml
+gremlin> :remote console
+```
 
+```shell
 # execute the script by sbt
 sbt run
 ```
