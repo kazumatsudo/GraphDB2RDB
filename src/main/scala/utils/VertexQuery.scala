@@ -3,7 +3,7 @@ package utils
 import gremlin.scala.{GremlinScala, Vertex}
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource
 
-final case class VertexUtilities(g: GraphTraversalSource) {
+final case class VertexQuery(g: GraphTraversalSource) {
 
   /** get the number of all vertices
    *
