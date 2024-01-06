@@ -20,8 +20,15 @@ To be described after first release
 
 ## Contribute
 
-### run
+### command
 
 ```shell
+# launch GraphDB (JanusGraph/Berkeley DB)
+docker compose up -d
+
+# access GraphDB Server (Gremlin console)
+docker compose exec janusgraph ./bin/gremlin.sh
+
+# execute the script by sbt
 sbt run
 ```
