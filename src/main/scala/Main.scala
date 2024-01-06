@@ -10,6 +10,12 @@ object Main {
     g.V(v1).addE("knows").to(v2).property("weight",0.75).iterate()
     println(g.V().has("name", "marko").valueMap().toList)
 
+    /* TODO: implement following
+     *   1. get all vertex
+     *   2. analyze vertex
+     *   3. generate DDL
+     */
+
     g.close()
   }
 }
