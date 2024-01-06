@@ -20,4 +20,8 @@ To be described after first release
 
 ## Contribute
 
-TODO
+### run
+
+```shell
+sbt run
+```
