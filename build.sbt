@@ -8,3 +8,8 @@ lazy val root = (project in file("."))
   .settings(
     name := "GraphDB2RDB"
   )
+
+libraryDependencies ++= Seq(
+  "org.apache.tinkerpop" % "gremlin-driver" % "3.6.2",
+  "org.janusgraph" % "janusgraph-driver" % "1.0.0"
+)

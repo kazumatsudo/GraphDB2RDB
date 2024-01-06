@@ -1,0 +1,6 @@
+# https://docs.janusgraph.org/master/basics/connecting/java/#getting-started-with-janusgraph-and-gremlin-java
+hosts: [localhost]
+port: 8182
+serializer: {
+  className: org.apache.tinkerpop.gremlin.util.ser.GraphBinaryMessageSerializerV1,
+  config: { ioRegistries: [org.janusgraph.graphdb.tinkerpop.JanusGraphIoRegistry] }}
