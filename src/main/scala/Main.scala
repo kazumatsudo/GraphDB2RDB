@@ -39,11 +39,14 @@ object Main extends StrictLogging {
 
     Using(traversal().withRemote("conf/remote-graph.properties")) { g =>
       val vertexQuery = VertexQuery(g)
+      val totalVertexPages = (vertexQuery.countAll / pageSize).toInt
+
       val edgeQuery = EdgeQuery(g)
+      val totalEdgePages = (edgeQuery.countAll / pageSize).toInt
 
       // 1. generate vertex DDL
       val generateVertexDdlResult = executeWithExceptionHandling({
-        val vertexAnalyzedResult = (0 to (vertexQuery.countAll / pageSize).toInt).map { start =>
+        val vertexAnalyzedResult = (0 to totalVertexPages).map { start =>
             vertexQuery
               .getVerticesList(start, pageSize)
               .map(vertex => VertexUtility.toTableList(vertex))
@@ -55,7 +58,7 @@ object Main extends StrictLogging {
 
       // 2. generate edge DDL
       val generateEdgeDdlResult = executeWithExceptionHandling({
-        val edgeAnalyzedResult = (0 to (edgeQuery.countAll / pageSize).toInt).map { start =>
+        val edgeAnalyzedResult = (0 to totalEdgePages).map { start =>
             edgeQuery
               .getEdgesList(start, pageSize)
               .map(edge => EdgeUtility.toTableList(edge))
@@ -67,7 +70,7 @@ object Main extends StrictLogging {
 
       // 3. generate vertex Insert
       val generateVertexInsertResult = executeWithExceptionHandling({
-        val vertexInsertSentence = (0 to (vertexQuery.countAll / pageSize).toInt).flatMap { start =>
+        val vertexInsertSentence = (0 to totalVertexPages).flatMap { start =>
           vertexQuery
             .getVerticesList(start, pageSize)
             .map(vertex => VertexUtility.toSqlSentence(vertex))
@@ -77,7 +80,7 @@ object Main extends StrictLogging {
 
       // 4. generate edge INSERT
       val generateEdgeInsertResult = executeWithExceptionHandling({
-        val edgeInsertSentence = (0 to (edgeQuery.countAll / pageSize).toInt).flatMap { start =>
+        val edgeInsertSentence = (0 to totalEdgePages).flatMap { start =>
           edgeQuery
             .getEdgesList(start, pageSize)
             .map(edge => EdgeUtility.toSqlSentence(edge))
