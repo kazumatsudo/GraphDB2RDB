@@ -1,5 +1,6 @@
 package utils
 
+import domain.table.{TableList, TableName}
 import domain.table.column.{ColumnLength, ColumnList, ColumnName, ColumnTypeInt, ColumnTypeString}
 import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerFactory
 import org.scalatest.funspec.AnyFunSpec
@@ -12,9 +13,11 @@ class VertexUtilitySpec extends AnyFunSpec with Matchers {
       val vertexQuery = VertexQuery(graph)
       val vertex = vertexQuery.getVerticesList(0, 1).head
 
-      VertexUtility.toTableList(vertex) shouldBe ColumnList(Map(
-        ColumnName("name") -> ColumnTypeString(ColumnLength(5)),
-        ColumnName("age") -> ColumnTypeInt(ColumnLength(2))
+      VertexUtility.toTableList(vertex) shouldBe TableList(Map(
+        TableName("vertex") -> ColumnList(Map(
+          ColumnName("name") -> ColumnTypeString(ColumnLength(5)),
+          ColumnName("age") -> ColumnTypeInt(ColumnLength(2))
+        ))
       ))
     }
   }
