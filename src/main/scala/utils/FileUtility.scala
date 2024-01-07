@@ -1,6 +1,7 @@
 package utils
 
 import java.io.{File, FileOutputStream, OutputStreamWriter}
+import scala.util.Using
 
 object FileUtility {
 
@@ -11,10 +12,10 @@ object FileUtility {
       directory.mkdirs()
     }
 
-    val fileOutPutStream = new FileOutputStream(s"${directory.getPath}/$filename.sql")
-    val writer = new OutputStreamWriter(fileOutPutStream)
-
-    writer.write(sqlSentence)
-    writer.close()
+    Using.Manager { use =>
+      val fileOutputStream = use(new FileOutputStream(s"${directory.getPath}/$filename.sql"))
+      val writer = use(new OutputStreamWriter(fileOutputStream))
+      writer.write(sqlSentence)
+    }
   }
 }
