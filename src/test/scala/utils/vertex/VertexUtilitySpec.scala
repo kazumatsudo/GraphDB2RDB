@@ -7,7 +7,7 @@ import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.matchers.should.Matchers
 
 class VertexUtilitySpec extends AnyFunSpec with Matchers {
-  describe("toColumn") {
+  describe("toTableList") {
     it("get Database Column Information") {
       val graph = TinkerFactory.createModern().traversal()
       val vertexQuery = VertexQuery(graph)
