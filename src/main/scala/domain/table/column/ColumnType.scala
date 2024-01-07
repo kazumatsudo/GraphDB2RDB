@@ -10,19 +10,19 @@ case object ColumnTypeBoolean extends ColumnType {
 }
 
 case class ColumnTypeInt(private val length: ColumnLength) extends ColumnType {
-  override def toSqlSentence: String = s"INT(${length.toSqlSentense})"
+  override def toSqlSentence: String = s"INT(${length.toSqlSentence})"
 }
 
 case class ColumnTypeLong(private val length: ColumnLength) extends ColumnType {
-  override def toSqlSentence: String = s"INT(${length.toSqlSentense})"
+  override def toSqlSentence: String = s"INT(${length.toSqlSentence})"
 }
 
 case class ColumnTypeDouble(private val length: ColumnLength) extends ColumnType {
-  override def toSqlSentence: String = s"INT(${length.toSqlSentense})"
+  override def toSqlSentence: String = s"INT(${length.toSqlSentence})"
 }
 
 case class ColumnTypeString(private val length: ColumnLength) extends ColumnType {
-  override def toSqlSentence: String = s"VARCHAR(${length.toSqlSentense})"
+  override def toSqlSentence: String = s"VARCHAR(${length.toSqlSentence})"
 }
 
 case object ColumnTypeUnknown extends ColumnType {
