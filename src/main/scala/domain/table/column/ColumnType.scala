@@ -58,3 +58,14 @@ case object ColumnTypeUnknown extends ColumnType {
     case ColumnTypeUnknown => ColumnTypeUnknown
   }
 }
+
+object ColumnType {
+
+  def apply(value: Any): ColumnType = value match {
+    case valueString: String => ColumnTypeString(ColumnLength(valueString.length))
+    case valueInt: Int => ColumnTypeInt(ColumnLength(valueInt.toString.length))
+    case valueDouble: Double => ColumnTypeDouble(ColumnLength(valueDouble.toString.replaceAll("0*$", "").length))
+    case _: Boolean => ColumnTypeBoolean
+    case _ => ColumnTypeUnknown // TODO: classify the type in detail
+  }
+}

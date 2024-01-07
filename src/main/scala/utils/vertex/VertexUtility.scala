@@ -1,7 +1,7 @@
 package utils.vertex
 
 import domain.table.{TableList, TableName}
-import domain.table.column.{ColumnLength, ColumnList, ColumnName, ColumnTypeBoolean, ColumnTypeDouble, ColumnTypeInt, ColumnTypeString, ColumnTypeUnknown}
+import domain.table.column.{ColumnList, ColumnName, ColumnType}
 import gremlin.scala._
 
 object VertexUtility {
@@ -14,16 +14,7 @@ object VertexUtility {
   def toTableList(vertex: Vertex): TableList =
     TableList {
       val columnList = ColumnList(vertex.valueMap.map { case (key, value) =>
-        val columnName = ColumnName(key)
-        val columnType = value match {
-          case valueString: String => ColumnTypeString(ColumnLength(valueString.length))
-          case valueInt: Int => ColumnTypeInt(ColumnLength(valueInt.toString.length))
-          case valueDouble: Double => ColumnTypeDouble(ColumnLength(valueDouble.toString.replaceAll("0*$", "").length))
-          case _: Boolean => ColumnTypeBoolean
-          case _ => ColumnTypeUnknown // TODO: classify the type in detail
-        }
-
-        columnName -> columnType
+        ColumnName(key) -> ColumnType.apply(value)
       })
 
       // TODO: Set a more detailed table name
