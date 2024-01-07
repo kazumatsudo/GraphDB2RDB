@@ -10,6 +10,7 @@ object Main extends StrictLogging {
    * 1. analyze vertex
    * 2. analyze edge
    * 3. generate DDL
+   * 4. generate INSERT sentence
    * @param args
    */
   def main(args: Array[String]): Unit = {
@@ -37,10 +38,27 @@ object Main extends StrictLogging {
     }
       .reduce[TableList] { case (accumulator, currentValue) => accumulator.merge(currentValue) }
 
+    val vertexInsertSentence = (0 to (vertexQuery.countAll / pageSize).toInt).flatMap { start =>
+      vertexQuery
+        .getVerticesList(start, pageSize)
+        .map(vertex => VertexUtility.toSqlSentence(vertex))
+    }.mkString("\n")
+    val edgeInsertSentence = (0 to (edgeQuery.countAll / pageSize).toInt).flatMap { start =>
+      edgeQuery
+        .getEdgesList(start, pageSize)
+        .map(edge => EdgeUtility.toSqlSentence(edge))
+    }.mkString("\n")
+
     g.close()
 
     // 3. generate DDL
+    logger.info("DDL")
     logger.info(vertexAnalyzedResult.toSqlSentence)
     logger.info(edgeAnalyzedResult.toSqlSentence)
+
+    // 4. generate INSERT sentence
+    logger.info("INSERT sentence")
+    logger.info(vertexInsertSentence)
+    logger.info(edgeInsertSentence)
   }
 }
