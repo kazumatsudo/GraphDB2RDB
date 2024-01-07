@@ -18,7 +18,7 @@ case class ColumnTypeLong(private val length: ColumnLength) extends ColumnType {
 }
 
 case class ColumnTypeDouble(private val length: ColumnLength) extends ColumnType {
-  override def toSqlSentence: String = s"INT(${length.toSqlSentence})"
+  override def toSqlSentence: String = s"DOUBLE"
 }
 
 case class ColumnTypeString(private val length: ColumnLength) extends ColumnType {
