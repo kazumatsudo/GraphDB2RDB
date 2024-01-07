@@ -21,4 +21,9 @@ case class ColumnList(private val value: Map[ColumnName, ColumnType]) extends An
         )
       }
     }
+
+  def toSqlSentence: String =
+    value.map { case (columnName, columnType) =>
+      s"${columnName.toSqlSentence} ${columnType.toSqlSentence}"
+    }.mkString(", ")
 }

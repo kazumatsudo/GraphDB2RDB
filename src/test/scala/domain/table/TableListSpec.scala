@@ -28,4 +28,19 @@ class TableListSpec extends AnyFunSpec with Matchers {
       ))
     }
   }
+
+  describe("toSqlSentence") {
+    it("success") {
+      // TODO: not use Vertex
+      val graph = TinkerFactory.createModern().traversal()
+      val vertexQuery = VertexQuery(graph)
+      val vertex = vertexQuery.getVerticesList(0, vertexQuery.countAll.toInt)
+
+      val vertexAnalyzedResult = vertex
+        .map(vertex => VertexUtility.toTableList(vertex))
+        .reduce[TableList] { case (accumulator, currentValue) => accumulator.merge(currentValue) }
+
+      vertexAnalyzedResult.toSqlSentence shouldBe "CREATE TABLE IF NOT EXISTS vertex (id INT(1), name VARCHAR(6), age INT(2), lang VARCHAR(4));"
+    }
+  }
 }
