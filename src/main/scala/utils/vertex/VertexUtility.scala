@@ -1,7 +1,7 @@
 package utils.vertex
 
-import domain.table.column._
 import domain.table.{TableList, TableName}
+import domain.table.column.{ColumnLength, ColumnList, ColumnName, ColumnTypeBoolean, ColumnTypeDouble, ColumnTypeInt, ColumnTypeString, ColumnTypeUnknown}
 import gremlin.scala._
 
 object VertexUtility {
