@@ -8,6 +8,9 @@ import scala.jdk.CollectionConverters.SetHasAsScala
 
 object EdgeUtility {
 
+  // TODO: Set a more detailed table name
+  private val tableName = TableName("edge")
+
   /** convert to Database Table Information
    *
    * @param edge [[Edge]]
@@ -22,10 +25,13 @@ object EdgeUtility {
       val column = edge.keys().asScala.map { key =>
         ColumnName(key) -> ColumnType.apply(edge.value[Any](key))
       }.toMap
-      val columnList = ColumnList(inVColumn ++ outVColumn ++ column)
 
-      // TODO: Set a more detailed table name
-      val tableName = TableName("edge")
-      Map(tableName -> columnList)
+      Map(tableName -> ColumnList(inVColumn ++ outVColumn ++ column))
     }
+
+  def toSqlSentence(edge: Edge): String = {
+    // TODO: pull request for gremlin-scala
+    val (columnList, valueList) = edge.keys().asScala.map { key => (key, edge.value(key)) }.unzip
+    s"INSERT INTO ${tableName.toSqlSentence} (in_v_id, out_v_id, ${columnList.mkString(",")}) VALUES (${edge.inVertex().id()}, ${edge.outVertex().id()}, ${valueList.mkString(", ")});"
+  }
 }
