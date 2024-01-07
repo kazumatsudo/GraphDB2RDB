@@ -16,7 +16,7 @@ case class ColumnList(private val value: Map[ColumnName, ColumnType]) extends An
           columnName,
           accumulator
             .get(columnName)
-            .map(_.merge(columnType))
+            .map(ColumnType.merge(columnType, _))
             .getOrElse(columnType)
         )
       }
