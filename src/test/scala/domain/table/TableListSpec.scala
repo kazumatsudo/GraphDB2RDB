@@ -20,6 +20,7 @@ class TableListSpec extends AnyFunSpec with Matchers {
 
       result shouldBe TableList(Map(
         TableName("vertex") -> ColumnList(Map(
+          ColumnName("id") -> ColumnTypeInt(ColumnLength(1)),
           ColumnName("name") -> ColumnTypeString(ColumnLength(6)),
           ColumnName("lang") -> ColumnTypeString(ColumnLength(4)),
           ColumnName("age") -> ColumnTypeInt(ColumnLength(2))
