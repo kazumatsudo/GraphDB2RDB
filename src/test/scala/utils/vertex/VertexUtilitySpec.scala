@@ -15,6 +15,7 @@ class VertexUtilitySpec extends AnyFunSpec with Matchers {
 
       VertexUtility.toTableList(vertex) shouldBe TableList(Map(
         TableName("vertex") -> ColumnList(Map(
+          ColumnName("id") -> ColumnTypeInt(ColumnLength(1)),
           ColumnName("name") -> ColumnTypeString(ColumnLength(5)),
           ColumnName("age") -> ColumnTypeInt(ColumnLength(2))
         ))
