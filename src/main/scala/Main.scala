@@ -21,7 +21,7 @@ object Main extends StrictLogging {
     }
   }
 
-  private def getOperationResult(processName: String, result: Boolean): Unit = {
+  private def displayOperationResult(processName: String, result: Boolean): Unit = {
     if (result) {
       logger.info(s"$processName: success")
     } else {
@@ -91,10 +91,10 @@ object Main extends StrictLogging {
       })
 
       logger.info(s"generate SQL process is finished.")
-      getOperationResult("generate vertex DDL   ", generateVertexDdlResult)
-      getOperationResult("generate edge DDL     ", generateEdgeDdlResult)
-      getOperationResult("generate vertex INSERT", generateVertexInsertResult)
-      getOperationResult("generate edge INSERT  ", generateEdgeInsertResult)
+      displayOperationResult("generate vertex DDL   ", generateVertexDdlResult)
+      displayOperationResult("generate edge DDL     ", generateEdgeDdlResult)
+      displayOperationResult("generate vertex INSERT", generateVertexInsertResult)
+      displayOperationResult("generate edge INSERT  ", generateEdgeInsertResult)
     }
   }
 }
