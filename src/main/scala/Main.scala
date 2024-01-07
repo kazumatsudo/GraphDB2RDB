@@ -1,4 +1,4 @@
-import domain.table.column.ColumnList
+import domain.table.TableList
 import org.apache.tinkerpop.gremlin.process.traversal.AnonymousTraversalSource.traversal
 import utils.{VertexQuery, VertexUtility}
 
@@ -31,8 +31,8 @@ object Main {
        *    - [ ] out edge
        */
       val analyzed = verticesList
-        .map(vertex => VertexUtility.toColumnList(vertex))
-        .reduce[ColumnList] { case (accumulator, currentValue) => accumulator.merge(currentValue) }
+        .map(vertex => VertexUtility.toTableList(vertex))
+        .reduce[TableList] { case (accumulator, currentValue) => accumulator.merge(currentValue) }
 
       println(analyzed)
     }

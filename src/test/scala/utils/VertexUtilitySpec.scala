@@ -12,7 +12,7 @@ class VertexUtilitySpec extends AnyFunSpec with Matchers {
       val vertexQuery = VertexQuery(graph)
       val vertex = vertexQuery.getVerticesList(0, 1).head
 
-      VertexUtility.toColumnList(vertex) shouldBe ColumnList(Map(
+      VertexUtility.toTableList(vertex) shouldBe ColumnList(Map(
         ColumnName("name") -> ColumnTypeString(ColumnLength(5)),
         ColumnName("age") -> ColumnTypeInt(ColumnLength(2))
       ))
