@@ -1,27 +1,39 @@
 package domain.table.column
 
-import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerFactory
 import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.matchers.should.Matchers
-import utils.{VertexQuery, VertexUtility}
 
 class ColumnListSpec extends AnyFunSpec with Matchers {
 
   describe("merge") {
+    val columnList1 = ColumnList(Map(
+      ColumnName("id") -> ColumnTypeInt(ColumnLength(11)),
+      ColumnName("name") -> ColumnTypeString(ColumnLength(30)),
+      ColumnName("address") -> ColumnTypeString(ColumnLength(255)),
+    ))
+    val columnList2 = ColumnList(Map(
+      ColumnName("id") -> ColumnTypeInt(ColumnLength(11)),
+      ColumnName("name") -> ColumnTypeString(ColumnLength(50)),
+      ColumnName("created_at") -> ColumnTypeUnknown,
+      ColumnName("updated_at") -> ColumnTypeUnknown,
+    ))
+
+    it("succeeds when both lists are empty") {
+      ColumnList(Map.empty).merge(ColumnList(Map.empty)) shouldBe ColumnList(Map.empty)
+    }
+
+    it("succeeds when one list is empty") {
+      columnList1.merge(ColumnList(Map.empty)) shouldBe columnList1
+      ColumnList(Map.empty).merge(columnList1) shouldBe columnList1
+    }
+
     it("success") {
-      // TODO: not use Vertex
-      val graph = TinkerFactory.createModern().traversal()
-      val vertexQuery = VertexQuery(graph)
-      val vertex = vertexQuery.getVerticesList(0, vertexQuery.countAll.toInt)
-
-      val result = vertex
-        .map(vertex => VertexUtility.toColumnList(vertex))
-        .reduce[ColumnList] { case (accumulator, currentValue) => accumulator.merge(currentValue) }
-
-      result shouldBe ColumnList(Map(
-        ColumnName("name") -> ColumnTypeString(ColumnLength(6)),
-        ColumnName("lang") -> ColumnTypeString(ColumnLength(4)),
-        ColumnName("age") -> ColumnTypeInt(ColumnLength(2))
+      columnList1.merge(columnList2) shouldBe ColumnList(Map(
+        ColumnName("id") -> ColumnTypeInt(ColumnLength(11)),
+        ColumnName("name") -> ColumnTypeString(ColumnLength(50)),
+        ColumnName("address") -> ColumnTypeString(ColumnLength(255)),
+        ColumnName("created_at") -> ColumnTypeUnknown,
+        ColumnName("updated_at") -> ColumnTypeUnknown,
       ))
     }
   }
