@@ -1,9 +1,10 @@
+import com.typesafe.scalalogging.StrictLogging
 import domain.table.TableList
 import org.apache.tinkerpop.gremlin.process.traversal.AnonymousTraversalSource.traversal
 import utils.edge.{EdgeQuery, EdgeUtility}
 import utils.vertex.{VertexQuery, VertexUtility}
 
-object Main {
+object Main extends StrictLogging {
 
   /** generate DDL from GraphDB
    * 1. analyze vertex
@@ -36,10 +37,10 @@ object Main {
     }
       .reduce[TableList] { case (accumulator, currentValue) => accumulator.merge(currentValue) }
 
-    // 3. generate DDL
-    println(vertexAnalyzedResult.toSqlSentence)
-    println(edgeAnalyzedResult.toSqlSentence)
-
     g.close()
+
+    // 3. generate DDL
+    logger.info(vertexAnalyzedResult.toSqlSentence)
+    logger.info(edgeAnalyzedResult.toSqlSentence)
   }
 }
