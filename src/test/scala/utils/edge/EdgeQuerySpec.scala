@@ -7,7 +7,7 @@ import org.scalatest.matchers.should.Matchers
 
 class EdgeQuerySpec extends AnyFunSpec with Matchers {
   describe("countAll") {
-    it("get the number of all vertices") {
+    it("get the number of all edges") {
       val graph = TinkerFactory.createModern().traversal()
       val edgeQuery = EdgeQuery(graph)
       edgeQuery.countAll shouldBe 6
@@ -15,7 +15,7 @@ class EdgeQuerySpec extends AnyFunSpec with Matchers {
   }
 
 
-  describe("getVerticesList") {
+  describe("getEdgesList") {
     describe("require"){
       it ("start must be positive.") {
         val graph = TinkerFactory.createModern().traversal()
@@ -34,7 +34,7 @@ class EdgeQuerySpec extends AnyFunSpec with Matchers {
       }
     }
 
-    it ("get the number of all vertices") {
+    it ("get the number of all edges") {
       val graph = TinkerFactory.createModern().traversal()
       val edgeQuery = EdgeQuery(graph)
       edgeQuery.getEdgesList(0, 1) shouldBe Seq(GremlinScala(graph.E()).head())
