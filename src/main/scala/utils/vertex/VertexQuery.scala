@@ -1,9 +1,12 @@
 package utils.vertex
 
+import com.typesafe.scalalogging.StrictLogging
 import gremlin.scala.{GremlinScala, Vertex}
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource
 
-final case class VertexQuery(g: GraphTraversalSource) {
+import scala.util.control.NonFatal
+
+final case class VertexQuery(g: GraphTraversalSource) extends StrictLogging {
 
   /** get the number of all vertices
    *
@@ -21,6 +24,12 @@ final case class VertexQuery(g: GraphTraversalSource) {
     require(start >= 0, "start must be positive.")
     require(count >= 0, "count must be positive.")
 
-    GremlinScala(g.V()).range(start, start + count).toList()
+    try {
+      GremlinScala(g.V()).range(start, start + count).toList()
+    } catch {
+      case NonFatal(e) =>
+        logger.error(s"An exception has occurred when getVerticesList is called. start: $start, count: $count", e)
+        throw e
+    }
   }
 }

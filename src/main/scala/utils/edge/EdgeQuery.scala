@@ -1,9 +1,12 @@
 package utils.edge
 
+import com.typesafe.scalalogging.StrictLogging
 import gremlin.scala.{Edge, GremlinScala}
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource
 
-final case class EdgeQuery(g: GraphTraversalSource) {
+import scala.util.control.NonFatal
+
+final case class EdgeQuery(g: GraphTraversalSource) extends StrictLogging {
 
   /** get the number of all edges
    *
@@ -21,6 +24,12 @@ final case class EdgeQuery(g: GraphTraversalSource) {
     require(start >= 0, "start must be positive.")
     require(count >= 0, "count must be positive.")
 
-    GremlinScala(g.E()).range(start, start + count).toList()
+    try {
+      GremlinScala(g.E()).range(start, start + count).toList()
+    } catch {
+      case NonFatal(e) =>
+        logger.error(s"An exception has occurred when getEdgesList is called. start: $start, count: $count", e)
+        throw e
+    }
   }
 }
