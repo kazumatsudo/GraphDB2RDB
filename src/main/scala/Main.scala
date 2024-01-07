@@ -1,41 +1,44 @@
 import domain.table.TableList
 import org.apache.tinkerpop.gremlin.process.traversal.AnonymousTraversalSource.traversal
+import utils.edge.{EdgeQuery, EdgeUtility}
 import utils.vertex.{VertexQuery, VertexUtility}
 
 object Main {
+
+  /** generate DDL from GraphDB
+   * 1. analyze vertex
+   * 2. analyze edge
+   * 3. generate DDL
+   * @param args
+   */
   def main(args: Array[String]): Unit = {
     val g = traversal().withRemote("conf/remote-graph.properties")
 
-    // https://tinkerpop.apache.org/docs/current/reference/#basic-gremlin
-    val v1 = g.addV("person").property("name","marko").next()
-    val v2 = g.addV("person").property("name", "stephen").next()
-    g.V(v1).addE("knows").to(v2).property("weight",0.75).iterate()
-    println(g.V().has("name", "marko").valueMap().toList)
+    val pageSize = 100
 
-    /* TODO: implement following
-     *   1. get all vertex
-     *   2. analyze vertex
-     *   3. generate DDL
-     */
+    // 1. analyze vertex
     val vertexQuery = VertexQuery(g)
-    val count = vertexQuery.countAll
-
-    (0 to (count / 100).toInt).foreach { start =>
-      // 1. get all vertices
-      val verticesList = vertexQuery.getVerticesList(start.toInt, 100)
-
-      /* 2. analyze vertex
-       * TODO:
-       *    - [x] vertex own
-       *    - [ ] in edge
-       *    - [ ] out edge
-       */
-      val analyzed = verticesList
+    val vertexAnalyzedResult = (0 to (vertexQuery.countAll / pageSize).toInt).map { start =>
+      vertexQuery
+        .getVerticesList(start, pageSize)
         .map(vertex => VertexUtility.toTableList(vertex))
         .reduce[TableList] { case (accumulator, currentValue) => accumulator.merge(currentValue) }
-
-      println(analyzed)
     }
+      .reduce[TableList] { case (accumulator, currentValue) => accumulator.merge(currentValue) }
+
+    // 2. analyze edge
+    val edgeQuery = EdgeQuery(g)
+    val edgeAnalyzedResult = (0 to (edgeQuery.countAll / pageSize).toInt).map { start =>
+      edgeQuery
+        .getEdgesList(start, pageSize)
+        .map(edge => EdgeUtility.toTableList(edge))
+        .reduce[TableList] { case (accumulator, currentValue) => accumulator.merge(currentValue) }
+    }
+      .reduce[TableList] { case (accumulator, currentValue) => accumulator.merge(currentValue) }
+
+    // 3. generate DDL
+    println(vertexAnalyzedResult.toSqlSentence)
+    println(edgeAnalyzedResult.toSqlSentence)
 
     g.close()
   }
