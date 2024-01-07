@@ -11,7 +11,7 @@ object FileUtility {
       directory.mkdirs()
     }
 
-    val fileOutPutStream = new FileOutputStream(s"${directory.getName}/$filename.sql")
+    val fileOutPutStream = new FileOutputStream(s"${directory.getPath}/$filename.sql")
     val writer = new OutputStreamWriter(fileOutPutStream)
 
     writer.write(sqlSentence)
