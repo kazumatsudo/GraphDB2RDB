@@ -1,7 +1,7 @@
 package utils.edge
 
 import domain.table.{TableList, TableName}
-import domain.table.column.{ColumnList, ColumnName, ColumnType}
+import domain.table.column.{ColumnList, ColumnName, ColumnType, ColumnTypeBoolean, ColumnTypeDouble, ColumnTypeInt, ColumnTypeLong, ColumnTypeString, ColumnTypeUnknown}
 import gremlin.scala.Edge
 
 import scala.jdk.CollectionConverters.SetHasAsScala
@@ -31,7 +31,17 @@ object EdgeUtility {
 
   def toSqlSentence(edge: Edge): String = {
     // TODO: pull request for gremlin-scala
-    val (columnList, valueList) = edge.keys().asScala.map { key => (key, edge.value(key)) }.unzip
-    s"INSERT INTO ${tableName.toSqlSentence} (in_v_id, out_v_id, ${columnList.mkString(",")}) VALUES (${edge.inVertex().id()}, ${edge.outVertex().id()}, ${valueList.mkString(", ")});"
+    val (columnList, valueList) = edge.keys().asScala.map { key => (key, edge.value[Any](key)) }.unzip
+    val valueListForSql = valueList.map { value =>
+      ColumnType.apply(value) match {
+        case ColumnTypeBoolean => value
+        case ColumnTypeInt(_) => value
+        case ColumnTypeLong(_) => value
+        case ColumnTypeDouble(_) => value
+        case ColumnTypeString(_) => s"\"$value\""
+        case ColumnTypeUnknown => s"\"$value\""
+      }
+    }
+    s"INSERT INTO ${tableName.toSqlSentence} (in_v_id, out_v_id, ${columnList.mkString(",")}) VALUES (${edge.inVertex().id()}, ${edge.outVertex().id()}, ${valueListForSql.mkString(", ")});"
   }
 }

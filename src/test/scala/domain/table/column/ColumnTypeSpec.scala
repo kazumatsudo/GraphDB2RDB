@@ -84,7 +84,7 @@ class ColumnTypeSpec extends AnyFunSpec with Matchers {
       ColumnType.apply("string").toSqlSentence shouldBe "VARCHAR(6)"
       ColumnType.apply(1).toSqlSentence shouldBe "INT(1)"
       ColumnType.apply(1.toLong).toSqlSentence shouldBe "INT(1)"
-      ColumnType.apply(1.1).toSqlSentence shouldBe "INT(3)"
+      ColumnType.apply(1.1).toSqlSentence shouldBe "DOUBLE"
       ColumnType.apply(Seq.empty).toSqlSentence shouldBe "TEXT"
     }
   }

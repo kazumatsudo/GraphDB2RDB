@@ -1,7 +1,7 @@
 package utils.vertex
 
 import domain.table.{TableList, TableName}
-import domain.table.column.{ColumnList, ColumnName, ColumnType}
+import domain.table.column.{ColumnList, ColumnName, ColumnType, ColumnTypeBoolean, ColumnTypeDouble, ColumnTypeInt, ColumnTypeLong, ColumnTypeString, ColumnTypeUnknown}
 import gremlin.scala._
 
 object VertexUtility {
@@ -26,6 +26,16 @@ object VertexUtility {
 
   def toSqlSentence(vertex: Vertex): String = {
     val (columnList, valueList) = vertex.valueMap.unzip
-    s"INSERT INTO ${tableName.toSqlSentence} (id, ${columnList.mkString(",")}) VALUES (${vertex.id()}, ${valueList.mkString(", ")});"
+    val valueListForSql = valueList.map { value =>
+      ColumnType.apply(value) match {
+        case ColumnTypeBoolean => value
+        case ColumnTypeInt(_) => value
+        case ColumnTypeLong(_) => value
+        case ColumnTypeDouble(_) => value
+        case ColumnTypeString(_) => s"\"$value\""
+        case ColumnTypeUnknown => s"\"$value\""
+      }
+    }
+    s"INSERT INTO ${tableName.toSqlSentence} (id, ${columnList.mkString(",")}) VALUES (${vertex.id()}, ${valueListForSql.mkString(", ")});"
   }
 }
