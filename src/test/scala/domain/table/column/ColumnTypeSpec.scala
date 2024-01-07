@@ -26,39 +26,39 @@ class ColumnTypeSpec extends AnyFunSpec with Matchers {
       val columnTypeUnknown = ColumnTypeUnknown
 
       // ColumnTypeBoolean
-      columnTypeBoolean.merge(columnTypeBoolean) shouldBe columnTypeBoolean
-      columnTypeBoolean.merge(columnTypeIntBig) shouldBe ColumnTypeInt(ColumnLength(5))
-      columnTypeBoolean.merge(columnTypeDoubleBig) shouldBe ColumnTypeDouble(ColumnLength(5))
-      columnTypeBoolean.merge(columnTypeStringBig) shouldBe ColumnTypeString(ColumnLength(5))
-      columnTypeBoolean.merge(columnTypeUnknown) shouldBe columnTypeUnknown
+      ColumnType.merge(columnTypeBoolean, columnTypeBoolean) shouldBe columnTypeBoolean
+      ColumnType.merge(columnTypeBoolean, columnTypeIntBig) shouldBe ColumnTypeInt(ColumnLength(5))
+      ColumnType.merge(columnTypeBoolean, columnTypeDoubleBig) shouldBe ColumnTypeDouble(ColumnLength(5))
+      ColumnType.merge(columnTypeBoolean, columnTypeStringBig) shouldBe ColumnTypeString(ColumnLength(5))
+      ColumnType.merge(columnTypeBoolean, columnTypeUnknown) shouldBe columnTypeUnknown
 
       // ColumnTypeInt
-      columnTypeIntSmall.merge(columnTypeBoolean) shouldBe ColumnTypeInt(ColumnLength(5))
-      columnTypeIntSmall.merge(columnTypeIntBig) shouldBe columnTypeIntBig
-      columnTypeIntSmall.merge(columnTypeDoubleBig) shouldBe columnTypeDoubleBig
-      columnTypeIntSmall.merge(columnTypeStringBig) shouldBe columnTypeStringBig
-      columnTypeIntSmall.merge(columnTypeUnknown) shouldBe columnTypeUnknown
+      ColumnType.merge(columnTypeIntSmall, columnTypeBoolean) shouldBe ColumnTypeInt(ColumnLength(5))
+      ColumnType.merge(columnTypeIntSmall, columnTypeIntBig) shouldBe columnTypeIntBig
+      ColumnType.merge(columnTypeIntSmall, columnTypeDoubleBig) shouldBe columnTypeDoubleBig
+      ColumnType.merge(columnTypeIntSmall, columnTypeStringBig) shouldBe columnTypeStringBig
+      ColumnType.merge(columnTypeIntSmall, columnTypeUnknown) shouldBe columnTypeUnknown
 
       // ColumnTypeDouble
-      columnTypeDoubleSmall.merge(columnTypeBoolean) shouldBe ColumnTypeDouble(ColumnLength(5))
-      columnTypeDoubleSmall.merge(columnTypeIntBig) shouldBe ColumnTypeDouble(ColumnLength(2))
-      columnTypeDoubleSmall.merge(columnTypeDoubleBig) shouldBe columnTypeDoubleBig
-      columnTypeDoubleSmall.merge(columnTypeStringBig) shouldBe columnTypeStringBig
-      columnTypeDoubleSmall.merge(columnTypeUnknown) shouldBe columnTypeUnknown
+      ColumnType.merge(columnTypeDoubleSmall, columnTypeBoolean) shouldBe ColumnTypeDouble(ColumnLength(5))
+      ColumnType.merge(columnTypeDoubleSmall, columnTypeIntBig) shouldBe ColumnTypeDouble(ColumnLength(2))
+      ColumnType.merge(columnTypeDoubleSmall, columnTypeDoubleBig) shouldBe columnTypeDoubleBig
+      ColumnType.merge(columnTypeDoubleSmall, columnTypeStringBig) shouldBe columnTypeStringBig
+      ColumnType.merge(columnTypeDoubleSmall, columnTypeUnknown) shouldBe columnTypeUnknown
 
       // ColumnTypeString
-      columnTypeStringSmall.merge(columnTypeBoolean) shouldBe ColumnTypeString(ColumnLength(5))
-      columnTypeStringSmall.merge(columnTypeIntBig) shouldBe ColumnTypeString(ColumnLength(2))
-      columnTypeStringSmall.merge(columnTypeDoubleBig) shouldBe ColumnTypeString(ColumnLength(2))
-      columnTypeStringSmall.merge(columnTypeStringBig) shouldBe columnTypeStringBig
-      columnTypeStringSmall.merge(columnTypeUnknown) shouldBe columnTypeUnknown
+      ColumnType.merge(columnTypeStringSmall, columnTypeBoolean) shouldBe ColumnTypeString(ColumnLength(5))
+      ColumnType.merge(columnTypeStringSmall, columnTypeIntBig) shouldBe ColumnTypeString(ColumnLength(2))
+      ColumnType.merge(columnTypeStringSmall, columnTypeDoubleBig) shouldBe ColumnTypeString(ColumnLength(2))
+      ColumnType.merge(columnTypeStringSmall, columnTypeStringBig) shouldBe columnTypeStringBig
+      ColumnType.merge(columnTypeStringSmall, columnTypeUnknown) shouldBe columnTypeUnknown
 
       // ColumnTypeUnknown
-      columnTypeUnknown.merge(columnTypeBoolean) shouldBe columnTypeUnknown
-      columnTypeUnknown.merge(columnTypeIntBig) shouldBe columnTypeUnknown
-      columnTypeUnknown.merge(columnTypeDoubleBig) shouldBe columnTypeUnknown
-      columnTypeUnknown.merge(columnTypeStringBig) shouldBe columnTypeUnknown
-      columnTypeUnknown.merge(columnTypeUnknown) shouldBe columnTypeUnknown
+      ColumnType.merge(columnTypeUnknown, columnTypeBoolean) shouldBe columnTypeUnknown
+      ColumnType.merge(columnTypeUnknown, columnTypeIntBig) shouldBe columnTypeUnknown
+      ColumnType.merge(columnTypeUnknown, columnTypeDoubleBig) shouldBe columnTypeUnknown
+      ColumnType.merge(columnTypeUnknown, columnTypeStringBig) shouldBe columnTypeUnknown
+      ColumnType.merge(columnTypeUnknown, columnTypeUnknown) shouldBe columnTypeUnknown
     }
   }
 }
