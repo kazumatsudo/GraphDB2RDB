@@ -1,4 +1,5 @@
 # directory
 .bsp/
 .idea/
+sql/
 target/
