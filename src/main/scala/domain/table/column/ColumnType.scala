@@ -2,14 +2,32 @@ package domain.table.column
 
 import scala.annotation.tailrec
 
-sealed trait ColumnType
-case object ColumnTypeBoolean extends ColumnType
+sealed trait ColumnType {
+  def toSqlSentence: String
+}
+case object ColumnTypeBoolean extends ColumnType {
+  override def toSqlSentence: String = "BOOLEAN"
+}
 
-case class ColumnTypeInt(private val length: ColumnLength) extends ColumnType
-case class ColumnTypeLong(private val length: ColumnLength) extends ColumnType
-case class ColumnTypeDouble(private val length: ColumnLength) extends ColumnType
-case class ColumnTypeString(private val length: ColumnLength) extends ColumnType
-case object ColumnTypeUnknown extends ColumnType
+case class ColumnTypeInt(private val length: ColumnLength) extends ColumnType {
+  override def toSqlSentence: String = s"INT(${length.toSqlSentense})"
+}
+
+case class ColumnTypeLong(private val length: ColumnLength) extends ColumnType {
+  override def toSqlSentence: String = s"INT(${length.toSqlSentense})"
+}
+
+case class ColumnTypeDouble(private val length: ColumnLength) extends ColumnType {
+  override def toSqlSentence: String = s"INT(${length.toSqlSentense})"
+}
+
+case class ColumnTypeString(private val length: ColumnLength) extends ColumnType {
+  override def toSqlSentence: String = s"VARCHAR(${length.toSqlSentense})"
+}
+
+case object ColumnTypeUnknown extends ColumnType {
+  override def toSqlSentence: String = s"TEXT"
+}
 
 object ColumnType {
 

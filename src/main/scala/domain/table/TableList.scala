@@ -23,4 +23,10 @@ case class TableList(private val value: Map[TableName, ColumnList]) extends AnyV
         )
       }
     }
+
+  def toSqlSentence: String =
+    value.map { case (tableName, columnList) =>
+      s"CREATE TABLE IF NOT EXISTS ${tableName.toSqlSentence} (${columnList.toSqlSentence});"
+    }.mkString("\n")
+
 }
