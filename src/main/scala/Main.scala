@@ -15,7 +15,9 @@ object Main extends StrictLogging {
       function
       true
     } catch {
-      case NonFatal(_) => false
+      case NonFatal(e) =>
+        logger.error(s"An exception occurred: ${e.getMessage}", e)
+        false
     }
   }
 
