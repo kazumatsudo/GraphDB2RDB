@@ -6,19 +6,28 @@ import org.scalatest.matchers.should.Matchers
 class ColumnListSpec extends AnyFunSpec with Matchers {
 
   describe("merge") {
-    it("success") {
-      val columnList1 = ColumnList(Map(
-        ColumnName("id") -> ColumnTypeInt(ColumnLength(11)),
-        ColumnName("name") -> ColumnTypeString(ColumnLength(30)),
-        ColumnName("address") -> ColumnTypeString(ColumnLength(255)),
-      ))
-      val columnList2 = ColumnList(Map(
-        ColumnName("id") -> ColumnTypeInt(ColumnLength(11)),
-        ColumnName("name") -> ColumnTypeString(ColumnLength(50)),
-        ColumnName("created_at") -> ColumnTypeUnknown,
-        ColumnName("updated_at") -> ColumnTypeUnknown,
-      ))
+    val columnList1 = ColumnList(Map(
+      ColumnName("id") -> ColumnTypeInt(ColumnLength(11)),
+      ColumnName("name") -> ColumnTypeString(ColumnLength(30)),
+      ColumnName("address") -> ColumnTypeString(ColumnLength(255)),
+    ))
+    val columnList2 = ColumnList(Map(
+      ColumnName("id") -> ColumnTypeInt(ColumnLength(11)),
+      ColumnName("name") -> ColumnTypeString(ColumnLength(50)),
+      ColumnName("created_at") -> ColumnTypeUnknown,
+      ColumnName("updated_at") -> ColumnTypeUnknown,
+    ))
 
+    it("succeeds when both lists are empty") {
+      ColumnList(Map.empty).merge(ColumnList(Map.empty)) shouldBe ColumnList(Map.empty)
+    }
+
+    it("succeeds when one list is empty") {
+      columnList1.merge(ColumnList(Map.empty)) shouldBe columnList1
+      ColumnList(Map.empty).merge(columnList1) shouldBe columnList1
+    }
+
+    it("success") {
       columnList1.merge(columnList2) shouldBe ColumnList(Map(
         ColumnName("id") -> ColumnTypeInt(ColumnLength(11)),
         ColumnName("name") -> ColumnTypeString(ColumnLength(50)),
