@@ -29,7 +29,7 @@ class VertexUtilitySpec extends AnyFunSpec with Matchers {
       val vertexQuery = VertexQuery(graph)
       val vertex = vertexQuery.getVerticesList(0, 1).head
 
-      VertexUtility.toSqlSentence(vertex) shouldBe "INSERT INTO vertex (id, name,age) VALUES (1, marko, 29);"
+      VertexUtility.toSqlSentence(vertex) shouldBe "INSERT INTO vertex (id, name,age) VALUES (1, \"marko\", 29);"
     }
   }
 }
