@@ -1,4 +1,4 @@
-package utils
+package utils.vertex
 
 import domain.table.{TableList, TableName}
 import domain.table.column.{ColumnLength, ColumnList, ColumnName, ColumnTypeBoolean, ColumnTypeDouble, ColumnTypeInt, ColumnTypeString, ColumnTypeUnknown}
