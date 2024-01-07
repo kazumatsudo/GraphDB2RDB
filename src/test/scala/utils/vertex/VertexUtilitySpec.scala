@@ -1,7 +1,7 @@
-package utils
+package utils.vertex
 
+import domain.table.column._
 import domain.table.{TableList, TableName}
-import domain.table.column.{ColumnLength, ColumnList, ColumnName, ColumnTypeInt, ColumnTypeString}
 import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerFactory
 import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.matchers.should.Matchers

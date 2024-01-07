@@ -4,7 +4,7 @@ import domain.table.column.{ColumnLength, ColumnList, ColumnName, ColumnTypeInt,
 import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerFactory
 import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.matchers.should.Matchers
-import utils.{VertexQuery, VertexUtility}
+import utils.vertex.{VertexQuery, VertexUtility}
 
 class TableListSpec extends AnyFunSpec with Matchers {
   describe("merge") {

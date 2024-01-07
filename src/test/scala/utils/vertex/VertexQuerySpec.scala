@@ -1,4 +1,4 @@
-package utils
+package utils.vertex
 
 import gremlin.scala.GremlinScala
 import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerFactory

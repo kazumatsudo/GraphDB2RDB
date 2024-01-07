@@ -1,4 +1,4 @@
-package utils
+package utils.vertex
 
 import gremlin.scala.{GremlinScala, Vertex}
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource

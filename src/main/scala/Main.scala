@@ -1,6 +1,6 @@
 import domain.table.TableList
 import org.apache.tinkerpop.gremlin.process.traversal.AnonymousTraversalSource.traversal
-import utils.{VertexQuery, VertexUtility}
+import utils.vertex.{VertexQuery, VertexUtility}
 
 object Main {
   def main(args: Array[String]): Unit = {
