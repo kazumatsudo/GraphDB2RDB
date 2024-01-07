@@ -13,9 +13,12 @@ object VertexUtility {
    */
   def toTableList(vertex: Vertex): TableList =
     TableList {
-      val columnList = ColumnList(vertex.valueMap.map { case (key, value) =>
+      val idColumn = Map(ColumnName("id") -> ColumnType.apply(vertex.id()))
+
+      val column = vertex.valueMap.map { case (key, value) =>
         ColumnName(key) -> ColumnType.apply(value)
-      })
+      }
+      val columnList = ColumnList(idColumn ++ column)
 
       // TODO: Set a more detailed table name
       val tableName = TableName("vertex")
