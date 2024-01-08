@@ -1,12 +1,15 @@
 package domain.table.column
 
-case class ColumnList(private val value: Map[ColumnName, ColumnType]) extends AnyVal {
+case class ColumnList(private val value: Map[ColumnName, ColumnType])
+    extends AnyVal {
 
   /** merges columnList in two columns into one
-   *
-   * @param target target columnList
-   * @return merged column list
-   */
+    *
+    * @param target
+    *   target columnList
+    * @return
+    *   merged column list
+    */
   def merge(target: ColumnList): ColumnList =
     ColumnList {
       value.foldLeft(target.value) { (accumulator, currentValue) =>
@@ -23,7 +26,9 @@ case class ColumnList(private val value: Map[ColumnName, ColumnType]) extends An
     }
 
   def toSqlSentence: String =
-    value.map { case (columnName, columnType) =>
-      s"${columnName.toSqlSentence} ${columnType.toSqlSentence}"
-    }.mkString(", ")
+    value
+      .map { case (columnName, columnType) =>
+        s"${columnName.toSqlSentence} ${columnType.toSqlSentence}"
+      }
+      .mkString(", ")
 }

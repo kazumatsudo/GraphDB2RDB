@@ -2,13 +2,16 @@ package domain.table
 
 import domain.table.column.ColumnList
 
-case class TableList(private val value: Map[TableName, ColumnList]) extends AnyVal {
+case class TableList(private val value: Map[TableName, ColumnList])
+    extends AnyVal {
 
   /** merges tableList in two Tables into one
-   *
-   * @param target target tableList
-   * @return merged table list
-   */
+    *
+    * @param target
+    *   target tableList
+    * @return
+    *   merged table list
+    */
   def merge(target: TableList): TableList =
     TableList {
       value.foldLeft(target.value) { (accumulator, currentValue) =>
@@ -25,8 +28,10 @@ case class TableList(private val value: Map[TableName, ColumnList]) extends AnyV
     }
 
   def toSqlSentence: String =
-    value.map { case (tableName, columnList) =>
-      s"CREATE TABLE IF NOT EXISTS ${tableName.toSqlSentence} (${columnList.toSqlSentence});"
-    }.mkString("\n")
+    value
+      .map { case (tableName, columnList) =>
+        s"CREATE TABLE IF NOT EXISTS ${tableName.toSqlSentence} (${columnList.toSqlSentence});"
+      }
+      .mkString("\n")
 
 }

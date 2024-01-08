@@ -11,7 +11,7 @@ import scala.util.control.NonFatal
 object Main extends StrictLogging {
 
   private def executeWithExceptionHandling(function: => Unit): Boolean = {
-    try  {
+    try {
       function
       true
     } catch {
@@ -21,7 +21,10 @@ object Main extends StrictLogging {
     }
   }
 
-  private def displayOperationResult(processName: String, result: Boolean): Unit = {
+  private def displayOperationResult(
+      processName: String,
+      result: Boolean
+  ): Unit = {
     if (result) {
       logger.info(s"$processName: success")
     } else {
@@ -30,12 +33,10 @@ object Main extends StrictLogging {
   }
 
   /** generate DDL and Insert sentence from GraphDB
-   * 1. generate vertex DDL
-   * 2. generate edge DDL
-   * 3. generate vertex Insert
-   * 4. generate edge INSERT
-   * @param args
-   */
+    *   1. generate vertex DDL 2. generate edge DDL 3. generate vertex Insert 4.
+    *      generate edge INSERT
+    * @param args
+    */
   def main(args: Array[String]): Unit = {
     val pageSize = 100
 
@@ -48,52 +49,69 @@ object Main extends StrictLogging {
 
       // 1. generate vertex DDL
       val generateVertexDdlResult = executeWithExceptionHandling({
-        val vertexAnalyzedResult = (0 to totalVertexPages).map { start =>
+        val vertexAnalyzedResult = (0 to totalVertexPages)
+          .map { start =>
             vertexQuery
               .getVerticesList(start, pageSize)
               .map(vertex => VertexUtility.toTableList(vertex))
-              .reduce[TableList] { case (accumulator, currentValue) => accumulator.merge(currentValue) }
+              .reduce[TableList] { case (accumulator, currentValue) =>
+                accumulator.merge(currentValue)
+              }
           }
-          .reduce[TableList] { case (accumulator, currentValue) => accumulator.merge(currentValue) }
+          .reduce[TableList] { case (accumulator, currentValue) =>
+            accumulator.merge(currentValue)
+          }
         FileUtility.outputSql("ddl_vertex", vertexAnalyzedResult.toSqlSentence)
       })
 
       // 2. generate edge DDL
       val generateEdgeDdlResult = executeWithExceptionHandling({
-        val edgeAnalyzedResult = (0 to totalEdgePages).map { start =>
+        val edgeAnalyzedResult = (0 to totalEdgePages)
+          .map { start =>
             edgeQuery
               .getEdgesList(start, pageSize)
               .map(edge => EdgeUtility.toTableList(edge))
-              .reduce[TableList] { case (accumulator, currentValue) => accumulator.merge(currentValue) }
+              .reduce[TableList] { case (accumulator, currentValue) =>
+                accumulator.merge(currentValue)
+              }
           }
-          .reduce[TableList] { case (accumulator, currentValue) => accumulator.merge(currentValue) }
+          .reduce[TableList] { case (accumulator, currentValue) =>
+            accumulator.merge(currentValue)
+          }
         FileUtility.outputSql("ddl_edge", edgeAnalyzedResult.toSqlSentence)
       })
 
       // 3. generate vertex Insert
       val generateVertexInsertResult = executeWithExceptionHandling({
-        val vertexInsertSentence = (0 to totalVertexPages).flatMap { start =>
-          vertexQuery
-            .getVerticesList(start, pageSize)
-            .map(vertex => VertexUtility.toSqlSentence(vertex))
-        }.mkString("\n")
+        val vertexInsertSentence = (0 to totalVertexPages)
+          .flatMap { start =>
+            vertexQuery
+              .getVerticesList(start, pageSize)
+              .map(vertex => VertexUtility.toSqlSentence(vertex))
+          }
+          .mkString("\n")
         FileUtility.outputSql("insert_vertex", vertexInsertSentence)
       })
 
       // 4. generate edge INSERT
       val generateEdgeInsertResult = executeWithExceptionHandling({
-        val edgeInsertSentence = (0 to totalEdgePages).flatMap { start =>
-          edgeQuery
-            .getEdgesList(start, pageSize)
-            .map(edge => EdgeUtility.toSqlSentence(edge))
-        }.mkString("\n")
+        val edgeInsertSentence = (0 to totalEdgePages)
+          .flatMap { start =>
+            edgeQuery
+              .getEdgesList(start, pageSize)
+              .map(edge => EdgeUtility.toSqlSentence(edge))
+          }
+          .mkString("\n")
         FileUtility.outputSql("insert_edge", edgeInsertSentence)
       })
 
       logger.info(s"generate SQL process is finished.")
       displayOperationResult("generate vertex DDL   ", generateVertexDdlResult)
       displayOperationResult("generate edge DDL     ", generateEdgeDdlResult)
-      displayOperationResult("generate vertex INSERT", generateVertexInsertResult)
+      displayOperationResult(
+        "generate vertex INSERT",
+        generateVertexInsertResult
+      )
       displayOperationResult("generate edge INSERT  ", generateEdgeInsertResult)
     }
   }

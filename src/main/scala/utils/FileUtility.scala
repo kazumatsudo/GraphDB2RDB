@@ -13,7 +13,8 @@ object FileUtility {
     }
 
     Using.Manager { use =>
-      val fileOutputStream = use(new FileOutputStream(s"${directory.getPath}/$filename.sql"))
+      val fileOutputStream =
+        use(new FileOutputStream(s"${directory.getPath}/$filename.sql"))
       val writer = use(new OutputStreamWriter(fileOutputStream))
       writer.write(sqlSentence)
     }
