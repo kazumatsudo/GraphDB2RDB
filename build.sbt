@@ -21,6 +21,8 @@ wartremoverErrors ++= Warts.allBut(
   Wart.Throw
 )
 
+coverageEnabled := true
+
 lazy val root = (project in file("."))
   .settings(
     name := "GraphDB2RDB"
