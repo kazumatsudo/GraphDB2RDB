@@ -1,3 +1,4 @@
+import com.typesafe.config.ConfigFactory
 import com.typesafe.scalalogging.StrictLogging
 import domain.table.TableList
 import org.apache.tinkerpop.gremlin.process.traversal.AnonymousTraversalSource.traversal
@@ -40,7 +41,12 @@ object Main extends StrictLogging {
   def main(args: Array[String]): Unit = {
     val pageSize = 100
 
-    Using(traversal().withRemote("conf/remote-graph.properties")) { g =>
+    val config = ConfigFactory.load()
+    Using(
+      traversal().withRemote(
+        config.getString("graphdb_remote_graph_properties")
+      )
+    ) { g =>
       val vertexQuery = VertexQuery(g)
       val totalVertexPages = (vertexQuery.countAll / pageSize).toInt
 
@@ -61,7 +67,10 @@ object Main extends StrictLogging {
           .reduce[TableList] { case (accumulator, currentValue) =>
             accumulator.merge(currentValue)
           }
-        FileUtility.outputSql("ddl_vertex", vertexAnalyzedResult.toSqlSentence)
+        FileUtility.outputSql(
+          config.getString("sql_ddl_vertex"),
+          vertexAnalyzedResult.toSqlSentence
+        )
       })
 
       // 2. generate edge DDL
@@ -78,7 +87,10 @@ object Main extends StrictLogging {
           .reduce[TableList] { case (accumulator, currentValue) =>
             accumulator.merge(currentValue)
           }
-        FileUtility.outputSql("ddl_edge", edgeAnalyzedResult.toSqlSentence)
+        FileUtility.outputSql(
+          config.getString("sql_ddl_edge"),
+          edgeAnalyzedResult.toSqlSentence
+        )
       })
 
       // 3. generate vertex Insert
@@ -90,7 +102,10 @@ object Main extends StrictLogging {
               .map(vertex => VertexUtility.toSqlSentence(vertex))
           }
           .mkString("\n")
-        FileUtility.outputSql("insert_vertex", vertexInsertSentence)
+        FileUtility.outputSql(
+          config.getString("sql_dml_vertex"),
+          vertexInsertSentence
+        )
       })
 
       // 4. generate edge INSERT
@@ -102,7 +117,10 @@ object Main extends StrictLogging {
               .map(edge => EdgeUtility.toSqlSentence(edge))
           }
           .mkString("\n")
-        FileUtility.outputSql("insert_edge", edgeInsertSentence)
+        FileUtility.outputSql(
+          config.getString("sql_dml_edge"),
+          edgeInsertSentence
+        )
       })
 
       logger.info(s"generate SQL process is finished.")

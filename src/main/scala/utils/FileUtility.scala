@@ -1,12 +1,15 @@
 package utils
 
+import com.typesafe.config.ConfigFactory
+
 import java.io.{File, FileOutputStream, OutputStreamWriter}
 import scala.util.Using
 
 object FileUtility {
 
   def outputSql(filename: String, sqlSentence: String): Unit = {
-    val directory = new File("sql")
+    val config = ConfigFactory.load()
+    val directory = new File(config.getString("sql_output_directory"))
 
     if (!directory.exists()) {
       directory.mkdirs()

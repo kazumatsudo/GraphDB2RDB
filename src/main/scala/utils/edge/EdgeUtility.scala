@@ -1,5 +1,6 @@
 package utils.edge
 
+import com.typesafe.config.ConfigFactory
 import domain.table.{TableList, TableName}
 import domain.table.column.{
   ColumnList,
@@ -18,8 +19,10 @@ import scala.jdk.CollectionConverters.SetHasAsScala
 
 object EdgeUtility {
 
+  private val config = ConfigFactory.load()
+
   // TODO: Set a more detailed table name
-  private val tableName = TableName("edge")
+  private val tableName = TableName(config.getString("table_name_edge"))
 
   /** convert to Database Table Information
     *
@@ -31,9 +34,16 @@ object EdgeUtility {
   def toTableList(edge: Edge): TableList =
     TableList {
       val inVColumn =
-        Map(ColumnName("in_v_id") -> ColumnType.apply(edge.inVertex().id()))
+        Map(
+          ColumnName(config.getString("column_name_edge_in_v_id")) -> ColumnType
+            .apply(edge.inVertex().id())
+        )
       val outVColumn =
-        Map(ColumnName("out_v_id") -> ColumnType.apply(edge.outVertex().id()))
+        Map(
+          ColumnName(
+            config.getString("column_name_edge_out_v_id")
+          ) -> ColumnType.apply(edge.outVertex().id())
+        )
 
       // TODO: pull request for gremlin-scala
       val column = edge
@@ -61,7 +71,8 @@ object EdgeUtility {
         case ColumnTypeUnknown   => s"\"$value\""
       }
     }
-    s"INSERT INTO ${tableName.toSqlSentence} (in_v_id, out_v_id, ${columnList
+    s"INSERT INTO ${tableName.toSqlSentence} (${config.getString("column_name_edge_in_v_id")}, ${config
+        .getString("column_name_edge_out_v_id")}, ${columnList
         .mkString(",")}) VALUES (${edge.inVertex().id()}, ${edge.outVertex().id()}, ${valueListForSql
         .mkString(", ")});"
   }
