@@ -59,6 +59,15 @@ generate RDB (MySQL) DDL and INSERT sentence from GraphDB (Tinkerpop).
     - sql/insert_edge.sql
     - sql/insert_vertex.sql
 
+## Settings
+
+You can define following settings as you like.
+
+- GraphDB connection settings
+- output SQL directory
+
+The settings you can be changed are summarized in [application.conf](./src/main/resources/application.conf).
+
 ## Test
 
 ```shell
