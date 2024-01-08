@@ -4,6 +4,23 @@ ThisBuild / scalaVersion := "2.13.8"
 
 ThisBuild / javacOptions ++= Seq("-source", "11", "-target", "11")
 
+// FIXME: enable all checks
+wartremoverErrors ++= Warts.allBut(
+  Wart.Any,
+  Wart.AutoUnboxing,
+  Wart.FinalCaseClass,
+  Wart.IterableOps,
+  Wart.JavaSerializable,
+  Wart.LeakingSealed,
+  Wart.NonUnitStatements,
+  Wart.Nothing,
+  Wart.Overloading,
+  Wart.Product,
+  Wart.Serializable,
+  Wart.StringPlusAny,
+  Wart.Throw
+)
+
 lazy val root = (project in file("."))
   .settings(
     name := "GraphDB2RDB"
