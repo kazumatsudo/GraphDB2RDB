@@ -2,6 +2,11 @@
 
 generate RDB (MySQL) DDL and INSERT sentence from GraphDB (Tinkerpop).
 
+![Latest GitHub release](https://img.shields.io/github/release/kazumatsudo/GraphDB2RDB.svg)
+[![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+[![codecov](https://codecov.io/github/kazumatsudo/GraphDB2RDB/graph/badge.svg?token=9JFEL8HKQR)](https://codecov.io/github/kazumatsudo/GraphDB2RDB)
+![workflow](https://github.com/kazumatsudo/GraphDB2RDB/actions/workflows/scala.yml/badge.svg)
+
 ## Demo
 
 ![demo](https://github.com/kazumatsudo/GraphDB2RDB/assets/25892776/fd9a5a56-c099-4088-91e7-31f4702e1ff1)
