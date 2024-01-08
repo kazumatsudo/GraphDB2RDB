@@ -1,5 +1,6 @@
 package utils.vertex
 
+import com.typesafe.config.ConfigFactory
 import domain.table.{TableList, TableName}
 import domain.table.column.{
   ColumnList,
@@ -16,8 +17,10 @@ import gremlin.scala._
 
 object VertexUtility {
 
+  private val config = ConfigFactory.load()
+
   // TODO: Set a more detailed table name
-  private val tableName = TableName("vertex")
+  private val tableName = TableName(config.getString("table_name_vertex"))
 
   /** convert to Database Table Information
     *
@@ -28,7 +31,10 @@ object VertexUtility {
     */
   def toTableList(vertex: Vertex): TableList =
     TableList {
-      val idColumn = Map(ColumnName("id") -> ColumnType.apply(vertex.id()))
+      val idColumn = Map(
+        ColumnName(config.getString("column_name_vertex_id")) -> ColumnType
+          .apply(vertex.id())
+      )
       val column = vertex.valueMap.map { case (key, value) =>
         ColumnName(key) -> ColumnType.apply(value)
       }
@@ -48,7 +54,8 @@ object VertexUtility {
         case ColumnTypeUnknown   => s"\"$value\""
       }
     }
-    s"INSERT INTO ${tableName.toSqlSentence} (id, ${columnList.mkString(",")}) VALUES (${vertex
+    s"INSERT INTO ${tableName.toSqlSentence} (${config.getString("column_name_vertex_id")}, ${columnList
+        .mkString(",")}) VALUES (${vertex
         .id()}, ${valueListForSql.mkString(", ")});"
   }
 }
