@@ -1,6 +1,12 @@
 package domain.table
 
-import domain.table.column.{ColumnLength, ColumnList, ColumnName, ColumnTypeInt, ColumnTypeString}
+import domain.table.column.{
+  ColumnLength,
+  ColumnList,
+  ColumnName,
+  ColumnTypeInt,
+  ColumnTypeString
+}
 import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerFactory
 import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.matchers.should.Matchers
@@ -16,16 +22,22 @@ class TableListSpec extends AnyFunSpec with Matchers {
 
       val result = vertex
         .map(vertex => VertexUtility.toTableList(vertex))
-        .reduce[TableList] { case (accumulator, currentValue) => accumulator.merge(currentValue) }
+        .reduce[TableList] { case (accumulator, currentValue) =>
+          accumulator.merge(currentValue)
+        }
 
-      result shouldBe TableList(Map(
-        TableName("vertex") -> ColumnList(Map(
-          ColumnName("id") -> ColumnTypeInt(ColumnLength(1)),
-          ColumnName("name") -> ColumnTypeString(ColumnLength(6)),
-          ColumnName("lang") -> ColumnTypeString(ColumnLength(4)),
-          ColumnName("age") -> ColumnTypeInt(ColumnLength(2))
-        ))
-      ))
+      result shouldBe TableList(
+        Map(
+          TableName("vertex") -> ColumnList(
+            Map(
+              ColumnName("id") -> ColumnTypeInt(ColumnLength(1)),
+              ColumnName("name") -> ColumnTypeString(ColumnLength(6)),
+              ColumnName("lang") -> ColumnTypeString(ColumnLength(4)),
+              ColumnName("age") -> ColumnTypeInt(ColumnLength(2))
+            )
+          )
+        )
+      )
     }
   }
 
@@ -38,7 +50,9 @@ class TableListSpec extends AnyFunSpec with Matchers {
 
       val vertexAnalyzedResult = vertex
         .map(vertex => VertexUtility.toTableList(vertex))
-        .reduce[TableList] { case (accumulator, currentValue) => accumulator.merge(currentValue) }
+        .reduce[TableList] { case (accumulator, currentValue) =>
+          accumulator.merge(currentValue)
+        }
 
       vertexAnalyzedResult.toSqlSentence shouldBe "CREATE TABLE IF NOT EXISTS vertex (id INT(1), name VARCHAR(6), age INT(2), lang VARCHAR(4));"
     }

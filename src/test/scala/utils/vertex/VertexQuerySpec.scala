@@ -7,7 +7,7 @@ import org.scalatest.matchers.should.Matchers
 
 class VertexQuerySpec extends AnyFunSpec with Matchers {
   describe("countAll") {
-    it ("get the number of all vertices") {
+    it("get the number of all vertices") {
       val graph = TinkerFactory.createModern().traversal()
       val vertexQuery = VertexQuery(graph)
       vertexQuery.countAll shouldBe 6
@@ -15,8 +15,8 @@ class VertexQuerySpec extends AnyFunSpec with Matchers {
   }
 
   describe("getVerticesList") {
-    describe("require"){
-      it ("start must be positive.") {
+    describe("require") {
+      it("start must be positive.") {
         val graph = TinkerFactory.createModern().traversal()
         val vertexQuery = VertexQuery(graph)
         intercept[IllegalArgumentException] {
@@ -24,7 +24,7 @@ class VertexQuerySpec extends AnyFunSpec with Matchers {
         }
       }
 
-      it ("count must be positive.") {
+      it("count must be positive.") {
         val graph = TinkerFactory.createModern().traversal()
         val vertexQuery = VertexQuery(graph)
         intercept[IllegalArgumentException] {
@@ -33,10 +33,12 @@ class VertexQuerySpec extends AnyFunSpec with Matchers {
       }
     }
 
-    it ("get the number of all vertices") {
+    it("get the number of all vertices") {
       val graph = TinkerFactory.createModern().traversal()
       val vertexQuery = VertexQuery(graph)
-      vertexQuery.getVerticesList(0, 1) shouldBe Seq(GremlinScala(graph.V()).head())
+      vertexQuery.getVerticesList(0, 1) shouldBe Seq(
+        GremlinScala(graph.V()).head()
+      )
     }
   }
 }
