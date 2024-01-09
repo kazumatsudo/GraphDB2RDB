@@ -32,11 +32,11 @@ lazy val root = (project in file("."))
 libraryDependencies ++= Seq(
   "ch.qos.logback" % "logback-classic" % "1.4.14",
   "com.michaelpollmeier" %% "gremlin-scala" % "3.5.3.7",
-  "com.typesafe" % "config" % "1.4.2",
+  "com.typesafe" % "config" % "1.4.3",
   "com.typesafe.scala-logging" %% "scala-logging" % "3.9.5",
   "org.apache.tinkerpop" % "gremlin-driver" % "3.7.1",
-  "org.apache.tinkerpop" % "tinkergraph-gremlin" % "3.6.2",
-  "org.janusgraph" % "janusgraph-driver" % "1.0.0"
+  "org.apache.tinkerpop" % "tinkergraph-gremlin" % "3.7.1",
+  "org.janusgraph" % "janusgraph-driver" % "1.1.0-20231130-164636.abdc113"
 )
 
 // test
