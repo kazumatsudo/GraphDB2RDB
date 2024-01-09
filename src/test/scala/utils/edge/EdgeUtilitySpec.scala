@@ -5,6 +5,7 @@ import domain.table.column.{
   ColumnLength,
   ColumnList,
   ColumnName,
+  ColumnTypeBoolean,
   ColumnTypeDouble,
   ColumnTypeInt
 }
@@ -25,7 +26,10 @@ class EdgeUtilitySpec extends AnyFunSpec with Matchers {
             Map(
               ColumnName("in_v_id") -> ColumnTypeInt(ColumnLength(1)),
               ColumnName("out_v_id") -> ColumnTypeInt(ColumnLength(1)),
-              ColumnName("weight") -> ColumnTypeDouble(ColumnLength(3))
+              ColumnName("property_weight") -> ColumnTypeDouble(
+                ColumnLength(3)
+              ),
+              ColumnName("label_knows") -> ColumnTypeBoolean
             )
           )
         )
@@ -41,7 +45,7 @@ class EdgeUtilitySpec extends AnyFunSpec with Matchers {
 
       EdgeUtility.toSqlSentence(
         edge
-      ) shouldBe "INSERT INTO edge (in_v_id, out_v_id, weight) VALUES (2, 1, 0.5);"
+      ) shouldBe "INSERT INTO edge (in_v_id, out_v_id, property_weight, label_knows) VALUES (2, 1, 0.5, true);"
     }
   }
 }

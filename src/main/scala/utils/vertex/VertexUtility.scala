@@ -69,8 +69,8 @@ object VertexUtility {
     val labelColumn = s"$columnNamePrefixLabel${vertex.label()}"
 
     s"INSERT INTO ${tableName.toSqlSentence} (${config.getString("column_name_vertex_id")}, ${propertyColumnList
-        .map(columnName => s"$columnNamePrefixProperty${columnName}")
-        .mkString(", ")}, ${labelColumn}) VALUES (${vertex
+        .map(columnName => s"$columnNamePrefixProperty$columnName")
+        .mkString(", ")}, $labelColumn) VALUES (${vertex
         .id()}, ${valueListForSql.mkString(", ")}, true);"
   }
 }
