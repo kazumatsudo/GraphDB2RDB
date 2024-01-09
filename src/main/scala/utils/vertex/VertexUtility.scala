@@ -21,6 +21,10 @@ object VertexUtility {
 
   // TODO: Set a more detailed table name
   private val tableName = TableName(config.getString("table_name_vertex"))
+  private val columnNamePrefixProperty =
+    config.getString("column_name_prefix_property")
+  private val columnNamePrefixLabel =
+    config.getString("column_name_prefix_label")
 
   /** convert to Database Table Information
     *
@@ -35,16 +39,23 @@ object VertexUtility {
         ColumnName(config.getString("column_name_vertex_id")) -> ColumnType
           .apply(vertex.id())
       )
-      val column = vertex.valueMap.map { case (key, value) =>
-        ColumnName(key) -> ColumnType.apply(value)
+      val propertyColumn = vertex.valueMap.map { case (key, value) =>
+        ColumnName(s"$columnNamePrefixProperty$key") -> ColumnType.apply(
+          value
+        )
       }
+      val labelColumn = Map(
+        ColumnName(
+          s"$columnNamePrefixLabel${vertex.label()}"
+        ) -> ColumnType.apply(true)
+      )
 
-      Map(tableName -> ColumnList(idColumn ++ column))
+      Map(tableName -> ColumnList(idColumn ++ propertyColumn ++ labelColumn))
     }
 
   def toSqlSentence(vertex: Vertex): String = {
-    val (columnList, valueList) = vertex.valueMap.unzip
-    val valueListForSql = valueList.map { value =>
+    val (propertyColumnList, propertyValueList) = vertex.valueMap.unzip
+    val valueListForSql = propertyValueList.map { value =>
       ColumnType.apply(value) match {
         case ColumnTypeBoolean   => value
         case ColumnTypeInt(_)    => value
@@ -54,8 +65,12 @@ object VertexUtility {
         case ColumnTypeUnknown   => s"\"$value\""
       }
     }
-    s"INSERT INTO ${tableName.toSqlSentence} (${config.getString("column_name_vertex_id")}, ${columnList
-        .mkString(",")}) VALUES (${vertex
-        .id()}, ${valueListForSql.mkString(", ")});"
+
+    val labelColumn = s"$columnNamePrefixLabel${vertex.label()}"
+
+    s"INSERT INTO ${tableName.toSqlSentence} (${config.getString("column_name_vertex_id")}, ${propertyColumnList
+        .map(columnName => s"$columnNamePrefixProperty${columnName}")
+        .mkString(", ")}, ${labelColumn}) VALUES (${vertex
+        .id()}, ${valueListForSql.mkString(", ")}, true);"
   }
 }
