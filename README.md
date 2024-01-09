@@ -19,12 +19,14 @@ generate RDB (MySQL) DDL and INSERT sentence from GraphDB (Tinkerpop).
         - the columns are as follows.
             - id
             - all propertyKeys
+            - label
     2. [DDL] CREATE TABLE "edge"
         - analyze all edges and define columns
         - the columns are as follows.
            - in_v_id (= vertex.id)
            - out_v_id (= vertex.id)
            - all propertyKeys
+           - label
     3. [DML] INSERT INTO "vertex"
         - analyze all vertices and generate
     4. [DML] INSERT INTO "edge"
