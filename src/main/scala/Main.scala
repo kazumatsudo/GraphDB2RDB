@@ -45,35 +45,23 @@ object Main extends StrictLogging {
       )
     ) { g =>
       val vertexQuery = VertexQuery(g)
-      val totalVertexCount = vertexQuery.countAll.toInt
-
       val edgeQuery = EdgeQuery(g)
-      val totalEdgeCount = edgeQuery.countAll.toInt
 
       // 1. generate vertex SQL
       val generateVertexSqlResult = executeWithExceptionHandling({
-        val (ddl, dml) = (0 to totalVertexCount)
-          .flatMap { start =>
-            vertexQuery
-              .getVerticesList(start, 1)
-              .headOption
-              .map(vertex =>
-                (
-                  VertexUtility.toTableList(vertex),
-                  VertexUtility.toSqlSentence(vertex)
-                )
-              )
-          }
-          .reduce[(TableList, String)] {
-            case (
-                  (tableListAccumlator, dmlAccumlator),
-                  (tableListCurrentValue, dmlCurrentValue)
-                ) =>
-              (
-                tableListAccumlator.merge(tableListCurrentValue),
-                dmlAccumlator + "\n" + dmlCurrentValue
-              )
-          }
+        var vertexCount = 0
+        var ddl: TableList = TableList(Map.empty)
+        var dml: String = ""
+
+        while (vertexQuery.getVertexByOrder(vertexCount).nonEmpty) {
+          val vertex = vertexQuery.getVertexByOrder(vertexCount).get
+
+          ddl = ddl.merge(VertexUtility.toTableList(vertex))
+          dml = s"$dml\n${VertexUtility.toSqlSentence(vertex)}"
+
+          vertexCount = vertexCount + 1
+        }
+
         FileUtility.outputSql(
           config.getString("sql_ddl_vertex"),
           ddl.toSqlSentence
@@ -86,28 +74,18 @@ object Main extends StrictLogging {
 
       // 2. generate edge DDL
       val generateEdgeSqlResult = executeWithExceptionHandling({
-        val (ddl, dml) = (0 to totalEdgeCount)
-          .flatMap { start =>
-            edgeQuery
-              .getEdgesList(start, 1)
-              .headOption
-              .map(edge =>
-                (
-                  EdgeUtility.toTableList(edge),
-                  EdgeUtility.toSqlSentence(edge)
-                )
-              )
-          }
-          .reduce[(TableList, String)] {
-            case (
-                  (tableListAccumlator, dmlAccumlator),
-                  (tableListCurrentValue, dmlCurrentValue)
-                ) =>
-              (
-                tableListAccumlator.merge(tableListCurrentValue),
-                dmlAccumlator + "\n" + dmlCurrentValue
-              )
-          }
+        var edgeCount = 0
+        var ddl: TableList = TableList(Map.empty)
+        var dml: String = ""
+
+        while (edgeQuery.getEdgeByOrder(edgeCount).nonEmpty) {
+          val edge = edgeQuery.getEdgeByOrder(edgeCount).get
+
+          ddl = ddl.merge(EdgeUtility.toTableList(edge))
+          dml = s"$dml\n${EdgeUtility.toSqlSentence(edge)}"
+
+          edgeCount = edgeCount + 1
+        }
 
         FileUtility.outputSql(
           config.getString("sql_ddl_edge"),

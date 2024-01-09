@@ -14,11 +14,14 @@ wartremoverErrors ++= Warts.allBut(
   Wart.LeakingSealed,
   Wart.NonUnitStatements,
   Wart.Nothing,
+  Wart.OptionPartial,
   Wart.Overloading,
   Wart.Product,
   Wart.Serializable,
   Wart.StringPlusAny,
-  Wart.Throw
+  Wart.Throw,
+  Wart.Var,
+  Wart.While
 )
 
 coverageEnabled := true

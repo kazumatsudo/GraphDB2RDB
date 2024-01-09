@@ -39,4 +39,24 @@ final case class EdgeQuery(g: GraphTraversalSource) extends StrictLogging {
         throw e
     }
   }
+
+  def getEdgeByOrder(position: Int): Option[Edge] = {
+    require(position >= 0, "position must be positive.")
+
+    try {
+      val graphTraversal = g.E().range(position, position + 1)
+      if (graphTraversal.hasNext) {
+        Some(graphTraversal.next())
+      } else {
+        None
+      }
+    } catch {
+      case NonFatal(e) =>
+        logger.error(
+          s"An exception has occurred when getEdgesList is called. position: $position",
+          e
+        )
+        throw e
+    }
+  }
 }

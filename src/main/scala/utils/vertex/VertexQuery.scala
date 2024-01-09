@@ -39,4 +39,24 @@ final case class VertexQuery(g: GraphTraversalSource) extends StrictLogging {
         throw e
     }
   }
+
+  def getVertexByOrder(position: Int): Option[Vertex] = {
+    require(position >= 0, "position must be positive.")
+
+    try {
+      val graphTraversal = g.V().range(position, position + 1)
+      if (graphTraversal.hasNext) {
+        Some(graphTraversal.next())
+      } else {
+        None
+      }
+    } catch {
+      case NonFatal(e) =>
+        logger.error(
+          s"An exception has occurred when getVerticesList is called. position: $position",
+          e
+        )
+        throw e
+    }
+  }
 }
