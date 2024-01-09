@@ -4,6 +4,7 @@ import domain.table.column.{
   ColumnLength,
   ColumnList,
   ColumnName,
+  ColumnTypeBoolean,
   ColumnTypeInt,
   ColumnTypeString
 }
@@ -31,9 +32,11 @@ class TableListSpec extends AnyFunSpec with Matchers {
           TableName("vertex") -> ColumnList(
             Map(
               ColumnName("id") -> ColumnTypeInt(ColumnLength(1)),
-              ColumnName("name") -> ColumnTypeString(ColumnLength(6)),
-              ColumnName("lang") -> ColumnTypeString(ColumnLength(4)),
-              ColumnName("age") -> ColumnTypeInt(ColumnLength(2))
+              ColumnName("property_age") -> ColumnTypeInt(ColumnLength(2)),
+              ColumnName("property_lang") -> ColumnTypeString(ColumnLength(4)),
+              ColumnName("property_name") -> ColumnTypeString(ColumnLength(6)),
+              ColumnName("label_person") -> ColumnTypeBoolean,
+              ColumnName("label_software") -> ColumnTypeBoolean
             )
           )
         )
@@ -54,7 +57,7 @@ class TableListSpec extends AnyFunSpec with Matchers {
           accumulator.merge(currentValue)
         }
 
-      vertexAnalyzedResult.toSqlSentence shouldBe "CREATE TABLE IF NOT EXISTS vertex (id INT(1), name VARCHAR(6), age INT(2), lang VARCHAR(4));"
+      vertexAnalyzedResult.toSqlSentence shouldBe "CREATE TABLE IF NOT EXISTS vertex (property_age INT(2), property_lang VARCHAR(4), property_name VARCHAR(6), label_software BOOLEAN, id INT(1), label_person BOOLEAN);"
     }
   }
 }

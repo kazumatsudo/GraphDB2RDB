@@ -6,6 +6,7 @@ import domain.table.column.{
   ColumnLength,
   ColumnList,
   ColumnName,
+  ColumnTypeBoolean,
   ColumnTypeInt,
   ColumnTypeString
 }
@@ -24,8 +25,9 @@ class VertexUtilitySpec extends AnyFunSpec with Matchers {
           TableName("vertex") -> ColumnList(
             Map(
               ColumnName("id") -> ColumnTypeInt(ColumnLength(1)),
-              ColumnName("name") -> ColumnTypeString(ColumnLength(5)),
-              ColumnName("age") -> ColumnTypeInt(ColumnLength(2))
+              ColumnName("property_name") -> ColumnTypeString(ColumnLength(5)),
+              ColumnName("property_age") -> ColumnTypeInt(ColumnLength(2)),
+              ColumnName("label_person") -> ColumnTypeBoolean
             )
           )
         )
@@ -41,7 +43,7 @@ class VertexUtilitySpec extends AnyFunSpec with Matchers {
 
       VertexUtility.toSqlSentence(
         vertex
-      ) shouldBe "INSERT INTO vertex (id, name,age) VALUES (1, \"marko\", 29);"
+      ) shouldBe "INSERT INTO vertex (id, property_name, property_age, label_person) VALUES (1, \"marko\", 29, true);"
     }
   }
 }

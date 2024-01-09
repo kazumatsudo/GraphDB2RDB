@@ -14,6 +14,7 @@ import domain.table.column.{
   ColumnTypeUnknown
 }
 import gremlin.scala.Edge
+import utils.vertex.VertexUtility.config
 
 import scala.jdk.CollectionConverters.SetHasAsScala
 
@@ -23,6 +24,10 @@ object EdgeUtility {
 
   // TODO: Set a more detailed table name
   private val tableName = TableName(config.getString("table_name_edge"))
+  private val columnNamePrefixProperty =
+    config.getString("column_name_prefix_property")
+  private val columnNamePrefixLabel =
+    config.getString("column_name_prefix_label")
 
   /** convert to Database Table Information
     *
@@ -46,22 +51,33 @@ object EdgeUtility {
         )
 
       // TODO: pull request for gremlin-scala
-      val column = edge
+      val propertyColumn = edge
         .keys()
         .asScala
         .map { key =>
-          ColumnName(key) -> ColumnType.apply(edge.value[Any](key))
+          ColumnName(s"$columnNamePrefixProperty$key") -> ColumnType.apply(
+            edge.value[Any](key)
+          )
         }
         .toMap
+      val labelColumn = Map(
+        ColumnName(
+          s"$columnNamePrefixLabel${edge.label()}"
+        ) -> ColumnType.apply(true)
+      )
 
-      Map(tableName -> ColumnList(inVColumn ++ outVColumn ++ column))
+      Map(
+        tableName -> ColumnList(
+          inVColumn ++ outVColumn ++ propertyColumn ++ labelColumn
+        )
+      )
     }
 
   def toSqlSentence(edge: Edge): String = {
     // TODO: pull request for gremlin-scala
-    val (columnList, valueList) =
+    val (propertyColumnList, propertyValueList) =
       edge.keys().asScala.map { key => (key, edge.value[Any](key)) }.unzip
-    val valueListForSql = valueList.map { value =>
+    val valueListForSql = propertyValueList.map { value =>
       ColumnType.apply(value) match {
         case ColumnTypeBoolean   => value
         case ColumnTypeInt(_)    => value
@@ -71,9 +87,13 @@ object EdgeUtility {
         case ColumnTypeUnknown   => s"\"$value\""
       }
     }
+
+    val labelColumn = s"$columnNamePrefixLabel${edge.label()}"
+
     s"INSERT INTO ${tableName.toSqlSentence} (${config.getString("column_name_edge_in_v_id")}, ${config
-        .getString("column_name_edge_out_v_id")}, ${columnList
-        .mkString(",")}) VALUES (${edge.inVertex().id()}, ${edge.outVertex().id()}, ${valueListForSql
-        .mkString(", ")});"
+        .getString("column_name_edge_out_v_id")}, ${propertyColumnList
+        .map(columnName => s"$columnNamePrefixProperty$columnName")
+        .mkString(", ")}, $labelColumn) VALUES (${edge.inVertex().id()}, ${edge.outVertex().id()}, ${valueListForSql
+        .mkString(", ")}, true);"
   }
 }
