@@ -37,13 +37,13 @@ class EdgeUtilitySpec extends AnyFunSpec with Matchers {
     }
   }
 
-  describe("toSqlSentence") {
+  describe("toDml") {
     it("get SQL Sentence") {
       val graph = TinkerFactory.createModern().traversal()
       val edgeQuery = EdgeQuery(graph)
       val edge = edgeQuery.getEdgesList(0, 1).head
 
-      EdgeUtility.toSqlSentence(
+      EdgeUtility.toDml(
         edge
       ) shouldBe "INSERT INTO edge (in_v_id, out_v_id, property_weight, label_knows) VALUES (2, 1, 0.5, true);"
     }

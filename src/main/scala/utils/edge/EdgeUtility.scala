@@ -73,7 +73,7 @@ object EdgeUtility {
       )
     }
 
-  def toSqlSentence(edge: Edge): String = {
+  def toDml(edge: Edge): String = {
     // TODO: pull request for gremlin-scala
     val (propertyColumnList, propertyValueList) =
       edge.keys().asScala.map { key => (key, edge.value[Any](key)) }.unzip
