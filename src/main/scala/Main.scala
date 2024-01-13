@@ -87,7 +87,7 @@ object Main extends StrictLogging {
         val (ddl, dml) = (0 to totalEdgeCount)
           .flatMap { start =>
             edgeQuery
-              .getEdgesList(start, 1)
+              .getList(start, 1)
               .headOption
               .map(edge =>
                 (

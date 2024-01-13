@@ -26,7 +26,7 @@ final case class EdgeQuery(private val g: GraphTraversalSource)
     * @return
     *   A list of Edges based on the specified pagination parameters.
     */
-  def getEdgesList(start: Int, count: Int): Seq[GraphEdge] = {
+  def getList(start: Int, count: Int): Seq[GraphEdge] = {
     require(start >= 0, "start must be positive.")
     require(count >= 0, "count must be positive.")
 
