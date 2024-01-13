@@ -66,9 +66,16 @@ case class GraphVertex(private val value: Vertex) {
 
     val labelColumn = s"$columnNamePrefixLabel${value.label()}"
 
-    s"INSERT INTO ${tableName.toSqlSentence} (${config.getString("column_name_vertex_id")}, ${propertyColumnList
+    val (keys, values) = (
+      Seq(
+        (config.getString("column_name_vertex_id"), value.id())
+      ) ++ propertyColumnList
         .map(columnName => s"$columnNamePrefixProperty$columnName")
-        .mkString(", ")}, $labelColumn) VALUES (${value
-        .id()}, ${valueListForSql.mkString(", ")}, true);"
+        .zip(valueListForSql) ++ Seq(
+        (labelColumn, true)
+      )
+    ).unzip
+
+    s"INSERT INTO ${tableName.toSqlSentence} (${keys.mkString(", ")}) VALUES (${values.mkString(", ")});"
   }
 }
