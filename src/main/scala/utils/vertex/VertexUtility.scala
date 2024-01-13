@@ -53,7 +53,7 @@ object VertexUtility {
       Map(tableName -> ColumnList(idColumn ++ propertyColumn ++ labelColumn))
     }
 
-  def toSqlSentence(vertex: Vertex): String = {
+  def toDml(vertex: Vertex): String = {
     val (propertyColumnList, propertyValueList) = vertex.valueMap.unzip
     val valueListForSql = propertyValueList.map { value =>
       ColumnType.apply(value) match {

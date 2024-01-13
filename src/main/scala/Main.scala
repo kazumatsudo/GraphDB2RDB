@@ -60,7 +60,7 @@ object Main extends StrictLogging {
               .map(vertex =>
                 (
                   VertexUtility.toDdl(vertex),
-                  VertexUtility.toSqlSentence(vertex)
+                  VertexUtility.toDml(vertex)
                 )
               )
           }

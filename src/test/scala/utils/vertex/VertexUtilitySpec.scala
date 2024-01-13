@@ -35,13 +35,13 @@ class VertexUtilitySpec extends AnyFunSpec with Matchers {
     }
   }
 
-  describe("toSqlSentence") {
+  describe("toDml") {
     it("get SQL Sentence") {
       val graph = TinkerFactory.createModern().traversal()
       val vertexQuery = VertexQuery(graph)
       val vertex = vertexQuery.getVerticesList(0, 1).head
 
-      VertexUtility.toSqlSentence(
+      VertexUtility.toDml(
         vertex
       ) shouldBe "INSERT INTO vertex (id, property_name, property_age, label_person) VALUES (1, \"marko\", 29, true);"
     }
