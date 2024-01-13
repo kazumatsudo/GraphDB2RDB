@@ -74,13 +74,23 @@ case class GraphEdge(private val value: Edge) {
         case ColumnTypeUnknown   => s"\"$value\""
       }
     }
-
     val labelColumn = s"$columnNamePrefixLabel${value.label()}"
 
-    s"INSERT INTO ${tableName.toSqlSentence} (${config.getString("column_name_edge_in_v_id")}, ${config
-        .getString("column_name_edge_out_v_id")}, ${propertyColumnList
+    val (keys, values) = (
+      Seq(
+        (config.getString("column_name_edge_in_v_id"), value.inVertex().id())
+      ) ++ Seq(
+        (
+          config.getString("column_name_edge_out_v_id"),
+          value.outVertex().id()
+        )
+      ) ++ propertyColumnList
         .map(columnName => s"$columnNamePrefixProperty$columnName")
-        .mkString(", ")}, $labelColumn) VALUES (${value.inVertex().id()}, ${value.outVertex().id()}, ${valueListForSql
-        .mkString(", ")}, true);"
+        .zip(valueListForSql) ++ Seq(
+        (labelColumn, true)
+      )
+    ).unzip
+
+    s"INSERT INTO ${tableName.toSqlSentence} (${keys.mkString(", ")}) VALUES (${values.mkString(", ")});"
   }
 }
