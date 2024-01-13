@@ -1,4 +1,4 @@
-package utils.edge
+package utils
 
 import com.typesafe.scalalogging.StrictLogging
 import domain.graph.GraphEdge

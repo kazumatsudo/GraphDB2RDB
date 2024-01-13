@@ -1,6 +1,5 @@
 package domain.table
 
-import domain.graph.GraphVertex
 import domain.table.column.{
   ColumnLength,
   ColumnList,
@@ -12,7 +11,7 @@ import domain.table.column.{
 import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerFactory
 import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.matchers.should.Matchers
-import utils.vertex.VertexQuery
+import utils.VertexQuery
 
 class TableListSpec extends AnyFunSpec with Matchers {
   describe("merge") {

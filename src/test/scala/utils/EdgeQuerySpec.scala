@@ -1,4 +1,4 @@
-package utils.edge
+package utils
 
 import domain.graph.GraphEdge
 import gremlin.scala.GremlinScala

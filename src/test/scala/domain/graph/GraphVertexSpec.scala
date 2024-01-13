@@ -5,7 +5,7 @@ import domain.table.{TableList, TableName}
 import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerFactory
 import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.matchers.should.Matchers
-import utils.vertex.VertexQuery
+import utils.VertexQuery
 
 class GraphVertexSpec extends AnyFunSpec with Matchers {
   describe("toDdl") {

@@ -1,8 +1,8 @@
-package utils.vertex
+package utils
 
 import com.typesafe.scalalogging.StrictLogging
 import domain.graph.GraphVertex
-import gremlin.scala.{GremlinScala, Vertex}
+import gremlin.scala.GremlinScala
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource
 
 import scala.util.control.NonFatal

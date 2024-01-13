@@ -5,7 +5,7 @@ import domain.table.{TableList, TableName}
 import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerFactory
 import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.matchers.should.Matchers
-import utils.edge.EdgeQuery
+import utils.EdgeQuery
 
 class GraphEdgeSpec extends AnyFunSpec with Matchers {
   describe("toDdl") {

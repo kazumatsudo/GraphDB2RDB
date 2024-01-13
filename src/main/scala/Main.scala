@@ -1,11 +1,8 @@
 import com.typesafe.config.ConfigFactory
 import com.typesafe.scalalogging.StrictLogging
-import domain.graph.GraphVertex
 import domain.table.TableList
 import org.apache.tinkerpop.gremlin.process.traversal.AnonymousTraversalSource.traversal
-import utils.FileUtility
-import utils.edge.EdgeQuery
-import utils.vertex.VertexQuery
+import utils.{EdgeQuery, FileUtility, VertexQuery}
 
 import scala.util.Using
 import scala.util.control.NonFatal

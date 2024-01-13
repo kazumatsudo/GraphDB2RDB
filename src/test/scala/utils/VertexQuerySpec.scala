@@ -1,4 +1,4 @@
-package utils.vertex
+package utils
 
 import domain.graph.GraphVertex
 import gremlin.scala.GremlinScala
