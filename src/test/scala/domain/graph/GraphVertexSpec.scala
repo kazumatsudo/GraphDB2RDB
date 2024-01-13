@@ -37,5 +37,13 @@ class GraphVertexSpec extends AnyFunSpec with Matchers {
 
       vertex.toDml shouldBe "INSERT INTO vertex (id, property_name, property_age, label_person) VALUES (1, \"marko\", 29, true);"
     }
+
+    it("not to write extra comma") {
+      val graph = TinkerFactory.createModern().traversal()
+      val vertex1 = graph.addV("testVertex1").next()
+
+      val graphVertex = GraphVertex(vertex1)
+      graphVertex.toDml shouldBe "INSERT INTO vertex (id, label_testVertex1) VALUES (0, true);"
+    }
   }
 }
