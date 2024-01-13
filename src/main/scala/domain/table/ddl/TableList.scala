@@ -1,6 +1,6 @@
-package domain.table
+package domain.table.ddl
 
-import domain.table.column.ColumnList
+import domain.table.ddl.column.ColumnList
 
 case class TableList(private val value: Map[TableName, ColumnList])
     extends AnyVal {

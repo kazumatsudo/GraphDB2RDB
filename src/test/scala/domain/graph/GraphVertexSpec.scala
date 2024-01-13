@@ -1,7 +1,7 @@
 package domain.graph
 
-import domain.table.column._
-import domain.table.{TableList, TableName}
+import domain.table.ddl.column.{ColumnLength, ColumnList, ColumnName, ColumnTypeBoolean, ColumnTypeInt, ColumnTypeString}
+import domain.table.ddl.{TableList, TableName}
 import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerFactory
 import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.matchers.should.Matchers

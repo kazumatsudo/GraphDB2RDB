@@ -1,18 +1,8 @@
 package domain.graph
 
 import com.typesafe.config.ConfigFactory
-import domain.table.{TableList, TableName}
-import domain.table.column.{
-  ColumnList,
-  ColumnName,
-  ColumnType,
-  ColumnTypeBoolean,
-  ColumnTypeDouble,
-  ColumnTypeInt,
-  ColumnTypeLong,
-  ColumnTypeString,
-  ColumnTypeUnknown
-}
+import domain.table.ddl.column.{ColumnList, ColumnName, ColumnType, ColumnTypeBoolean, ColumnTypeDouble, ColumnTypeInt, ColumnTypeLong, ColumnTypeString, ColumnTypeUnknown}
+import domain.table.ddl.{TableList, TableName}
 import gremlin.scala._
 
 case class GraphVertex(private val value: Vertex) {

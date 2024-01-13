@@ -1,6 +1,6 @@
 import com.typesafe.config.ConfigFactory
 import com.typesafe.scalalogging.StrictLogging
-import domain.table.TableList
+import domain.table.ddl.TableList
 import org.apache.tinkerpop.gremlin.process.traversal.AnonymousTraversalSource.traversal
 import utils.{EdgeQuery, FileUtility, VertexQuery}
 
