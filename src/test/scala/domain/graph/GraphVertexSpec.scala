@@ -1,26 +1,20 @@
-package utils.vertex
+package domain.graph
 
+import domain.table.column._
 import domain.table.{TableList, TableName}
 import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerFactory
-import domain.table.column.{
-  ColumnLength,
-  ColumnList,
-  ColumnName,
-  ColumnTypeBoolean,
-  ColumnTypeInt,
-  ColumnTypeString
-}
 import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.matchers.should.Matchers
+import utils.vertex.VertexQuery
 
-class VertexUtilitySpec extends AnyFunSpec with Matchers {
+class GraphVertexSpec extends AnyFunSpec with Matchers {
   describe("toDdl") {
     it("get Database Column Information") {
       val graph = TinkerFactory.createModern().traversal()
       val vertexQuery = VertexQuery(graph)
       val vertex = vertexQuery.getVerticesList(0, 1).head
 
-      VertexUtility.toDdl(vertex) shouldBe TableList(
+      vertex.toDdl shouldBe TableList(
         Map(
           TableName("vertex") -> ColumnList(
             Map(
@@ -41,9 +35,7 @@ class VertexUtilitySpec extends AnyFunSpec with Matchers {
       val vertexQuery = VertexQuery(graph)
       val vertex = vertexQuery.getVerticesList(0, 1).head
 
-      VertexUtility.toDml(
-        vertex
-      ) shouldBe "INSERT INTO vertex (id, property_name, property_age, label_person) VALUES (1, \"marko\", 29, true);"
+      vertex.toDml shouldBe "INSERT INTO vertex (id, property_name, property_age, label_person) VALUES (1, \"marko\", 29, true);"
     }
   }
 }

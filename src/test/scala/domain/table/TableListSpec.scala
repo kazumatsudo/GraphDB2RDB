@@ -1,5 +1,6 @@
 package domain.table
 
+import domain.graph.GraphVertex
 import domain.table.column.{
   ColumnLength,
   ColumnList,
@@ -11,7 +12,7 @@ import domain.table.column.{
 import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerFactory
 import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.matchers.should.Matchers
-import utils.vertex.{VertexQuery, VertexUtility}
+import utils.vertex.VertexQuery
 
 class TableListSpec extends AnyFunSpec with Matchers {
   describe("merge") {
@@ -22,7 +23,7 @@ class TableListSpec extends AnyFunSpec with Matchers {
       val vertex = vertexQuery.getVerticesList(0, vertexQuery.countAll.toInt)
 
       val result = vertex
-        .map(vertex => VertexUtility.toDdl(vertex))
+        .map(_.toDdl)
         .reduce[TableList] { case (accumulator, currentValue) =>
           accumulator.merge(currentValue)
         }
@@ -52,7 +53,7 @@ class TableListSpec extends AnyFunSpec with Matchers {
       val vertex = vertexQuery.getVerticesList(0, vertexQuery.countAll.toInt)
 
       val vertexAnalyzedResult = vertex
-        .map(vertex => VertexUtility.toDdl(vertex))
+        .map(_.toDdl)
         .reduce[TableList] { case (accumulator, currentValue) =>
           accumulator.merge(currentValue)
         }

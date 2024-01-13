@@ -1,10 +1,11 @@
 import com.typesafe.config.ConfigFactory
 import com.typesafe.scalalogging.StrictLogging
+import domain.graph.GraphVertex
 import domain.table.TableList
 import org.apache.tinkerpop.gremlin.process.traversal.AnonymousTraversalSource.traversal
 import utils.FileUtility
 import utils.edge.EdgeQuery
-import utils.vertex.{VertexQuery, VertexUtility}
+import utils.vertex.VertexQuery
 
 import scala.util.Using
 import scala.util.control.NonFatal
@@ -59,8 +60,8 @@ object Main extends StrictLogging {
               .headOption
               .map(vertex =>
                 (
-                  VertexUtility.toDdl(vertex),
-                  VertexUtility.toDml(vertex)
+                  vertex.toDdl,
+                  vertex.toDml
                 )
               )
           }

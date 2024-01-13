@@ -20,8 +20,6 @@ case class GraphEdge(private val value: Edge) {
 
   /** convert to Database Table Information
     *
-    * @param edge
-    *   [[Edge]]
     * @return
     *   Database Table Information
     */

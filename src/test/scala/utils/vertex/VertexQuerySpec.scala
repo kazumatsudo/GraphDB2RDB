@@ -1,5 +1,6 @@
 package utils.vertex
 
+import domain.graph.GraphVertex
 import gremlin.scala.GremlinScala
 import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerFactory
 import org.scalatest.funspec.AnyFunSpec
@@ -37,7 +38,7 @@ class VertexQuerySpec extends AnyFunSpec with Matchers {
       val graph = TinkerFactory.createModern().traversal()
       val vertexQuery = VertexQuery(graph)
       vertexQuery.getVerticesList(0, 1) shouldBe Seq(
-        GremlinScala(graph.V()).head()
+        GraphVertex(GremlinScala(graph.V()).head())
       )
     }
   }
