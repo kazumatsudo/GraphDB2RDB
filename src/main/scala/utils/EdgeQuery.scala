@@ -1,12 +1,14 @@
-package utils.edge
+package utils
 
 import com.typesafe.scalalogging.StrictLogging
-import gremlin.scala.{Edge, GremlinScala}
+import domain.graph.GraphEdge
+import gremlin.scala.GremlinScala
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource
 
 import scala.util.control.NonFatal
 
-final case class EdgeQuery(g: GraphTraversalSource) extends StrictLogging {
+final case class EdgeQuery(private val g: GraphTraversalSource)
+    extends StrictLogging {
 
   /** get the number of all edges
     *
@@ -24,12 +26,12 @@ final case class EdgeQuery(g: GraphTraversalSource) extends StrictLogging {
     * @return
     *   A list of Edges based on the specified pagination parameters.
     */
-  def getEdgesList(start: Int, count: Int): Seq[Edge] = {
+  def getList(start: Int, count: Int): Seq[GraphEdge] = {
     require(start >= 0, "start must be positive.")
     require(count >= 0, "count must be positive.")
 
     try {
-      GremlinScala(g.E()).range(start, start + count).toList()
+      GremlinScala(g.E()).range(start, start + count).toList().map(GraphEdge)
     } catch {
       case NonFatal(e) =>
         logger.error(
@@ -40,13 +42,13 @@ final case class EdgeQuery(g: GraphTraversalSource) extends StrictLogging {
     }
   }
 
-  def getEdgeByOrder(position: Int): Option[Edge] = {
+  def getEdgeByOrder(position: Int): Option[GraphEdge] = {
     require(position >= 0, "position must be positive.")
 
     try {
       val graphTraversal = g.E().range(position, position + 1)
       if (graphTraversal.hasNext) {
-        Some(graphTraversal.next())
+        Some(GraphEdge(graphTraversal.next()))
       } else {
         None
       }

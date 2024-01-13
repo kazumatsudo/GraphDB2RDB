@@ -1,12 +1,14 @@
-package utils.vertex
+package utils
 
 import com.typesafe.scalalogging.StrictLogging
-import gremlin.scala.{GremlinScala, Vertex}
+import domain.graph.GraphVertex
+import gremlin.scala.GremlinScala
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource
 
 import scala.util.control.NonFatal
 
-final case class VertexQuery(g: GraphTraversalSource) extends StrictLogging {
+final case class VertexQuery(private val g: GraphTraversalSource)
+    extends StrictLogging {
 
   /** get the number of all vertices
     *
@@ -24,12 +26,12 @@ final case class VertexQuery(g: GraphTraversalSource) extends StrictLogging {
     * @return
     *   A list of Vertices based on the specified pagination parameters.
     */
-  def getVerticesList(start: Int, count: Int): Seq[Vertex] = {
+  def getList(start: Int, count: Int): Seq[GraphVertex] = {
     require(start >= 0, "start must be positive.")
     require(count >= 0, "count must be positive.")
 
     try {
-      GremlinScala(g.V()).range(start, start + count).toList()
+      GremlinScala(g.V()).range(start, start + count).toList().map(GraphVertex)
     } catch {
       case NonFatal(e) =>
         logger.error(
@@ -40,13 +42,13 @@ final case class VertexQuery(g: GraphTraversalSource) extends StrictLogging {
     }
   }
 
-  def getVertexByOrder(position: Int): Option[Vertex] = {
+  def getVertexByOrder(position: Int): Option[GraphVertex] = {
     require(position >= 0, "position must be positive.")
 
     try {
       val graphTraversal = g.V().range(position, position + 1)
       if (graphTraversal.hasNext) {
-        Some(graphTraversal.next())
+        Some(GraphVertex(graphTraversal.next()))
       } else {
         None
       }

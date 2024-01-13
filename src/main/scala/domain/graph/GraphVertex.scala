@@ -1,4 +1,4 @@
-package utils.vertex
+package domain.graph
 
 import com.typesafe.config.ConfigFactory
 import domain.table.{TableList, TableName}
@@ -15,7 +15,7 @@ import domain.table.column.{
 }
 import gremlin.scala._
 
-object VertexUtility {
+case class GraphVertex(private val value: Vertex) {
 
   private val config = ConfigFactory.load()
 
@@ -28,33 +28,31 @@ object VertexUtility {
 
   /** convert to Database Table Information
     *
-    * @param vertex
-    *   [[Vertex]]
     * @return
     *   Database Table Information
     */
-  def toTableList(vertex: Vertex): TableList =
+  def toDdl: TableList =
     TableList {
       val idColumn = Map(
         ColumnName(config.getString("column_name_vertex_id")) -> ColumnType
-          .apply(vertex.id())
+          .apply(value.id())
       )
-      val propertyColumn = vertex.valueMap.map { case (key, value) =>
+      val propertyColumn = value.valueMap.map { case (key, value) =>
         ColumnName(s"$columnNamePrefixProperty$key") -> ColumnType.apply(
           value
         )
       }
       val labelColumn = Map(
         ColumnName(
-          s"$columnNamePrefixLabel${vertex.label()}"
+          s"$columnNamePrefixLabel${value.label()}"
         ) -> ColumnType.apply(true)
       )
 
       Map(tableName -> ColumnList(idColumn ++ propertyColumn ++ labelColumn))
     }
 
-  def toSqlSentence(vertex: Vertex): String = {
-    val (propertyColumnList, propertyValueList) = vertex.valueMap.unzip
+  def toDml: String = {
+    val (propertyColumnList, propertyValueList) = value.valueMap.unzip
     val valueListForSql = propertyValueList.map { value =>
       ColumnType.apply(value) match {
         case ColumnTypeBoolean   => value
@@ -66,11 +64,18 @@ object VertexUtility {
       }
     }
 
-    val labelColumn = s"$columnNamePrefixLabel${vertex.label()}"
+    val labelColumn = s"$columnNamePrefixLabel${value.label()}"
 
-    s"INSERT INTO ${tableName.toSqlSentence} (${config.getString("column_name_vertex_id")}, ${propertyColumnList
+    val (keys, values) = (
+      Seq(
+        (config.getString("column_name_vertex_id"), value.id())
+      ) ++ propertyColumnList
         .map(columnName => s"$columnNamePrefixProperty$columnName")
-        .mkString(", ")}, $labelColumn) VALUES (${vertex
-        .id()}, ${valueListForSql.mkString(", ")}, true);"
+        .zip(valueListForSql) ++ Seq(
+        (labelColumn, true)
+      )
+    ).unzip
+
+    s"INSERT INTO ${tableName.toSqlSentence} (${keys.mkString(", ")}) VALUES (${values.mkString(", ")});"
   }
 }

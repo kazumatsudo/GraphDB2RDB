@@ -2,9 +2,7 @@ import com.typesafe.config.ConfigFactory
 import com.typesafe.scalalogging.StrictLogging
 import domain.table.TableList
 import org.apache.tinkerpop.gremlin.process.traversal.AnonymousTraversalSource.traversal
-import utils.FileUtility
-import utils.edge.{EdgeQuery, EdgeUtility}
-import utils.vertex.{VertexQuery, VertexUtility}
+import utils.{EdgeQuery, FileUtility, VertexQuery}
 
 import scala.util.Using
 import scala.util.control.NonFatal
@@ -56,8 +54,8 @@ object Main extends StrictLogging {
         while (vertexQuery.getVertexByOrder(vertexCount).nonEmpty) {
           val vertex = vertexQuery.getVertexByOrder(vertexCount).get
 
-          ddl = ddl.merge(VertexUtility.toTableList(vertex))
-          dml = s"$dml\n${VertexUtility.toSqlSentence(vertex)}"
+          ddl = ddl.merge(vertex.toDdl)
+          dml = s"$dml\n${vertex.toDml}"
 
           vertexCount = vertexCount + 1
         }
@@ -81,8 +79,8 @@ object Main extends StrictLogging {
         while (edgeQuery.getEdgeByOrder(edgeCount).nonEmpty) {
           val edge = edgeQuery.getEdgeByOrder(edgeCount).get
 
-          ddl = ddl.merge(EdgeUtility.toTableList(edge))
-          dml = s"$dml\n${EdgeUtility.toSqlSentence(edge)}"
+          ddl = ddl.merge(edge.toDdl)
+          dml = s"$dml\n${edge.toDml}"
 
           edgeCount = edgeCount + 1
         }
