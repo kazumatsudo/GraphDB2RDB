@@ -59,7 +59,7 @@ object Main extends StrictLogging {
               .headOption
               .map(vertex =>
                 (
-                  VertexUtility.toTableList(vertex),
+                  VertexUtility.toDdl(vertex),
                   VertexUtility.toSqlSentence(vertex)
                 )
               )

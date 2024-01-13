@@ -14,13 +14,13 @@ import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.matchers.should.Matchers
 
 class VertexUtilitySpec extends AnyFunSpec with Matchers {
-  describe("toTableList") {
+  describe("toDdl") {
     it("get Database Column Information") {
       val graph = TinkerFactory.createModern().traversal()
       val vertexQuery = VertexQuery(graph)
       val vertex = vertexQuery.getVerticesList(0, 1).head
 
-      VertexUtility.toTableList(vertex) shouldBe TableList(
+      VertexUtility.toDdl(vertex) shouldBe TableList(
         Map(
           TableName("vertex") -> ColumnList(
             Map(

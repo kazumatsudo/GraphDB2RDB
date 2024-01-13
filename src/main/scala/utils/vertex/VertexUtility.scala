@@ -33,7 +33,7 @@ object VertexUtility {
     * @return
     *   Database Table Information
     */
-  def toTableList(vertex: Vertex): TableList =
+  def toDdl(vertex: Vertex): TableList =
     TableList {
       val idColumn = Map(
         ColumnName(config.getString("column_name_vertex_id")) -> ColumnType

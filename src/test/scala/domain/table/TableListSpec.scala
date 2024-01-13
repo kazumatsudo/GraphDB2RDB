@@ -22,7 +22,7 @@ class TableListSpec extends AnyFunSpec with Matchers {
       val vertex = vertexQuery.getVerticesList(0, vertexQuery.countAll.toInt)
 
       val result = vertex
-        .map(vertex => VertexUtility.toTableList(vertex))
+        .map(vertex => VertexUtility.toDdl(vertex))
         .reduce[TableList] { case (accumulator, currentValue) =>
           accumulator.merge(currentValue)
         }
@@ -52,7 +52,7 @@ class TableListSpec extends AnyFunSpec with Matchers {
       val vertex = vertexQuery.getVerticesList(0, vertexQuery.countAll.toInt)
 
       val vertexAnalyzedResult = vertex
-        .map(vertex => VertexUtility.toTableList(vertex))
+        .map(vertex => VertexUtility.toDdl(vertex))
         .reduce[TableList] { case (accumulator, currentValue) =>
           accumulator.merge(currentValue)
         }
