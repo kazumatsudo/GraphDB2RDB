@@ -53,7 +53,7 @@ object Main extends StrictLogging {
         val (ddl, dml) = (0 to totalVertexCount)
           .flatMap { start =>
             vertexQuery
-              .getVerticesList(start, 1)
+              .getList(start, 1)
               .headOption
               .map(vertex =>
                 (

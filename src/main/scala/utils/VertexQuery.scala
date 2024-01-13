@@ -26,7 +26,7 @@ final case class VertexQuery(private val g: GraphTraversalSource)
     * @return
     *   A list of Vertices based on the specified pagination parameters.
     */
-  def getVerticesList(start: Int, count: Int): Seq[GraphVertex] = {
+  def getList(start: Int, count: Int): Seq[GraphVertex] = {
     require(start >= 0, "start must be positive.")
     require(count >= 0, "count must be positive.")
 

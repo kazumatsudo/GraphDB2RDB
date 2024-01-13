@@ -15,13 +15,13 @@ class VertexQuerySpec extends AnyFunSpec with Matchers {
     }
   }
 
-  describe("getVerticesList") {
+  describe("getList") {
     describe("require") {
       it("start must be positive.") {
         val graph = TinkerFactory.createModern().traversal()
         val vertexQuery = VertexQuery(graph)
         intercept[IllegalArgumentException] {
-          vertexQuery.getVerticesList(-1, 0)
+          vertexQuery.getList(-1, 0)
         }
       }
 
@@ -29,7 +29,7 @@ class VertexQuerySpec extends AnyFunSpec with Matchers {
         val graph = TinkerFactory.createModern().traversal()
         val vertexQuery = VertexQuery(graph)
         intercept[IllegalArgumentException] {
-          vertexQuery.getVerticesList(0, -1)
+          vertexQuery.getList(0, -1)
         }
       }
     }
@@ -37,7 +37,7 @@ class VertexQuerySpec extends AnyFunSpec with Matchers {
     it("get the number of all vertices") {
       val graph = TinkerFactory.createModern().traversal()
       val vertexQuery = VertexQuery(graph)
-      vertexQuery.getVerticesList(0, 1) shouldBe Seq(
+      vertexQuery.getList(0, 1) shouldBe Seq(
         GraphVertex(GremlinScala(graph.V()).head())
       )
     }

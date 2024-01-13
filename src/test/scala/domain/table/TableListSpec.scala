@@ -19,7 +19,7 @@ class TableListSpec extends AnyFunSpec with Matchers {
       // TODO: not use Vertex
       val graph = TinkerFactory.createModern().traversal()
       val vertexQuery = VertexQuery(graph)
-      val vertex = vertexQuery.getVerticesList(0, vertexQuery.countAll.toInt)
+      val vertex = vertexQuery.getList(0, vertexQuery.countAll.toInt)
 
       val result = vertex
         .map(_.toDdl)
@@ -49,7 +49,7 @@ class TableListSpec extends AnyFunSpec with Matchers {
       // TODO: not use Vertex
       val graph = TinkerFactory.createModern().traversal()
       val vertexQuery = VertexQuery(graph)
-      val vertex = vertexQuery.getVerticesList(0, vertexQuery.countAll.toInt)
+      val vertex = vertexQuery.getList(0, vertexQuery.countAll.toInt)
 
       val vertexAnalyzedResult = vertex
         .map(_.toDdl)

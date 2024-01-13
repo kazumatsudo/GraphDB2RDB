@@ -12,7 +12,7 @@ class GraphVertexSpec extends AnyFunSpec with Matchers {
     it("get Database Column Information") {
       val graph = TinkerFactory.createModern().traversal()
       val vertexQuery = VertexQuery(graph)
-      val vertex = vertexQuery.getVerticesList(0, 1).head
+      val vertex = vertexQuery.getList(0, 1).head
 
       vertex.toDdl shouldBe TableList(
         Map(
@@ -33,7 +33,7 @@ class GraphVertexSpec extends AnyFunSpec with Matchers {
     it("get SQL Sentence") {
       val graph = TinkerFactory.createModern().traversal()
       val vertexQuery = VertexQuery(graph)
-      val vertex = vertexQuery.getVerticesList(0, 1).head
+      val vertex = vertexQuery.getList(0, 1).head
 
       vertex.toDml shouldBe "INSERT INTO vertex (id, property_name, property_age, label_person) VALUES (1, \"marko\", 29, true);"
     }
