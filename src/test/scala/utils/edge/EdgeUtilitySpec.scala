@@ -14,13 +14,13 @@ import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.matchers.should.Matchers
 
 class EdgeUtilitySpec extends AnyFunSpec with Matchers {
-  describe("toTableList") {
+  describe("toDdl") {
     it("get Database Column Information") {
       val graph = TinkerFactory.createModern().traversal()
       val edgeQuery = EdgeQuery(graph)
       val edge = edgeQuery.getEdgesList(0, 1).head
 
-      EdgeUtility.toTableList(edge) shouldBe TableList(
+      EdgeUtility.toDdl(edge) shouldBe TableList(
         Map(
           TableName("edge") -> ColumnList(
             Map(

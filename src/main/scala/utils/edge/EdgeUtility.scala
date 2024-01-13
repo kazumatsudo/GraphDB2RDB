@@ -36,7 +36,7 @@ object EdgeUtility {
     * @return
     *   Database Table Information
     */
-  def toTableList(edge: Edge): TableList =
+  def toDdl(edge: Edge): TableList =
     TableList {
       val inVColumn =
         Map(

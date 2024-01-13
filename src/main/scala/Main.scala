@@ -93,7 +93,7 @@ object Main extends StrictLogging {
               .headOption
               .map(edge =>
                 (
-                  EdgeUtility.toTableList(edge),
+                  EdgeUtility.toDdl(edge),
                   EdgeUtility.toSqlSentence(edge)
                 )
               )
