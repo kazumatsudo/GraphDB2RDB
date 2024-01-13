@@ -70,20 +70,10 @@ You can define following settings as you like.
 
 The settings you can be changed are summarized in [application.conf](./src/main/resources/application.conf).
 
-## Test
+## design
 
-```shell
-sbt test
-```
-
-## Contribute
-
-### Pull Request Process
-
-1. Ensure all test are passed.
-2. Update the README.md when you add new features.
-3. If you would like, please list your account in the Contributors field of README.md.
-4. After the author submits an approve, the pull request is merged at the author's discretion.
+The design (ex. structure, each diagrams, ...) is summarised in [wiki](https://github.com/kazumatsudo/GraphDB2RDB/wiki).  
+this document contains how to contribute to this repository.
 
 ## Authors
 
