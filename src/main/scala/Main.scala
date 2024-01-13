@@ -2,9 +2,7 @@ import com.typesafe.config.ConfigFactory
 import com.typesafe.scalalogging.StrictLogging
 import domain.table.TableList
 import org.apache.tinkerpop.gremlin.process.traversal.AnonymousTraversalSource.traversal
-import utils.FileUtility
-import utils.edge.{EdgeQuery, EdgeUtility}
-import utils.vertex.{VertexQuery, VertexUtility}
+import utils.{EdgeQuery, FileUtility, VertexQuery}
 
 import scala.util.Using
 import scala.util.control.NonFatal
@@ -55,12 +53,12 @@ object Main extends StrictLogging {
         val (ddl, dml) = (0 to totalVertexCount)
           .flatMap { start =>
             vertexQuery
-              .getVerticesList(start, 1)
+              .getList(start, 1)
               .headOption
               .map(vertex =>
                 (
-                  VertexUtility.toTableList(vertex),
-                  VertexUtility.toSqlSentence(vertex)
+                  vertex.toDdl,
+                  vertex.toDml
                 )
               )
           }
@@ -89,12 +87,12 @@ object Main extends StrictLogging {
         val (ddl, dml) = (0 to totalEdgeCount)
           .flatMap { start =>
             edgeQuery
-              .getEdgesList(start, 1)
+              .getList(start, 1)
               .headOption
               .map(edge =>
                 (
-                  EdgeUtility.toTableList(edge),
-                  EdgeUtility.toSqlSentence(edge)
+                  edge.toDdl,
+                  edge.toDml
                 )
               )
           }
