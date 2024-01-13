@@ -1,5 +1,6 @@
 package utils.edge
 
+import domain.graph.GraphEdge
 import gremlin.scala.GremlinScala
 import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerFactory
 import org.scalatest.funspec.AnyFunSpec
@@ -36,7 +37,9 @@ class EdgeQuerySpec extends AnyFunSpec with Matchers {
     it("get the number of all edges") {
       val graph = TinkerFactory.createModern().traversal()
       val edgeQuery = EdgeQuery(graph)
-      edgeQuery.getEdgesList(0, 1) shouldBe Seq(GremlinScala(graph.E()).head())
+      edgeQuery.getEdgesList(0, 1) shouldBe Seq(
+        GraphEdge(GremlinScala(graph.E()).head())
+      )
     }
   }
 }

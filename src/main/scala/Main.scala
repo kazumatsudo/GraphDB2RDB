@@ -3,7 +3,7 @@ import com.typesafe.scalalogging.StrictLogging
 import domain.table.TableList
 import org.apache.tinkerpop.gremlin.process.traversal.AnonymousTraversalSource.traversal
 import utils.FileUtility
-import utils.edge.{EdgeQuery, EdgeUtility}
+import utils.edge.EdgeQuery
 import utils.vertex.{VertexQuery, VertexUtility}
 
 import scala.util.Using
@@ -93,8 +93,8 @@ object Main extends StrictLogging {
               .headOption
               .map(edge =>
                 (
-                  EdgeUtility.toDdl(edge),
-                  EdgeUtility.toDml(edge)
+                  edge.toDdl,
+                  edge.toDml
                 )
               )
           }

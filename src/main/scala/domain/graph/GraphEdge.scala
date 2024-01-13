@@ -1,24 +1,13 @@
-package utils.edge
+package domain.graph
 
 import com.typesafe.config.ConfigFactory
+import domain.table.column._
 import domain.table.{TableList, TableName}
-import domain.table.column.{
-  ColumnList,
-  ColumnName,
-  ColumnType,
-  ColumnTypeBoolean,
-  ColumnTypeDouble,
-  ColumnTypeInt,
-  ColumnTypeLong,
-  ColumnTypeString,
-  ColumnTypeUnknown
-}
 import gremlin.scala.Edge
-import utils.vertex.VertexUtility.config
 
 import scala.jdk.CollectionConverters.SetHasAsScala
 
-object EdgeUtility {
+case class GraphEdge(private val value: Edge) {
 
   private val config = ConfigFactory.load()
 
@@ -36,33 +25,33 @@ object EdgeUtility {
     * @return
     *   Database Table Information
     */
-  def toDdl(edge: Edge): TableList =
+  def toDdl: TableList =
     TableList {
       val inVColumn =
         Map(
           ColumnName(config.getString("column_name_edge_in_v_id")) -> ColumnType
-            .apply(edge.inVertex().id())
+            .apply(value.inVertex().id())
         )
       val outVColumn =
         Map(
           ColumnName(
             config.getString("column_name_edge_out_v_id")
-          ) -> ColumnType.apply(edge.outVertex().id())
+          ) -> ColumnType.apply(value.outVertex().id())
         )
 
       // TODO: pull request for gremlin-scala
-      val propertyColumn = edge
+      val propertyColumn = value
         .keys()
         .asScala
         .map { key =>
           ColumnName(s"$columnNamePrefixProperty$key") -> ColumnType.apply(
-            edge.value[Any](key)
+            value.value[Any](key)
           )
         }
         .toMap
       val labelColumn = Map(
         ColumnName(
-          s"$columnNamePrefixLabel${edge.label()}"
+          s"$columnNamePrefixLabel${value.label()}"
         ) -> ColumnType.apply(true)
       )
 
@@ -73,10 +62,10 @@ object EdgeUtility {
       )
     }
 
-  def toDml(edge: Edge): String = {
+  def toDml: String = {
     // TODO: pull request for gremlin-scala
     val (propertyColumnList, propertyValueList) =
-      edge.keys().asScala.map { key => (key, edge.value[Any](key)) }.unzip
+      value.keys().asScala.map { key => (key, value.value[Any](key)) }.unzip
     val valueListForSql = propertyValueList.map { value =>
       ColumnType.apply(value) match {
         case ColumnTypeBoolean   => value
@@ -88,12 +77,12 @@ object EdgeUtility {
       }
     }
 
-    val labelColumn = s"$columnNamePrefixLabel${edge.label()}"
+    val labelColumn = s"$columnNamePrefixLabel${value.label()}"
 
     s"INSERT INTO ${tableName.toSqlSentence} (${config.getString("column_name_edge_in_v_id")}, ${config
         .getString("column_name_edge_out_v_id")}, ${propertyColumnList
         .map(columnName => s"$columnNamePrefixProperty$columnName")
-        .mkString(", ")}, $labelColumn) VALUES (${edge.inVertex().id()}, ${edge.outVertex().id()}, ${valueListForSql
+        .mkString(", ")}, $labelColumn) VALUES (${value.inVertex().id()}, ${value.outVertex().id()}, ${valueListForSql
         .mkString(", ")}, true);"
   }
 }
