@@ -20,11 +20,11 @@ class UsingSpecificKeyListSpec extends AnyFunSpec with Matchers {
     it("success") {
       val graph = TinkerFactory.createModern().traversal()
 
-      val value = Map(
-        (
-          "person",
-          Map(
-            ("age", 29)
+      val value = UsingSpecificKeyListRequest(
+        Seq(
+          UsingSpecificKeyListRequestLabel(
+            "person",
+            Seq(UsingSpecificKeyListRequestKey("age", Seq(29)))
           )
         )
       )

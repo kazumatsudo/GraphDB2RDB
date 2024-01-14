@@ -1,12 +1,9 @@
 package usecase
 
-import com.typesafe.scalalogging.StrictLogging
 import domain.table.ddl.TableList
 import domain.table.dml.RecordList
 import infrastructure.{EdgeQuery, VertexQuery}
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource
-
-import scala.util.control.NonFatal
 
 /** analyze all Vertices and Edges
   *
@@ -18,20 +15,11 @@ import scala.util.control.NonFatal
   * @param g
   *   [[GraphTraversalSource]]
   */
-final case class ByExhaustiveSearch(private val g: GraphTraversalSource)
-    extends StrictLogging {
+final case class ByExhaustiveSearch(
+    override protected val g: GraphTraversalSource
+) extends UsecaseBase {
 
-  private def executeWithExceptionHandling(
-      function: => (TableList, RecordList)
-  ): Option[(TableList, RecordList)] = {
-    try {
-      Some(function)
-    } catch {
-      case NonFatal(_) => None
-    }
-  }
-
-  def execute
+  override def execute
       : (Option[(TableList, RecordList)], Option[(TableList, RecordList)]) = {
 
     // 1. generate vertex SQL
