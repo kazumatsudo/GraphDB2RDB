@@ -60,7 +60,6 @@ object Main extends StrictLogging {
               request <- JsonUtility.parseForUsingSpecificKeyListRequest(
                 jsonString
               )
-              _ = logger.info(s"request: $request")
             } yield UsingSpecificKeyList(g, request)
           } match {
             case Failure(exception) => throw new Exception(exception)
