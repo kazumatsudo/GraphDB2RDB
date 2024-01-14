@@ -17,6 +17,13 @@ final case class EdgeQuery(private val g: GraphTraversalSource)
     */
   def countAll: Long = GremlinScala(g.E()).count().head()
 
+  /** get in Edges List
+   *
+   * @param vertex
+   *   target Vertex
+   * @return
+   *   A list of Edge
+   */
   def getInEdgeList(vertex: GraphVertex): Seq[GraphEdge] = {
     GremlinScala(g.V(vertex.id)).inE().toList().map(GraphEdge)
   }
@@ -44,5 +51,16 @@ final case class EdgeQuery(private val g: GraphTraversalSource)
         )
         throw e
     }
+  }
+
+  /** get out Edges List
+   *
+   * @param vertex
+   *   target Vertex
+   * @return
+   *   A list of Edge
+   */
+  def getOutEdgeList(vertex: GraphVertex): Seq[GraphEdge] = {
+    GremlinScala(g.V(vertex.id)).outE().toList().map(GraphEdge)
   }
 }

@@ -55,4 +55,17 @@ class EdgeQuerySpec extends AnyFunSpec with Matchers {
       )
     }
   }
+
+  describe("getOutEdgeList") {
+    it("get outE list") {
+      val graph = TinkerFactory.createModern().traversal()
+      val edgeQuery = EdgeQuery(graph)
+      val edgeList = GremlinScala(graph.E()).toList().map(GraphEdge)
+      edgeQuery.getOutEdgeList(GraphVertex(graph.V().next())) shouldBe Seq(
+        edgeList(2),
+        edgeList.head,
+        edgeList(1)
+      )
+    }
+  }
 }
