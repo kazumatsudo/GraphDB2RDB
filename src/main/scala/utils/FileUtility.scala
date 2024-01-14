@@ -3,9 +3,16 @@ package utils
 import com.typesafe.config.ConfigFactory
 
 import java.io.{File, FileOutputStream, OutputStreamWriter}
-import scala.util.Using
+import scala.io.Source
+import scala.util.{Try, Using}
 
 object FileUtility {
+
+  def readJson(filePath: String): Try[String] = {
+    Using(Source.fromFile(filePath)) { bufferedSource =>
+      bufferedSource.mkString
+    }
+  }
 
   def outputSql(filename: String, sqlSentence: String): Unit = {
     val config = ConfigFactory.load()
