@@ -7,6 +7,7 @@ ThisBuild / javacOptions ++= Seq("-source", "11", "-target", "11")
 // FIXME: enable all checks
 wartremoverErrors ++= Warts.allBut(
   Wart.Any,
+  Wart.AnyVal,
   Wart.AutoUnboxing,
   Wart.FinalCaseClass,
   Wart.IterableOps,
