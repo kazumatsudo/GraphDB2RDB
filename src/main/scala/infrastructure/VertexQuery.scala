@@ -2,7 +2,7 @@ package infrastructure
 
 import com.typesafe.scalalogging.StrictLogging
 import domain.graph.GraphVertex
-import gremlin.scala.GremlinScala
+import gremlin.scala.{GremlinScala, Key}
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource
 
 import scala.util.control.NonFatal
@@ -40,5 +40,30 @@ final case class VertexQuery(private val g: GraphTraversalSource)
         )
         throw e
     }
+  }
+
+  /** get Vertices List searched by property key
+    *
+    * @param label
+    *   vertex label
+    * @param key
+    *   vertex property key
+    * @param value
+    *   vertex property value
+    * @return
+    *   A list of Vertices.
+    */
+  def getListByPropertyKey(
+      label: String,
+      key: String,
+      value: Any
+  ): Seq[GraphVertex] = {
+    require(label.nonEmpty, "label must not be empty.")
+    require(key.nonEmpty, "key must not be empty.")
+
+    GremlinScala(g.V())
+      .has(label, Key[Any](key), value)
+      .toList()
+      .map(GraphVertex)
   }
 }
