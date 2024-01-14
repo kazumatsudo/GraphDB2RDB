@@ -1,13 +1,6 @@
-package domain.table
+package domain.table.ddl
 
-import domain.table.column.{
-  ColumnLength,
-  ColumnList,
-  ColumnName,
-  ColumnTypeBoolean,
-  ColumnTypeInt,
-  ColumnTypeString
-}
+import domain.table.ddl.column._
 import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerFactory
 import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.matchers.should.Matchers

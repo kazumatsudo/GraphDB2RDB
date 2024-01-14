@@ -1,8 +1,9 @@
 package domain.graph
 
 import com.typesafe.config.ConfigFactory
-import domain.table.column._
-import domain.table.{TableList, TableName}
+import domain.table.ddl.column.{ColumnList, ColumnName, ColumnType}
+import domain.table.ddl.{TableList, TableName}
+import domain.table.dml.{RecordId, RecordKey, RecordList, RecordValue}
 import gremlin.scala.Edge
 
 import scala.jdk.CollectionConverters.SetHasAsScala
@@ -60,37 +61,31 @@ case class GraphEdge(private val value: Edge) {
       )
     }
 
-  def toDml: String = {
+  def toDml: RecordList = {
+    val id = value.id()
+
     // TODO: pull request for gremlin-scala
-    val (propertyColumnList, propertyValueList) =
-      value.keys().asScala.map { key => (key, value.value[Any](key)) }.unzip
-    val valueListForSql = propertyValueList.map { value =>
-      ColumnType.apply(value) match {
-        case ColumnTypeBoolean   => value
-        case ColumnTypeInt(_)    => value
-        case ColumnTypeLong(_)   => value
-        case ColumnTypeDouble(_) => value
-        case ColumnTypeString(_) => s"\"$value\""
-        case ColumnTypeUnknown   => s"\"$value\""
+    val propertyColumnList = value
+      .keys()
+      .asScala
+      .map { key =>
+        (s"$columnNamePrefixProperty$key", value.value[Any](key))
       }
-    }
+      .toMap
+
     val labelColumn = s"$columnNamePrefixLabel${value.label()}"
 
-    val (keys, values) = (
-      Seq(
-        (config.getString("column_name_edge_in_v_id"), value.inVertex().id())
-      ) ++ Seq(
-        (
-          config.getString("column_name_edge_out_v_id"),
-          value.outVertex().id()
-        )
-      ) ++ propertyColumnList
-        .map(columnName => s"$columnNamePrefixProperty$columnName")
-        .zip(valueListForSql) ++ Seq(
-        (labelColumn, true)
+    val recordValue = Map(
+      (config.getString("column_name_edge_in_v_id"), value.inVertex().id())
+    ) ++ Map(
+      (
+        config.getString("column_name_edge_out_v_id"),
+        value.outVertex().id()
       )
-    ).unzip
+    ) ++ propertyColumnList ++ Map((labelColumn, true))
 
-    s"INSERT INTO ${tableName.toSqlSentence} (${keys.mkString(", ")}) VALUES (${values.mkString(", ")});"
+    RecordList(
+      Map((RecordKey(tableName, RecordId(id)), RecordValue(recordValue)))
+    )
   }
 }

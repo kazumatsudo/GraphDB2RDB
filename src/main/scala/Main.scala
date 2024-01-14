@@ -1,6 +1,7 @@
 import com.typesafe.config.ConfigFactory
 import com.typesafe.scalalogging.StrictLogging
-import domain.table.TableList
+import domain.table.ddl.TableList
+import domain.table.dml.RecordList
 import org.apache.tinkerpop.gremlin.process.traversal.AnonymousTraversalSource.traversal
 import utils.{EdgeQuery, FileUtility, VertexQuery}
 
@@ -62,14 +63,14 @@ object Main extends StrictLogging {
                 )
               )
           }
-          .reduce[(TableList, String)] {
+          .reduce[(TableList, RecordList)] {
             case (
                   (tableListAccumlator, dmlAccumlator),
                   (tableListCurrentValue, dmlCurrentValue)
                 ) =>
               (
                 tableListAccumlator.merge(tableListCurrentValue),
-                dmlAccumlator + "\n" + dmlCurrentValue
+                dmlAccumlator.merge(dmlCurrentValue)
               )
           }
         FileUtility.outputSql(
@@ -78,7 +79,7 @@ object Main extends StrictLogging {
         )
         FileUtility.outputSql(
           config.getString("sql_dml_vertex"),
-          dml
+          dml.toSqlSentence
         )
       })
 
@@ -96,14 +97,14 @@ object Main extends StrictLogging {
                 )
               )
           }
-          .reduce[(TableList, String)] {
+          .reduce[(TableList, RecordList)] {
             case (
                   (tableListAccumlator, dmlAccumlator),
                   (tableListCurrentValue, dmlCurrentValue)
                 ) =>
               (
                 tableListAccumlator.merge(tableListCurrentValue),
-                dmlAccumlator + "\n" + dmlCurrentValue
+                dmlAccumlator.merge(dmlCurrentValue)
               )
           }
 
@@ -113,7 +114,7 @@ object Main extends StrictLogging {
         )
         FileUtility.outputSql(
           config.getString("sql_dml_edge"),
-          dml
+          dml.toSqlSentence
         )
       })
 

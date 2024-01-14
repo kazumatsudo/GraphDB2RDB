@@ -1,7 +1,15 @@
 package domain.graph
 
-import domain.table.column._
-import domain.table.{TableList, TableName}
+import domain.table.ddl.column.{
+  ColumnLength,
+  ColumnList,
+  ColumnName,
+  ColumnTypeBoolean,
+  ColumnTypeInt,
+  ColumnTypeString
+}
+import domain.table.ddl.{TableList, TableName}
+import domain.table.dml.{RecordId, RecordKey, RecordList, RecordValue}
 import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerFactory
 import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.matchers.should.Matchers
@@ -35,7 +43,18 @@ class GraphVertexSpec extends AnyFunSpec with Matchers {
       val vertexQuery = VertexQuery(graph)
       val vertex = vertexQuery.getList(0, 1).head
 
-      vertex.toDml shouldBe "INSERT INTO vertex (id, property_name, property_age, label_person) VALUES (1, \"marko\", 29, true);"
+      vertex.toDml shouldBe RecordList(
+        Map(
+          RecordKey((TableName("vertex"), RecordId(1))) -> RecordValue(
+            Map(
+              "id" -> 1,
+              "property_name" -> "marko",
+              "property_age" -> 29,
+              "label_person" -> true
+            )
+          )
+        )
+      )
     }
 
     it("not to write extra comma") {
@@ -43,7 +62,15 @@ class GraphVertexSpec extends AnyFunSpec with Matchers {
       val vertex1 = graph.addV("testVertex1").next()
 
       val graphVertex = GraphVertex(vertex1)
-      graphVertex.toDml shouldBe "INSERT INTO vertex (id, label_testVertex1) VALUES (0, true);"
+      graphVertex.toDml shouldBe RecordList(
+        Map(
+          RecordKey(
+            (TableName("vertex"), RecordId(vertex1.id()))
+          ) -> RecordValue(
+            Map(("id" -> 0), "label_testVertex1" -> true)
+          )
+        )
+      )
     }
   }
 }

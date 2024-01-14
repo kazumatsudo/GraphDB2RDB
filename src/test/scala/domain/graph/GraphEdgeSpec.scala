@@ -1,7 +1,15 @@
 package domain.graph
 
-import domain.table.column._
-import domain.table.{TableList, TableName}
+import domain.table.ddl.column.{
+  ColumnLength,
+  ColumnList,
+  ColumnName,
+  ColumnTypeBoolean,
+  ColumnTypeDouble,
+  ColumnTypeInt
+}
+import domain.table.ddl.{TableList, TableName}
+import domain.table.dml.{RecordId, RecordKey, RecordList, RecordValue}
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__.V
 import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerFactory
 import org.scalatest.funspec.AnyFunSpec
@@ -38,7 +46,18 @@ class GraphEdgeSpec extends AnyFunSpec with Matchers {
       val edgeQuery = EdgeQuery(graph)
       val edge = edgeQuery.getList(0, 1).head
 
-      edge.toDml shouldBe "INSERT INTO edge (in_v_id, out_v_id, property_weight, label_knows) VALUES (2, 1, 0.5, true);"
+      edge.toDml shouldBe RecordList(
+        Map(
+          RecordKey((TableName("edge"), RecordId(7))) -> RecordValue(
+            Map(
+              "in_v_id" -> 2,
+              "out_v_id" -> 1,
+              "property_weight" -> 0.5,
+              "label_knows" -> true
+            )
+          )
+        )
+      )
     }
 
     it("not to write extra comma") {
@@ -48,7 +67,13 @@ class GraphEdgeSpec extends AnyFunSpec with Matchers {
       val edge = graph.V(vertex1).addE("testEdge").to(V(vertex2)).next()
 
       val graphEdge = GraphEdge(edge)
-      graphEdge.toDml shouldBe "INSERT INTO edge (in_v_id, out_v_id, label_testEdge) VALUES (13, 0, true);"
+      graphEdge.toDml shouldBe RecordList(
+        Map(
+          RecordKey((TableName("edge"), RecordId(14))) -> RecordValue(
+            Map("in_v_id" -> 13, "out_v_id" -> 0, "label_testEdge" -> true)
+          )
+        )
+      )
     }
   }
 }

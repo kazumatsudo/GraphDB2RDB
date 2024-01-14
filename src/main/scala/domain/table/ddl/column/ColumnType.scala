@@ -1,4 +1,4 @@
-package domain.table.column
+package domain.table.ddl.column
 
 import scala.annotation.tailrec
 
