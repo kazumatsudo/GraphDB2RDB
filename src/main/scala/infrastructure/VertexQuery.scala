@@ -1,4 +1,4 @@
-package utils
+package infrastructure
 
 import com.typesafe.scalalogging.StrictLogging
 import domain.graph.GraphVertex

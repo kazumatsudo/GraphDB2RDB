@@ -10,10 +10,10 @@ import domain.table.ddl.column.{
 }
 import domain.table.ddl.{TableList, TableName}
 import domain.table.dml.{RecordId, RecordKey, RecordList, RecordValue}
+import infrastructure.VertexQuery
 import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerFactory
 import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.matchers.should.Matchers
-import utils.VertexQuery
 
 class GraphVertexSpec extends AnyFunSpec with Matchers {
   describe("toDdl") {
