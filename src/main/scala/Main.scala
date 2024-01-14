@@ -2,8 +2,9 @@ import com.typesafe.config.ConfigFactory
 import com.typesafe.scalalogging.StrictLogging
 import domain.table.ddl.TableList
 import domain.table.dml.RecordList
+import infrastructure.{EdgeQuery, VertexQuery}
 import org.apache.tinkerpop.gremlin.process.traversal.AnonymousTraversalSource.traversal
-import utils.{EdgeQuery, FileUtility, VertexQuery}
+import utils.FileUtility
 
 import scala.util.Using
 import scala.util.control.NonFatal

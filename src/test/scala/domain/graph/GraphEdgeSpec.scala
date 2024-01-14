@@ -10,11 +10,11 @@ import domain.table.ddl.column.{
 }
 import domain.table.ddl.{TableList, TableName}
 import domain.table.dml.{RecordId, RecordKey, RecordList, RecordValue}
+import infrastructure.EdgeQuery
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__.V
 import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerFactory
 import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.matchers.should.Matchers
-import utils.EdgeQuery
 
 class GraphEdgeSpec extends AnyFunSpec with Matchers {
   describe("toDdl") {

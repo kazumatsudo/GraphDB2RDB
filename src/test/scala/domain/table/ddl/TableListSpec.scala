@@ -1,10 +1,10 @@
 package domain.table.ddl
 
 import domain.table.ddl.column._
+import infrastructure.VertexQuery
 import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerFactory
 import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.matchers.should.Matchers
-import utils.VertexQuery
 
 class TableListSpec extends AnyFunSpec with Matchers {
   describe("merge") {
