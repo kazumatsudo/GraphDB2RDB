@@ -97,14 +97,14 @@ object Main extends StrictLogging {
                 )
               )
           }
-          .reduce[(TableList, String)] {
+          .reduce[(TableList, RecordList)] {
             case (
                   (tableListAccumlator, dmlAccumlator),
                   (tableListCurrentValue, dmlCurrentValue)
                 ) =>
               (
                 tableListAccumlator.merge(tableListCurrentValue),
-                dmlAccumlator + "\n" + dmlCurrentValue
+                dmlAccumlator.merge(dmlCurrentValue)
               )
           }
 
@@ -114,7 +114,7 @@ object Main extends StrictLogging {
         )
         FileUtility.outputSql(
           config.getString("sql_dml_edge"),
-          dml
+          dml.toSqlSentence
         )
       })
 
