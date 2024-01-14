@@ -1,8 +1,9 @@
 package domain.graph
 
 import com.typesafe.config.ConfigFactory
-import domain.table.ddl.column.{ColumnList, ColumnName, ColumnType, ColumnTypeBoolean, ColumnTypeDouble, ColumnTypeInt, ColumnTypeLong, ColumnTypeString, ColumnTypeUnknown}
+import domain.table.ddl.column.{ColumnList, ColumnName, ColumnType}
 import domain.table.ddl.{TableList, TableName}
+import domain.table.dml.{RecordId, RecordKey, RecordList, RecordValue}
 import gremlin.scala._
 
 case class GraphVertex(private val value: Vertex) {
@@ -41,31 +42,20 @@ case class GraphVertex(private val value: Vertex) {
       Map(tableName -> ColumnList(idColumn ++ propertyColumn ++ labelColumn))
     }
 
-  def toDml: String = {
-    val (propertyColumnList, propertyValueList) = value.valueMap.unzip
-    val valueListForSql = propertyValueList.map { value =>
-      ColumnType.apply(value) match {
-        case ColumnTypeBoolean   => value
-        case ColumnTypeInt(_)    => value
-        case ColumnTypeLong(_)   => value
-        case ColumnTypeDouble(_) => value
-        case ColumnTypeString(_) => s"\"$value\""
-        case ColumnTypeUnknown   => s"\"$value\""
-      }
-    }
+  def toDml: RecordList = {
+    val id = value.id()
 
+    val propertyColumnList = value.valueMap.map { case (columnName, value) =>
+      (s"$columnNamePrefixProperty$columnName", value)
+    }
     val labelColumn = s"$columnNamePrefixLabel${value.label()}"
 
-    val (keys, values) = (
-      Seq(
-        (config.getString("column_name_vertex_id"), value.id())
-      ) ++ propertyColumnList
-        .map(columnName => s"$columnNamePrefixProperty$columnName")
-        .zip(valueListForSql) ++ Seq(
-        (labelColumn, true)
-      )
-    ).unzip
+    val recordValue = Map(
+      (config.getString("column_name_vertex_id"), id)
+    ) ++ propertyColumnList ++ Map((labelColumn, true))
 
-    s"INSERT INTO ${tableName.toSqlSentence} (${keys.mkString(", ")}) VALUES (${values.mkString(", ")});"
+    RecordList(
+      Map((RecordKey(tableName, RecordId(id)), RecordValue(recordValue)))
+    )
   }
 }
