@@ -17,6 +17,8 @@ case class GraphVertex(private val value: Vertex) {
   private val columnNamePrefixLabel =
     config.getString("column_name_prefix_label")
 
+  val id: AnyRef = value.id()
+
   /** convert to Database Table Information
     *
     * @return
@@ -43,8 +45,6 @@ case class GraphVertex(private val value: Vertex) {
     }
 
   def toDml: RecordList = {
-    val id = value.id()
-
     val propertyColumnList = value.valueMap.map { case (columnName, value) =>
       (s"$columnNamePrefixProperty$columnName", value)
     }

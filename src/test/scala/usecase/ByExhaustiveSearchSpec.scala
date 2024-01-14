@@ -1,4 +1,4 @@
-package domain.usecase
+package usecase
 
 import domain.table.ddl.column.{
   ColumnLength,
@@ -14,7 +14,6 @@ import domain.table.dml.{RecordId, RecordKey, RecordList, RecordValue}
 import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerFactory
 import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.matchers.should.Matchers
-import usecase.ByExhaustiveSearch
 
 class ByExhaustiveSearchSpec extends AnyFunSpec with Matchers {
   describe("execute") {
@@ -28,6 +27,7 @@ class ByExhaustiveSearchSpec extends AnyFunSpec with Matchers {
             Map(
               TableName("vertex") -> ColumnList(
                 Map(
+                  ColumnName("id") -> ColumnTypeInt(ColumnLength(1)),
                   ColumnName("property_age") -> ColumnTypeInt(ColumnLength(2)),
                   ColumnName("property_lang") -> ColumnTypeString(
                     ColumnLength(4)
@@ -35,61 +35,60 @@ class ByExhaustiveSearchSpec extends AnyFunSpec with Matchers {
                   ColumnName("property_name") -> ColumnTypeString(
                     ColumnLength(6)
                   ),
-                  ColumnName("label_software") -> ColumnTypeBoolean,
-                  ColumnName("id") -> ColumnTypeInt(ColumnLength(1)),
-                  ColumnName("label_person") -> ColumnTypeBoolean
+                  ColumnName("label_person") -> ColumnTypeBoolean,
+                  ColumnName("label_software") -> ColumnTypeBoolean
                 )
               )
             )
           ),
           RecordList(
             Map(
-              RecordKey((TableName("vertex"), RecordId(5))) -> RecordValue(
+              RecordKey((TableName("vertex"), RecordId(1))) -> RecordValue(
                 Map(
-                  "id" -> 5,
-                  "property_name" -> "ripple",
-                  "property_lang" -> "java",
-                  "label_software" -> true
-                )
-              ),
-              RecordKey((TableName("vertex"), RecordId(6))) -> RecordValue(
-                Map(
-                  "id" -> 6,
-                  "property_name" -> "peter",
-                  "property_age" -> 35,
-                  "label_person" -> true
-                )
-              ),
-              RecordKey((TableName("vertex"), RecordId(4))) -> RecordValue(
-                Map(
-                  "id" -> 4,
-                  "property_name" -> "josh",
-                  "property_age" -> 32,
+                  "id" -> 1,
+                  "property_age" -> 29,
+                  "property_name" -> "marko",
                   "label_person" -> true
                 )
               ),
               RecordKey((TableName("vertex"), RecordId(2))) -> RecordValue(
                 Map(
                   "id" -> 2,
-                  "property_name" -> "vadas",
                   "property_age" -> 27,
-                  "label_person" -> true
-                )
-              ),
-              RecordKey((TableName("vertex"), RecordId(1))) -> RecordValue(
-                Map(
-                  "id" -> 1,
-                  "property_name" -> "marko",
-                  "property_age" -> 29,
+                  "property_name" -> "vadas",
                   "label_person" -> true
                 )
               ),
               RecordKey((TableName("vertex"), RecordId(3))) -> RecordValue(
                 Map(
                   "id" -> 3,
-                  "property_name" -> "lop",
                   "property_lang" -> "java",
+                  "property_name" -> "lop",
                   "label_software" -> true
+                )
+              ),
+              RecordKey((TableName("vertex"), RecordId(4))) -> RecordValue(
+                Map(
+                  "id" -> 4,
+                  "property_age" -> 32,
+                  "property_name" -> "josh",
+                  "label_person" -> true
+                )
+              ),
+              RecordKey((TableName("vertex"), RecordId(5))) -> RecordValue(
+                Map(
+                  "id" -> 5,
+                  "property_lang" -> "java",
+                  "property_name" -> "ripple",
+                  "label_software" -> true
+                )
+              ),
+              RecordKey((TableName("vertex"), RecordId(6))) -> RecordValue(
+                Map(
+                  "id" -> 6,
+                  "property_age" -> 35,
+                  "property_name" -> "peter",
+                  "label_person" -> true
                 )
               )
             )
@@ -101,13 +100,13 @@ class ByExhaustiveSearchSpec extends AnyFunSpec with Matchers {
             Map(
               TableName("edge") -> ColumnList(
                 Map(
+                  ColumnName("in_v_id") -> ColumnTypeInt(ColumnLength(1)),
+                  ColumnName("out_v_id") -> ColumnTypeInt(ColumnLength(1)),
                   ColumnName("property_weight") -> ColumnTypeDouble(
                     ColumnLength(3)
                   ),
-                  ColumnName("label_knows") -> ColumnTypeBoolean,
-                  ColumnName("out_v_id") -> ColumnTypeInt(ColumnLength(1)),
                   ColumnName("label_created") -> ColumnTypeBoolean,
-                  ColumnName("in_v_id") -> ColumnTypeInt(ColumnLength(1))
+                  ColumnName("label_knows") -> ColumnTypeBoolean
                 )
               )
             )

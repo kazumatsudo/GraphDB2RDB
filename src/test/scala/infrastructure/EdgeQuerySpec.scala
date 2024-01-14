@@ -1,6 +1,6 @@
 package infrastructure
 
-import domain.graph.GraphEdge
+import domain.graph.{GraphEdge, GraphVertex}
 import gremlin.scala.GremlinScala
 import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerFactory
 import org.scalatest.funspec.AnyFunSpec
@@ -12,6 +12,19 @@ class EdgeQuerySpec extends AnyFunSpec with Matchers {
       val graph = TinkerFactory.createModern().traversal()
       val edgeQuery = EdgeQuery(graph)
       edgeQuery.countAll shouldBe 6
+    }
+  }
+
+  describe("getInEdgeList") {
+    it("get inE list") {
+      val graph = TinkerFactory.createModern().traversal()
+      val edgeQuery = EdgeQuery(graph)
+      val edgeList = GremlinScala(graph.E()).toList().map(GraphEdge)
+      edgeQuery.getInEdgeList(
+        GraphVertex(GremlinScala(graph.V()).toList()(1))
+      ) shouldBe Seq(
+        edgeList.head
+      )
     }
   }
 
@@ -39,6 +52,19 @@ class EdgeQuerySpec extends AnyFunSpec with Matchers {
       val edgeQuery = EdgeQuery(graph)
       edgeQuery.getList(0, 1) shouldBe Seq(
         GraphEdge(GremlinScala(graph.E()).head())
+      )
+    }
+  }
+
+  describe("getOutEdgeList") {
+    it("get outE list") {
+      val graph = TinkerFactory.createModern().traversal()
+      val edgeQuery = EdgeQuery(graph)
+      val edgeList = GremlinScala(graph.E()).toList().map(GraphEdge)
+      edgeQuery.getOutEdgeList(GraphVertex(graph.V().next())) shouldBe Seq(
+        edgeList(2),
+        edgeList.head,
+        edgeList(1)
       )
     }
   }

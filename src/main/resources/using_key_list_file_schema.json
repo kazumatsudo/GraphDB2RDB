@@ -1,0 +1,39 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "using_key_list_file",
+  "description": "",
+  "type": "object",
+  "properties": {
+    "value": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "label": {
+            "type": "string"
+          },
+          "value": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "key": {
+                  "type": "string"
+                },
+                "value": {
+                  "type": "array",
+                  "items": {
+                    "type": ["boolean", "number", "string"]
+                  }
+                }
+              },
+              "required": ["key", "value"]
+            }
+          }
+        },
+        "required": ["label", "value"]
+      }
+    }
+  },
+  "required": ["value"]
+}
