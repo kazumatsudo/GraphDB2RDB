@@ -1,4 +1,5 @@
 {
+  "$schema": "using_key_list_file_schema.json",
   "value": [
     {
       "label": "person",
