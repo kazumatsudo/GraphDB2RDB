@@ -1,11 +1,7 @@
 package domain.graph
 
 import com.typesafe.config.ConfigFactory
-import domain.table.ddl.column.{
-  ColumnList,
-  ColumnName,
-  ColumnType
-}
+import domain.table.ddl.column.{ColumnList, ColumnName, ColumnType}
 import domain.table.ddl.{TableList, TableName}
 import domain.table.dml.{RecordId, RecordKey, RecordList, RecordValue}
 import gremlin.scala.Edge

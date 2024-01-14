@@ -1,6 +1,15 @@
 package domain.table.ddl.column
 
-import domain.table.ddl.column.{ColumnLength, ColumnType, ColumnTypeBoolean, ColumnTypeDouble, ColumnTypeInt, ColumnTypeLong, ColumnTypeString, ColumnTypeUnknown}
+import domain.table.ddl.column.{
+  ColumnLength,
+  ColumnType,
+  ColumnTypeBoolean,
+  ColumnTypeDouble,
+  ColumnTypeInt,
+  ColumnTypeLong,
+  ColumnTypeString,
+  ColumnTypeUnknown
+}
 import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.matchers.should.Matchers
 
