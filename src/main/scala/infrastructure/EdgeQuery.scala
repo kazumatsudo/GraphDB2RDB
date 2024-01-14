@@ -1,7 +1,7 @@
 package infrastructure
 
 import com.typesafe.scalalogging.StrictLogging
-import domain.graph.GraphEdge
+import domain.graph.{GraphEdge, GraphVertex}
 import gremlin.scala.GremlinScala
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource
 
@@ -16,6 +16,10 @@ final case class EdgeQuery(private val g: GraphTraversalSource)
     *   the number of all edges
     */
   def countAll: Long = GremlinScala(g.E()).count().head()
+
+  def getInEdgeList(vertex: GraphVertex): Seq[GraphEdge] = {
+    GremlinScala(g.V(vertex.id)).inE().toList().map(GraphEdge)
+  }
 
   /** get Edges List
     *
