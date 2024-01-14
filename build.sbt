@@ -40,7 +40,7 @@ libraryDependencies ++= Seq(
   "com.typesafe.scala-logging" %% "scala-logging" % "3.9.5",
   "io.circe" %% "circe-core" % "0.14.6",
   "io.circe" %% "circe-generic" % "0.14.6",
-  "io.circe" %% "circe-parser" % "0.14.5",
+  "io.circe" %% "circe-parser" % "0.14.6",
   "org.apache.tinkerpop" % "gremlin-driver" % "3.7.1",
   "org.apache.tinkerpop" % "tinkergraph-gremlin" % "3.7.1",
   "org.janusgraph" % "janusgraph-driver" % "1.1.0-20231130-164636.abdc113"
