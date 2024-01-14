@@ -1,0 +1,30 @@
+{
+  "value": [
+    {
+      "label": "person",
+      "value": [
+        {
+          "key": "age",
+          "value": [27, 29, 32, 35]
+        },
+        {
+          "key": "name",
+          "value": ["josh", "marko", "peter", "vadas"]
+        }
+      ]
+    },
+    {
+      "label": "software",
+      "value": [
+        {
+          "key": "lang",
+          "value": ["java"]
+        },
+        {
+          "key": "name",
+          "value": ["lop", "ripple"]
+        }
+      ]
+    }
+  ]
+}
