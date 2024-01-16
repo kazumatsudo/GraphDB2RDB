@@ -19,11 +19,17 @@ final case class ByExhaustiveSearch(
     override protected val g: GraphTraversalSource
 ) extends UsecaseBase {
 
-  override def execute
-      : (Option[(TableList, RecordList)], Option[(TableList, RecordList)]) = {
+  override def execute(
+      checkUnique: Boolean
+  ): (
+      Option[TableList],
+      Option[RecordList],
+      Option[TableList],
+      Option[RecordList]
+  ) = {
 
     // 1. generate vertex SQL
-    val vertexSqlOption = executeWithExceptionHandling({
+    val (verticesDdl, verticesDml) = {
       val vertexQuery = VertexQuery(g)
       val totalVertexCount = vertexQuery.countAll.toInt
 
@@ -46,13 +52,13 @@ final case class ByExhaustiveSearch(
               ) =>
             (
               tableListAccumlator.merge(tableListCurrentValue),
-              dmlAccumlator.merge(dmlCurrentValue)
+              dmlAccumlator.merge(dmlCurrentValue, checkUnique)
             )
         }
-    })
+    }
 
     // 2. generate edge SQL
-    val edgeSqlOption = executeWithExceptionHandling({
+    val (edgesDdl, edgesDml) = {
       val edgeQuery = EdgeQuery(g)
       val totalEdgeCount = edgeQuery.countAll.toInt
 
@@ -75,11 +81,11 @@ final case class ByExhaustiveSearch(
               ) =>
             (
               tableListAccumlator.merge(tableListCurrentValue),
-              dmlAccumlator.merge(dmlCurrentValue)
+              dmlAccumlator.merge(dmlCurrentValue, checkUnique)
             )
         }
-    })
+    }
 
-    (vertexSqlOption, edgeSqlOption)
+    (Some(verticesDdl), Some(verticesDml), Some(edgesDdl), Some(edgesDml))
   }
 }

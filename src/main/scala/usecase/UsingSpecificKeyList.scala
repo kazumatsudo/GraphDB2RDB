@@ -32,8 +32,14 @@ final case class UsingSpecificKeyList(
     private val value: UsingSpecificKeyListRequest
 ) extends UsecaseBase {
 
-  override def execute
-      : (Option[(TableList, RecordList)], Option[(TableList, RecordList)]) = {
+  override def execute(
+      checkUnique: Boolean
+  ): (
+      Option[TableList],
+      Option[RecordList],
+      Option[TableList],
+      Option[RecordList]
+  ) = {
 
     // 1. get vertex by specific key
     val verticesOption = executeWithExceptionHandling({
@@ -51,55 +57,58 @@ final case class UsingSpecificKeyList(
     verticesOption match {
       case Some(vertices) =>
         // 2. generate vertex SQL
-        val vertexSqlOption = executeWithExceptionHandling({
+        val edgeQuery = EdgeQuery(g)
+
+        val (verticesDdl, verticesDml, edgesDdl, edgesDml) = {
           vertices
-            .map(vertex =>
+            .map { vertex =>
+              val (edgesDdl, edgesDml) =
+                (edgeQuery.getInEdgeList(vertex) ++ edgeQuery
+                  .getOutEdgeList(vertex)).view
+                  .map(edge => (edge.toDdl, edge.toDml))
+                  .reduce[(TableList, RecordList)] {
+                    case (
+                          (tableListAccumlator, dmlAccumlator),
+                          (tableListCurrentValue, dmlCurrentValue)
+                        ) =>
+                      (
+                        tableListAccumlator.merge(tableListCurrentValue),
+                        dmlAccumlator.merge(dmlCurrentValue, checkUnique)
+                      )
+                  }
+
               (
                 vertex.toDdl,
-                vertex.toDml
+                vertex.toDml,
+                edgesDdl,
+                edgesDml
               )
-            )
-            .reduce[(TableList, RecordList)] {
+            }
+            .reduce[(TableList, RecordList, TableList, RecordList)] {
               case (
-                    (tableListAccumlator, dmlAccumlator),
-                    (tableListCurrentValue, dmlCurrentValue)
+                    (
+                      vertexDdlAccumlator,
+                      vertexDmlAccumlator,
+                      edgeDdlAccumlator,
+                      edgeDmlAccumlator
+                    ),
+                    (
+                      vertexDdlCurrentValue,
+                      vertexDmlCurrentValue,
+                      edgeDdlCurrentValue,
+                      edgeDmlCurrentValue
+                    )
                   ) =>
                 (
-                  tableListAccumlator.merge(tableListCurrentValue),
-                  dmlAccumlator.merge(dmlCurrentValue)
+                  vertexDdlAccumlator.merge(vertexDdlCurrentValue),
+                  vertexDmlAccumlator.merge(vertexDmlCurrentValue, checkUnique),
+                  edgeDdlAccumlator.merge(edgeDdlCurrentValue),
+                  edgeDmlAccumlator.merge(edgeDmlCurrentValue, checkUnique)
                 )
             }
-        })
-
-        // 3. generate edge SQL
-        val edgeSqlOption = executeWithExceptionHandling({
-          val edgeQuery = EdgeQuery(g)
-          vertices.view
-            .flatMap(vertex =>
-              (edgeQuery.getInEdgeList(vertex) ++ edgeQuery.getOutEdgeList(
-                vertex
-              ))
-                .map(edge =>
-                  (
-                    edge.toDdl,
-                    edge.toDml
-                  )
-                )
-            )
-            .reduce[(TableList, RecordList)] {
-              case (
-                    (tableListAccumlator, dmlAccumlator),
-                    (tableListCurrentValue, dmlCurrentValue)
-                  ) =>
-                (
-                  tableListAccumlator.merge(tableListCurrentValue),
-                  dmlAccumlator.merge(dmlCurrentValue)
-                )
-            }
-        })
-
-        (vertexSqlOption, edgeSqlOption)
-      case None => (None, None)
+        }
+        (Some(verticesDdl), Some(verticesDml), Some(edgesDdl), Some(edgesDml))
+      case None => (None, None, None, None)
     }
   }
 }
