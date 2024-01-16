@@ -68,36 +68,41 @@ object Main extends StrictLogging {
       }
 
       /* execute analysis method */
-      val (vertexResult, edgeResult) = usecase.execute(checkUnique = false)
+      val (verticesDdlResult, verticesDmlResult, edgesDdlResult, edgesDmlResult) =
+        usecase.execute(checkUnique = false)
 
       /* output SQL */
-      vertexResult match {
-        case Some((ddl, dml)) =>
-          FileUtility.outputSql(
-            config.getString("sql_ddl_vertex"),
-            ddl.toSqlSentence
-          )
-          FileUtility.outputSql(
-            config.getString("sql_dml_vertex"),
-            dml.toSqlSentence
-          )
-        case None =>
+      verticesDdlResult.foreach { vertexDdl =>
+        FileUtility.outputSql(
+          config.getString("sql_ddl_vertex"),
+          vertexDdl.toSqlSentence
+        )
       }
-      displayOperationResult("generate vertex SQL", vertexResult.nonEmpty)
+      displayOperationResult("generate vertices DDL", verticesDdlResult.nonEmpty)
 
-      edgeResult match {
-        case Some((ddl, dml)) =>
-          FileUtility.outputSql(
-            config.getString("sql_ddl_edge"),
-            ddl.toSqlSentence
-          )
-          FileUtility.outputSql(
-            config.getString("sql_dml_edge"),
-            dml.toSqlSentence
-          )
-        case None =>
+      verticesDmlResult.foreach { vertexDml =>
+        FileUtility.outputSql(
+          config.getString("sql_dml_vertex"),
+          vertexDml.toSqlSentence
+        )
       }
-      displayOperationResult("generate edge SQL  ", edgeResult.nonEmpty)
+      displayOperationResult("generate vertices DML", verticesDmlResult.nonEmpty)
+
+      edgesDdlResult.foreach { edgesDdlResult =>
+        FileUtility.outputSql(
+          config.getString("sql_ddl_edge"),
+          edgesDdlResult.toSqlSentence
+        )
+      }
+      displayOperationResult("generate edges    DDL", edgesDdlResult.nonEmpty)
+
+      edgesDmlResult.foreach { edgesDmlResult =>
+        FileUtility.outputSql(
+          config.getString("sql_dml_edge"),
+          edgesDmlResult.toSqlSentence
+        )
+      }
+      displayOperationResult("generate edges    DML", edgesDmlResult.nonEmpty)
     }
   }
 }

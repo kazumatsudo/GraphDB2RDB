@@ -23,5 +23,10 @@ trait UsecaseBase extends StrictLogging {
 
   def execute(
       checkUnique: Boolean
-  ): (Option[(TableList, RecordList)], Option[(TableList, RecordList)])
+  ): (
+      Option[TableList],
+      Option[RecordList],
+      Option[TableList],
+      Option[RecordList]
+  )
 }
