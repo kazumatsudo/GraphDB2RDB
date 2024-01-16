@@ -3,6 +3,7 @@ package domain.table.dml
 import domain.table.ddl.column.{
   ColumnType,
   ColumnTypeBoolean,
+  ColumnTypeByte,
   ColumnTypeCharacter,
   ColumnTypeDouble,
   ColumnTypeInt,
@@ -20,6 +21,7 @@ final case class RecordValue(private val value: Map[String, Any])
     val valuesForSql = values.map { value =>
       ColumnType.apply(value) match {
         case ColumnTypeBoolean      => value
+        case ColumnTypeByte(_)      => value
         case ColumnTypeInt(_)       => value
         case ColumnTypeLong(_)      => value
         case ColumnTypeDouble(_)    => value
