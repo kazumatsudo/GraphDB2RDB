@@ -68,7 +68,12 @@ object Main extends StrictLogging {
       }
 
       /* execute analysis method */
-      val (verticesDdlResult, verticesDmlResult, edgesDdlResult, edgesDmlResult) =
+      val (
+        verticesDdlResult,
+        verticesDmlResult,
+        edgesDdlResult,
+        edgesDmlResult
+      ) =
         usecase.execute(checkUnique = false)
 
       /* output SQL */
@@ -78,7 +83,10 @@ object Main extends StrictLogging {
           vertexDdl.toSqlSentence
         )
       }
-      displayOperationResult("generate vertices DDL", verticesDdlResult.nonEmpty)
+      displayOperationResult(
+        "generate vertices DDL",
+        verticesDdlResult.nonEmpty
+      )
 
       verticesDmlResult.foreach { vertexDml =>
         FileUtility.outputSql(
@@ -86,7 +94,10 @@ object Main extends StrictLogging {
           vertexDml.toSqlSentence
         )
       }
-      displayOperationResult("generate vertices DML", verticesDmlResult.nonEmpty)
+      displayOperationResult(
+        "generate vertices DML",
+        verticesDmlResult.nonEmpty
+      )
 
       edgesDdlResult.foreach { edgesDdlResult =>
         FileUtility.outputSql(
