@@ -84,6 +84,9 @@ class RecordListSpec extends AnyFunSpec with Matchers {
         Map(("double", 1.toDouble))
       ).toSqlSentence shouldBe ("double", "1.0")
       RecordValue(
+        Map(("char", 'a'))
+      ).toSqlSentence shouldBe ("char", "\"a\"")
+      RecordValue(
         Map(("string", 1.toString))
       ).toSqlSentence shouldBe ("string", "\"1\"")
       RecordValue(

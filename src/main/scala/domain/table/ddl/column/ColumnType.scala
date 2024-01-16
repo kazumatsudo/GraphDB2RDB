@@ -2,6 +2,8 @@ package domain.table.ddl.column
 
 import scala.annotation.tailrec
 
+/** referenced by https://docs.janusgraph.org/schema/#property-key-data-type
+  */
 sealed trait ColumnType {
   def toSqlSentence: String
 }
@@ -22,6 +24,11 @@ case class ColumnTypeDouble(private val length: ColumnLength)
   override def toSqlSentence: String = s"DOUBLE"
 }
 
+case class ColumnTypeCharacter(private val length: ColumnLength)
+    extends ColumnType {
+  override def toSqlSentence: String = s"CHAR(${length.toSqlSentence})"
+}
+
 case class ColumnTypeString(private val length: ColumnLength)
     extends ColumnType {
   override def toSqlSentence: String = s"VARCHAR(${length.toSqlSentence})"
@@ -34,8 +41,7 @@ case object ColumnTypeUnknown extends ColumnType {
 object ColumnType {
 
   def apply(value: Any): ColumnType = value match {
-    case valueString: String =>
-      ColumnTypeString(ColumnLength(valueString.length))
+    case _: Boolean    => ColumnTypeBoolean
     case valueInt: Int => ColumnTypeInt(ColumnLength(valueInt.toString.length))
     case valueLong: Long =>
       ColumnTypeLong(ColumnLength(valueLong.toString.length))
@@ -43,8 +49,11 @@ object ColumnType {
       ColumnTypeDouble(
         ColumnLength(valueDouble.toString.replaceAll("0*$", "").length)
       )
-    case _: Boolean => ColumnTypeBoolean
-    case _          => ColumnTypeUnknown // TODO: classify the type in detail
+    case _: Char =>
+      ColumnTypeCharacter(ColumnLength(1))
+    case valueString: String =>
+      ColumnTypeString(ColumnLength(valueString.length))
+    case _ => ColumnTypeUnknown // TODO: classify the type in detail
   }
 
   /** merges the attributes (type, length...) in two columns into one
@@ -67,6 +76,8 @@ object ColumnType {
         ColumnTypeLong(length.max(5)) // 5 = false.toString
       case (ColumnTypeBoolean, ColumnTypeDouble(length)) =>
         ColumnTypeDouble(length.max(5)) // 5 = false.toString
+      case (ColumnTypeBoolean, ColumnTypeCharacter(length)) =>
+        ColumnTypeCharacter(length.max(5)) // 5 = false.toString
       case (ColumnTypeBoolean, ColumnTypeString(length)) =>
         ColumnTypeString(length.max(5)) // 5 = false.toString
       case (ColumnTypeBoolean, ColumnTypeUnknown) => ColumnTypeUnknown
@@ -79,6 +90,8 @@ object ColumnType {
         ColumnTypeLong(alength.max(blength))
       case (ColumnTypeInt(alength), ColumnTypeDouble(blength)) =>
         ColumnTypeDouble(alength.max(blength))
+      case (ColumnTypeInt(alength), ColumnTypeCharacter(blength)) =>
+        ColumnTypeCharacter(alength.max(blength))
       case (ColumnTypeInt(alength), ColumnTypeString(blength)) =>
         ColumnTypeString(alength.max(blength))
       case (ColumnTypeInt(_), ColumnTypeUnknown) => ColumnTypeUnknown
@@ -90,6 +103,8 @@ object ColumnType {
         ColumnTypeLong(alength.max(blength))
       case (ColumnTypeLong(alength), ColumnTypeDouble(blength)) =>
         ColumnTypeDouble(alength.max(blength))
+      case (ColumnTypeLong(alength), ColumnTypeCharacter(blength)) =>
+        ColumnTypeCharacter(alength.max(blength))
       case (ColumnTypeLong(alength), ColumnTypeString(blength)) =>
         ColumnTypeString(alength.max(blength))
       case (ColumnTypeLong(_), ColumnTypeUnknown) => ColumnTypeUnknown
@@ -102,24 +117,39 @@ object ColumnType {
         ColumnTypeDouble(alength.max(blength))
       case (ColumnTypeDouble(alength), ColumnTypeString(blength)) =>
         ColumnTypeString(alength.max(blength))
+      case (ColumnTypeDouble(alength), ColumnTypeCharacter(blength)) =>
+        ColumnTypeCharacter(alength.max(blength))
       case (ColumnTypeDouble(_), ColumnTypeUnknown) => ColumnTypeUnknown
 
+      // ColumnTypeCharacter
+      case (ColumnTypeCharacter(_), ColumnTypeBoolean)   => merge(b, a)
+      case (ColumnTypeCharacter(_), ColumnTypeInt(_))    => merge(b, a)
+      case (ColumnTypeCharacter(_), ColumnTypeLong(_))   => merge(b, a)
+      case (ColumnTypeCharacter(_), ColumnTypeDouble(_)) => merge(b, a)
+      case (ColumnTypeCharacter(alength), ColumnTypeCharacter(blength)) =>
+        ColumnTypeCharacter(alength.max(blength))
+      case (ColumnTypeCharacter(alength), ColumnTypeString(blength)) =>
+        ColumnTypeString(alength.max(blength))
+      case (ColumnTypeCharacter(_), ColumnTypeUnknown) => ColumnTypeUnknown
+
       // ColumnTypeString
-      case (ColumnTypeString(_), ColumnTypeBoolean)   => merge(b, a)
-      case (ColumnTypeString(_), ColumnTypeInt(_))    => merge(b, a)
-      case (ColumnTypeString(_), ColumnTypeLong(_))   => merge(b, a)
-      case (ColumnTypeString(_), ColumnTypeDouble(_)) => merge(b, a)
+      case (ColumnTypeString(_), ColumnTypeBoolean)      => merge(b, a)
+      case (ColumnTypeString(_), ColumnTypeInt(_))       => merge(b, a)
+      case (ColumnTypeString(_), ColumnTypeLong(_))      => merge(b, a)
+      case (ColumnTypeString(_), ColumnTypeDouble(_))    => merge(b, a)
+      case (ColumnTypeString(_), ColumnTypeCharacter(_)) => merge(b, a)
       case (ColumnTypeString(alength), ColumnTypeString(blength)) =>
         ColumnTypeString(alength.max(blength))
       case (ColumnTypeString(_), ColumnTypeUnknown) => ColumnTypeUnknown
 
       // ColumnTypeUnknown
-      case (ColumnTypeUnknown, ColumnTypeBoolean)   => merge(b, a)
-      case (ColumnTypeUnknown, ColumnTypeInt(_))    => merge(b, a)
-      case (ColumnTypeUnknown, ColumnTypeLong(_))   => merge(b, a)
-      case (ColumnTypeUnknown, ColumnTypeDouble(_)) => merge(b, a)
-      case (ColumnTypeUnknown, ColumnTypeString(_)) => merge(b, a)
-      case (ColumnTypeUnknown, ColumnTypeUnknown)   => ColumnTypeUnknown
+      case (ColumnTypeUnknown, ColumnTypeBoolean)      => merge(b, a)
+      case (ColumnTypeUnknown, ColumnTypeInt(_))       => merge(b, a)
+      case (ColumnTypeUnknown, ColumnTypeLong(_))      => merge(b, a)
+      case (ColumnTypeUnknown, ColumnTypeDouble(_))    => merge(b, a)
+      case (ColumnTypeUnknown, ColumnTypeCharacter(_)) => merge(b, a)
+      case (ColumnTypeUnknown, ColumnTypeString(_))    => merge(b, a)
+      case (ColumnTypeUnknown, ColumnTypeUnknown)      => ColumnTypeUnknown
     }
   }
 }
