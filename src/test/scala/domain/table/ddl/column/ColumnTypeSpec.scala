@@ -3,6 +3,8 @@ package domain.table.ddl.column
 import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.matchers.should.Matchers
 
+import java.util.UUID
+
 class ColumnTypeSpec extends AnyFunSpec with Matchers {
   describe("apply") {
     it("success") {
@@ -13,6 +15,7 @@ class ColumnTypeSpec extends AnyFunSpec with Matchers {
       ColumnType.apply(1.toLong) shouldBe ColumnTypeLong(ColumnLength(1))
       ColumnType.apply(1.1.toFloat) shouldBe ColumnTypeFloat(ColumnLength(3))
       ColumnType.apply(1.1) shouldBe ColumnTypeDouble(ColumnLength(3))
+      ColumnType.apply(UUID.randomUUID()) shouldBe ColumnTypeUUID
       ColumnType.apply('a') shouldBe ColumnTypeCharacter(ColumnLength(1))
       ColumnType.apply("string") shouldBe ColumnTypeString(ColumnLength(6))
       ColumnType.apply(Seq.empty) shouldBe ColumnTypeUnknown
@@ -34,6 +37,7 @@ class ColumnTypeSpec extends AnyFunSpec with Matchers {
       val columnTypeFloatBig = ColumnTypeFloat(ColumnLength(2))
       val columnTypeDoubleSmall = ColumnTypeDouble(ColumnLength(1))
       val columnTypeDoubleBig = ColumnTypeDouble(ColumnLength(2))
+      val columnTypeUUID = ColumnTypeUUID
       val columnTypeCharacterSmall = ColumnTypeCharacter(ColumnLength(1))
       val columnTypeCharacterBig = ColumnTypeCharacter(ColumnLength(2))
       val columnTypeStringSmall = ColumnTypeString(ColumnLength(1))
@@ -69,6 +73,10 @@ class ColumnTypeSpec extends AnyFunSpec with Matchers {
         columnTypeBoolean,
         columnTypeDoubleBig
       ) shouldBe ColumnTypeDouble(ColumnLength(5))
+      ColumnType.merge(
+        columnTypeBoolean,
+        columnTypeUUID
+      ) shouldBe ColumnTypeCharacter(ColumnLength(36))
       ColumnType.merge(
         columnTypeBoolean,
         columnTypeCharacterBig
@@ -113,6 +121,10 @@ class ColumnTypeSpec extends AnyFunSpec with Matchers {
       ) shouldBe columnTypeDoubleBig
       ColumnType.merge(
         columnTypeByteSmall,
+        columnTypeUUID
+      ) shouldBe ColumnTypeCharacter(ColumnTypeUUID.length)
+      ColumnType.merge(
+        columnTypeByteSmall,
         columnTypeCharacterBig
       ) shouldBe columnTypeCharacterBig
       ColumnType.merge(
@@ -155,6 +167,10 @@ class ColumnTypeSpec extends AnyFunSpec with Matchers {
       ) shouldBe columnTypeDoubleBig
       ColumnType.merge(
         columnTypeShortSmall,
+        columnTypeUUID
+      ) shouldBe ColumnTypeCharacter(ColumnTypeUUID.length)
+      ColumnType.merge(
+        columnTypeShortSmall,
         columnTypeCharacterBig
       ) shouldBe columnTypeCharacterBig
       ColumnType.merge(
@@ -195,6 +211,10 @@ class ColumnTypeSpec extends AnyFunSpec with Matchers {
         columnTypeIntSmall,
         columnTypeDoubleBig
       ) shouldBe columnTypeDoubleBig
+      ColumnType.merge(
+        columnTypeIntSmall,
+        columnTypeUUID
+      ) shouldBe ColumnTypeCharacter(ColumnTypeUUID.length)
       ColumnType.merge(
         columnTypeIntSmall,
         columnTypeCharacterBig
@@ -243,6 +263,10 @@ class ColumnTypeSpec extends AnyFunSpec with Matchers {
       ) shouldBe columnTypeCharacterBig
       ColumnType.merge(
         columnTypeLongSmall,
+        columnTypeUUID
+      ) shouldBe ColumnTypeCharacter(ColumnTypeUUID.length)
+      ColumnType.merge(
+        columnTypeLongSmall,
         columnTypeStringBig
       ) shouldBe columnTypeStringBig
       ColumnType.merge(
@@ -279,6 +303,10 @@ class ColumnTypeSpec extends AnyFunSpec with Matchers {
         columnTypeFloatSmall,
         columnTypeDoubleBig
       ) shouldBe columnTypeDoubleBig
+      ColumnType.merge(
+        columnTypeFloatSmall,
+        columnTypeUUID
+      ) shouldBe ColumnTypeCharacter(ColumnTypeUUID.length)
       ColumnType.merge(
         columnTypeFloatSmall,
         columnTypeCharacterBig
@@ -323,6 +351,10 @@ class ColumnTypeSpec extends AnyFunSpec with Matchers {
       ) shouldBe columnTypeDoubleBig
       ColumnType.merge(
         columnTypeDoubleSmall,
+        columnTypeUUID
+      ) shouldBe ColumnTypeCharacter(ColumnTypeUUID.length)
+      ColumnType.merge(
+        columnTypeDoubleSmall,
         columnTypeCharacterBig
       ) shouldBe columnTypeCharacterBig
       ColumnType.merge(
@@ -331,6 +363,52 @@ class ColumnTypeSpec extends AnyFunSpec with Matchers {
       ) shouldBe columnTypeStringBig
       ColumnType.merge(
         columnTypeDoubleSmall,
+        columnTypeUnknown
+      ) shouldBe columnTypeUnknown
+
+      // ColumnTypeUUID
+      ColumnType.merge(
+        ColumnTypeUUID,
+        columnTypeBoolean
+      ) shouldBe ColumnTypeCharacter(ColumnTypeUUID.length)
+      ColumnType.merge(
+        ColumnTypeUUID,
+        columnTypeByteBig
+      ) shouldBe ColumnTypeCharacter(ColumnTypeUUID.length)
+      ColumnType.merge(
+        ColumnTypeUUID,
+        columnTypeShortBig
+      ) shouldBe ColumnTypeCharacter(ColumnTypeUUID.length)
+      ColumnType.merge(
+        ColumnTypeUUID,
+        columnTypeIntBig
+      ) shouldBe ColumnTypeCharacter(ColumnTypeUUID.length)
+      ColumnType.merge(
+        ColumnTypeUUID,
+        columnTypeLongBig
+      ) shouldBe ColumnTypeCharacter(ColumnTypeUUID.length)
+      ColumnType.merge(
+        ColumnTypeUUID,
+        columnTypeFloatBig
+      ) shouldBe ColumnTypeCharacter(ColumnTypeUUID.length)
+      ColumnType.merge(
+        ColumnTypeUUID,
+        columnTypeDoubleBig
+      ) shouldBe ColumnTypeCharacter(ColumnTypeUUID.length)
+      ColumnType.merge(
+        ColumnTypeUUID,
+        ColumnTypeUUID
+      ) shouldBe ColumnTypeUUID
+      ColumnType.merge(
+        ColumnTypeUUID,
+        columnTypeCharacterBig
+      ) shouldBe ColumnTypeCharacter(ColumnTypeUUID.length)
+      ColumnType.merge(
+        ColumnTypeUUID,
+        columnTypeStringBig
+      ) shouldBe ColumnTypeString(ColumnTypeUUID.length)
+      ColumnType.merge(
+        ColumnTypeUUID,
         columnTypeUnknown
       ) shouldBe columnTypeUnknown
 
@@ -363,6 +441,10 @@ class ColumnTypeSpec extends AnyFunSpec with Matchers {
         columnTypeCharacterSmall,
         columnTypeDoubleBig
       ) shouldBe columnTypeCharacterBig
+      ColumnType.merge(
+        columnTypeCharacterSmall,
+        columnTypeUUID
+      ) shouldBe ColumnTypeCharacter(ColumnTypeUUID.length)
       ColumnType.merge(
         columnTypeCharacterSmall,
         columnTypeCharacterBig
@@ -407,6 +489,10 @@ class ColumnTypeSpec extends AnyFunSpec with Matchers {
       ) shouldBe columnTypeStringBig
       ColumnType.merge(
         columnTypeStringSmall,
+        columnTypeUUID
+      ) shouldBe ColumnTypeString(ColumnTypeUUID.length)
+      ColumnType.merge(
+        columnTypeStringSmall,
         columnTypeCharacterBig
       ) shouldBe columnTypeStringBig
       ColumnType.merge(
@@ -449,6 +535,10 @@ class ColumnTypeSpec extends AnyFunSpec with Matchers {
       ) shouldBe columnTypeUnknown
       ColumnType.merge(
         columnTypeUnknown,
+        columnTypeUUID
+      ) shouldBe columnTypeUnknown
+      ColumnType.merge(
+        columnTypeUnknown,
         columnTypeCharacterBig
       ) shouldBe columnTypeUnknown
       ColumnType.merge(
@@ -471,6 +561,7 @@ class ColumnTypeSpec extends AnyFunSpec with Matchers {
       ColumnType.apply(1.toLong).toSqlSentence shouldBe "INT(1)"
       ColumnType.apply(1.1.toFloat).toSqlSentence shouldBe "FLOAT"
       ColumnType.apply(1.1).toSqlSentence shouldBe "DOUBLE"
+      ColumnType.apply(UUID.randomUUID()).toSqlSentence shouldBe "CHAR(36)"
       ColumnType.apply('a').toSqlSentence shouldBe "CHAR(1)"
       ColumnType.apply(Seq.empty).toSqlSentence shouldBe "TEXT"
     }

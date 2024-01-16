@@ -11,6 +11,7 @@ import domain.table.ddl.column.{
   ColumnTypeLong,
   ColumnTypeShort,
   ColumnTypeString,
+  ColumnTypeUUID,
   ColumnTypeUnknown
 }
 
@@ -29,6 +30,7 @@ final case class RecordValue(private val value: Map[String, Any])
         case ColumnTypeLong(_)      => value
         case ColumnTypeFloat(_)     => value
         case ColumnTypeDouble(_)    => value
+        case ColumnTypeUUID         => s"\"$value\""
         case ColumnTypeCharacter(_) => s"\"$value\""
         case ColumnTypeString(_)    => s"\"$value\""
         case ColumnTypeUnknown      => s"\"$value\""
