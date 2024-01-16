@@ -14,7 +14,8 @@ class RecordListSpec extends AnyFunSpec with Matchers {
         val recordValue = RecordValue(Map(("boolean", false)))
         val recordList = RecordList(Map((recordKey, recordValue)))
 
-        RecordList(Map.empty).merge(recordList) shouldBe recordList
+        RecordList(Map.empty)
+          .merge(recordList, checkUnique = true) shouldBe recordList
       }
 
       it("if the target has no value") {
@@ -24,7 +25,10 @@ class RecordListSpec extends AnyFunSpec with Matchers {
         val recordValue = RecordValue(Map(("boolean", false)))
         val recordList = RecordList(Map((recordKey, recordValue)))
 
-        recordList.merge(RecordList(Map.empty)) shouldBe recordList
+        recordList.merge(
+          RecordList(Map.empty),
+          checkUnique = true
+        ) shouldBe recordList
       }
 
       it("if RecordList has the same value") {
@@ -34,7 +38,20 @@ class RecordListSpec extends AnyFunSpec with Matchers {
         val recordValue = RecordValue(Map(("boolean", false)))
         val recordList = RecordList(Map((recordKey, recordValue)))
 
-        recordList.merge(recordList) shouldBe recordList
+        recordList.merge(recordList, checkUnique = true) shouldBe recordList
+      }
+
+      it("if checkUnique is false, update after the value") {
+        val tableName = TableName("test_table")
+        val recordId = RecordId(1)
+        val recordKey = RecordKey(tableName, recordId)
+
+        val recordValue1 = RecordValue(Map(("boolean", false)))
+        val recordList1 = RecordList(Map((recordKey, recordValue1)))
+        val recordValue2 = RecordValue(Map(("int", 1)))
+        val recordList2 = RecordList(Map((recordKey, recordValue2)))
+
+        recordList1.merge(recordList2, checkUnique = false) shouldBe recordList2
       }
     }
 
@@ -50,7 +67,7 @@ class RecordListSpec extends AnyFunSpec with Matchers {
         val recordList2 = RecordList(Map((recordKey, recordValue2)))
 
         intercept[IllegalArgumentException] {
-          recordList1.merge(recordList2)
+          recordList1.merge(recordList2, checkUnique = true)
         }
       }
     }

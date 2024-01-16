@@ -21,7 +21,7 @@ class ByExhaustiveSearchSpec extends AnyFunSpec with Matchers {
       val graph = TinkerFactory.createModern().traversal()
       val usecase = ByExhaustiveSearch(graph)
 
-      usecase.execute shouldBe (Some(
+      usecase.execute(checkUnique = true) shouldBe (Some(
         (
           TableList(
             Map(

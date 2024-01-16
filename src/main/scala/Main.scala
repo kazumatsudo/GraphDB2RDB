@@ -68,7 +68,7 @@ object Main extends StrictLogging {
       }
 
       /* execute analysis method */
-      val (vertexResult, edgeResult) = usecase.execute
+      val (vertexResult, edgeResult) = usecase.execute(checkUnique = false)
 
       /* output SQL */
       vertexResult match {

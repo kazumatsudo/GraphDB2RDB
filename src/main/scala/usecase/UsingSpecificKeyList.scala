@@ -32,8 +32,9 @@ final case class UsingSpecificKeyList(
     private val value: UsingSpecificKeyListRequest
 ) extends UsecaseBase {
 
-  override def execute
-      : (Option[(TableList, RecordList)], Option[(TableList, RecordList)]) = {
+  override def execute(
+      checkUnique: Boolean
+  ): (Option[(TableList, RecordList)], Option[(TableList, RecordList)]) = {
 
     // 1. get vertex by specific key
     val verticesOption = executeWithExceptionHandling({
@@ -66,7 +67,7 @@ final case class UsingSpecificKeyList(
                   ) =>
                 (
                   tableListAccumlator.merge(tableListCurrentValue),
-                  dmlAccumlator.merge(dmlCurrentValue)
+                  dmlAccumlator.merge(dmlCurrentValue, checkUnique)
                 )
             }
         })
@@ -93,7 +94,7 @@ final case class UsingSpecificKeyList(
                   ) =>
                 (
                   tableListAccumlator.merge(tableListCurrentValue),
-                  dmlAccumlator.merge(dmlCurrentValue)
+                  dmlAccumlator.merge(dmlCurrentValue, checkUnique)
                 )
             }
         })

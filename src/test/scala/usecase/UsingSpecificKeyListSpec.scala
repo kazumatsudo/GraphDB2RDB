@@ -30,7 +30,7 @@ class UsingSpecificKeyListSpec extends AnyFunSpec with Matchers {
       )
       val usecase = UsingSpecificKeyList(graph, value)
 
-      usecase.execute shouldBe (Some(
+      usecase.execute(checkUnique = true) shouldBe (Some(
         (
           TableList(
             Map(
