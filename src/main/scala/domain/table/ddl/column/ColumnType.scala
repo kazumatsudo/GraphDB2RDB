@@ -28,6 +28,11 @@ case class ColumnTypeLong(private val length: ColumnLength) extends ColumnType {
   override def toSqlSentence: String = s"INT(${length.toSqlSentence})"
 }
 
+case class ColumnTypeFloat(private val length: ColumnLength)
+    extends ColumnType {
+  override def toSqlSentence: String = s"FLOAT"
+}
+
 case class ColumnTypeDouble(private val length: ColumnLength)
     extends ColumnType {
   override def toSqlSentence: String = s"DOUBLE"
@@ -58,6 +63,10 @@ object ColumnType {
     case valueInt: Int => ColumnTypeInt(ColumnLength(valueInt.toString.length))
     case valueLong: Long =>
       ColumnTypeLong(ColumnLength(valueLong.toString.length))
+    case valueFloat: Float =>
+      ColumnTypeFloat(
+        ColumnLength(valueFloat.toString.replaceAll("0*$", "").length)
+      )
     case valueDouble: Double =>
       ColumnTypeDouble(
         ColumnLength(valueDouble.toString.replaceAll("0*$", "").length)
@@ -90,6 +99,8 @@ object ColumnType {
         ColumnTypeInt(length.max(5)) // 5 = false.toString
       case (ColumnTypeBoolean, ColumnTypeLong(length)) =>
         ColumnTypeLong(length.max(5)) // 5 = false.toString
+      case (ColumnTypeBoolean, ColumnTypeFloat(length)) =>
+        ColumnTypeFloat(length.max(5)) // 5 = false.toString
       case (ColumnTypeBoolean, ColumnTypeDouble(length)) =>
         ColumnTypeDouble(length.max(5)) // 5 = false.toString
       case (ColumnTypeBoolean, ColumnTypeCharacter(length)) =>
@@ -108,6 +119,8 @@ object ColumnType {
         ColumnTypeInt(alength.max(blength))
       case (ColumnTypeByte(alength), ColumnTypeLong(blength)) =>
         ColumnTypeLong(alength.max(blength))
+      case (ColumnTypeByte(alength), ColumnTypeFloat(blength)) =>
+        ColumnTypeFloat(alength.max(blength))
       case (ColumnTypeByte(alength), ColumnTypeDouble(blength)) =>
         ColumnTypeDouble(alength.max(blength))
       case (ColumnTypeByte(alength), ColumnTypeCharacter(blength)) =>
@@ -125,6 +138,8 @@ object ColumnType {
         ColumnTypeInt(alength.max(blength))
       case (ColumnTypeShort(alength), ColumnTypeLong(blength)) =>
         ColumnTypeLong(alength.max(blength))
+      case (ColumnTypeShort(alength), ColumnTypeFloat(blength)) =>
+        ColumnTypeFloat(alength.max(blength))
       case (ColumnTypeShort(alength), ColumnTypeDouble(blength)) =>
         ColumnTypeDouble(alength.max(blength))
       case (ColumnTypeShort(alength), ColumnTypeCharacter(blength)) =>
@@ -141,6 +156,8 @@ object ColumnType {
         ColumnTypeInt(alength.max(blength))
       case (ColumnTypeInt(alength), ColumnTypeLong(blength)) =>
         ColumnTypeLong(alength.max(blength))
+      case (ColumnTypeInt(alength), ColumnTypeFloat(blength)) =>
+        ColumnTypeFloat(alength.max(blength))
       case (ColumnTypeInt(alength), ColumnTypeDouble(blength)) =>
         ColumnTypeDouble(alength.max(blength))
       case (ColumnTypeInt(alength), ColumnTypeCharacter(blength)) =>
@@ -156,6 +173,8 @@ object ColumnType {
       case (ColumnTypeLong(_), ColumnTypeInt(_))   => merge(b, a)
       case (ColumnTypeLong(alength), ColumnTypeLong(blength)) =>
         ColumnTypeLong(alength.max(blength))
+      case (ColumnTypeLong(alength), ColumnTypeFloat(blength)) =>
+        ColumnTypeFloat(alength.max(blength))
       case (ColumnTypeLong(alength), ColumnTypeDouble(blength)) =>
         ColumnTypeDouble(alength.max(blength))
       case (ColumnTypeLong(alength), ColumnTypeCharacter(blength)) =>
@@ -164,12 +183,29 @@ object ColumnType {
         ColumnTypeString(alength.max(blength))
       case (ColumnTypeLong(_), ColumnTypeUnknown) => ColumnTypeUnknown
 
+      // ColumnTypeFloat
+      case (ColumnTypeFloat(_), ColumnTypeBoolean)  => merge(b, a)
+      case (ColumnTypeFloat(_), ColumnTypeByte(_))  => merge(b, a)
+      case (ColumnTypeFloat(_), ColumnTypeShort(_)) => merge(b, a)
+      case (ColumnTypeFloat(_), ColumnTypeInt(_))   => merge(b, a)
+      case (ColumnTypeFloat(_), ColumnTypeLong(_))  => merge(b, a)
+      case (ColumnTypeFloat(alength), ColumnTypeFloat(blength)) =>
+        ColumnTypeFloat(alength.max(blength))
+      case (ColumnTypeFloat(alength), ColumnTypeDouble(blength)) =>
+        ColumnTypeDouble(alength.max(blength))
+      case (ColumnTypeFloat(alength), ColumnTypeString(blength)) =>
+        ColumnTypeString(alength.max(blength))
+      case (ColumnTypeFloat(alength), ColumnTypeCharacter(blength)) =>
+        ColumnTypeCharacter(alength.max(blength))
+      case (ColumnTypeFloat(_), ColumnTypeUnknown) => ColumnTypeUnknown
+
       // ColumnTypeDouble
       case (ColumnTypeDouble(_), ColumnTypeBoolean)  => merge(b, a)
       case (ColumnTypeDouble(_), ColumnTypeByte(_))  => merge(b, a)
       case (ColumnTypeDouble(_), ColumnTypeShort(_)) => merge(b, a)
       case (ColumnTypeDouble(_), ColumnTypeInt(_))   => merge(b, a)
       case (ColumnTypeDouble(_), ColumnTypeLong(_))  => merge(b, a)
+      case (ColumnTypeDouble(_), ColumnTypeFloat(_)) => merge(b, a)
       case (ColumnTypeDouble(alength), ColumnTypeDouble(blength)) =>
         ColumnTypeDouble(alength.max(blength))
       case (ColumnTypeDouble(alength), ColumnTypeString(blength)) =>
@@ -184,6 +220,7 @@ object ColumnType {
       case (ColumnTypeCharacter(_), ColumnTypeShort(_))  => merge(b, a)
       case (ColumnTypeCharacter(_), ColumnTypeInt(_))    => merge(b, a)
       case (ColumnTypeCharacter(_), ColumnTypeLong(_))   => merge(b, a)
+      case (ColumnTypeCharacter(_), ColumnTypeFloat(_))  => merge(b, a)
       case (ColumnTypeCharacter(_), ColumnTypeDouble(_)) => merge(b, a)
       case (ColumnTypeCharacter(alength), ColumnTypeCharacter(blength)) =>
         ColumnTypeCharacter(alength.max(blength))
@@ -197,6 +234,7 @@ object ColumnType {
       case (ColumnTypeString(_), ColumnTypeShort(_))     => merge(b, a)
       case (ColumnTypeString(_), ColumnTypeInt(_))       => merge(b, a)
       case (ColumnTypeString(_), ColumnTypeLong(_))      => merge(b, a)
+      case (ColumnTypeString(_), ColumnTypeFloat(_))     => merge(b, a)
       case (ColumnTypeString(_), ColumnTypeDouble(_))    => merge(b, a)
       case (ColumnTypeString(_), ColumnTypeCharacter(_)) => merge(b, a)
       case (ColumnTypeString(alength), ColumnTypeString(blength)) =>
@@ -209,6 +247,7 @@ object ColumnType {
       case (ColumnTypeUnknown, ColumnTypeShort(_))     => merge(b, a)
       case (ColumnTypeUnknown, ColumnTypeInt(_))       => merge(b, a)
       case (ColumnTypeUnknown, ColumnTypeLong(_))      => merge(b, a)
+      case (ColumnTypeUnknown, ColumnTypeFloat(_))     => merge(b, a)
       case (ColumnTypeUnknown, ColumnTypeDouble(_))    => merge(b, a)
       case (ColumnTypeUnknown, ColumnTypeCharacter(_)) => merge(b, a)
       case (ColumnTypeUnknown, ColumnTypeString(_))    => merge(b, a)

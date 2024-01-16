@@ -11,6 +11,7 @@ class ColumnTypeSpec extends AnyFunSpec with Matchers {
       ColumnType.apply(1.toShort) shouldBe ColumnTypeShort(ColumnLength(1))
       ColumnType.apply(1) shouldBe ColumnTypeInt(ColumnLength(1))
       ColumnType.apply(1.toLong) shouldBe ColumnTypeLong(ColumnLength(1))
+      ColumnType.apply(1.1.toFloat) shouldBe ColumnTypeFloat(ColumnLength(3))
       ColumnType.apply(1.1) shouldBe ColumnTypeDouble(ColumnLength(3))
       ColumnType.apply('a') shouldBe ColumnTypeCharacter(ColumnLength(1))
       ColumnType.apply("string") shouldBe ColumnTypeString(ColumnLength(6))
@@ -29,6 +30,8 @@ class ColumnTypeSpec extends AnyFunSpec with Matchers {
       val columnTypeIntBig = ColumnTypeInt(ColumnLength(2))
       val columnTypeLongSmall = ColumnTypeLong(ColumnLength(1))
       val columnTypeLongBig = ColumnTypeLong(ColumnLength(2))
+      val columnTypeFloatSmall = ColumnTypeFloat(ColumnLength(1))
+      val columnTypeFloatBig = ColumnTypeFloat(ColumnLength(2))
       val columnTypeDoubleSmall = ColumnTypeDouble(ColumnLength(1))
       val columnTypeDoubleBig = ColumnTypeDouble(ColumnLength(2))
       val columnTypeCharacterSmall = ColumnTypeCharacter(ColumnLength(1))
@@ -58,6 +61,10 @@ class ColumnTypeSpec extends AnyFunSpec with Matchers {
         columnTypeBoolean,
         columnTypeLongBig
       ) shouldBe ColumnTypeLong(ColumnLength(5))
+      ColumnType.merge(
+        columnTypeBoolean,
+        columnTypeFloatBig
+      ) shouldBe ColumnTypeFloat(ColumnLength(5))
       ColumnType.merge(
         columnTypeBoolean,
         columnTypeDoubleBig
@@ -98,6 +105,10 @@ class ColumnTypeSpec extends AnyFunSpec with Matchers {
       ) shouldBe columnTypeLongBig
       ColumnType.merge(
         columnTypeByteSmall,
+        columnTypeFloatBig
+      ) shouldBe columnTypeFloatBig
+      ColumnType.merge(
+        columnTypeByteSmall,
         columnTypeDoubleBig
       ) shouldBe columnTypeDoubleBig
       ColumnType.merge(
@@ -134,6 +145,10 @@ class ColumnTypeSpec extends AnyFunSpec with Matchers {
         columnTypeShortSmall,
         columnTypeLongBig
       ) shouldBe columnTypeLongBig
+      ColumnType.merge(
+        columnTypeShortSmall,
+        columnTypeFloatBig
+      ) shouldBe columnTypeFloatBig
       ColumnType.merge(
         columnTypeShortSmall,
         columnTypeDoubleBig
@@ -174,6 +189,10 @@ class ColumnTypeSpec extends AnyFunSpec with Matchers {
       ) shouldBe columnTypeLongBig
       ColumnType.merge(
         columnTypeIntSmall,
+        columnTypeFloatBig
+      ) shouldBe columnTypeFloatBig
+      ColumnType.merge(
+        columnTypeIntSmall,
         columnTypeDoubleBig
       ) shouldBe columnTypeDoubleBig
       ColumnType.merge(
@@ -197,19 +216,23 @@ class ColumnTypeSpec extends AnyFunSpec with Matchers {
       ColumnType.merge(
         columnTypeLongSmall,
         columnTypeByteBig
-      ) shouldBe ColumnTypeLong(ColumnLength(2))
+      ) shouldBe columnTypeLongBig
       ColumnType.merge(
         columnTypeLongSmall,
         columnTypeShortBig
-      ) shouldBe ColumnTypeLong(ColumnLength(2))
+      ) shouldBe columnTypeLongBig
       ColumnType.merge(
         columnTypeLongSmall,
         columnTypeIntBig
-      ) shouldBe ColumnTypeLong(ColumnLength(2))
+      ) shouldBe columnTypeLongBig
       ColumnType.merge(
         columnTypeLongSmall,
         columnTypeLongBig
       ) shouldBe columnTypeLongBig
+      ColumnType.merge(
+        columnTypeLongSmall,
+        columnTypeFloatBig
+      ) shouldBe columnTypeFloatBig
       ColumnType.merge(
         columnTypeLongSmall,
         columnTypeDoubleBig
@@ -227,6 +250,48 @@ class ColumnTypeSpec extends AnyFunSpec with Matchers {
         columnTypeUnknown
       ) shouldBe columnTypeUnknown
 
+      // ColumnTypeFloat
+      ColumnType.merge(
+        columnTypeFloatSmall,
+        columnTypeBoolean
+      ) shouldBe ColumnTypeFloat(ColumnLength(5))
+      ColumnType.merge(
+        columnTypeFloatSmall,
+        columnTypeByteBig
+      ) shouldBe columnTypeFloatBig
+      ColumnType.merge(
+        columnTypeFloatSmall,
+        columnTypeShortBig
+      ) shouldBe columnTypeFloatBig
+      ColumnType.merge(
+        columnTypeFloatSmall,
+        columnTypeIntBig
+      ) shouldBe columnTypeFloatBig
+      ColumnType.merge(
+        columnTypeFloatSmall,
+        columnTypeLongBig
+      ) shouldBe columnTypeFloatBig
+      ColumnType.merge(
+        columnTypeFloatSmall,
+        columnTypeFloatBig
+      ) shouldBe columnTypeFloatBig
+      ColumnType.merge(
+        columnTypeFloatSmall,
+        columnTypeDoubleBig
+      ) shouldBe columnTypeDoubleBig
+      ColumnType.merge(
+        columnTypeFloatSmall,
+        columnTypeCharacterBig
+      ) shouldBe columnTypeCharacterBig
+      ColumnType.merge(
+        columnTypeFloatSmall,
+        columnTypeStringBig
+      ) shouldBe columnTypeStringBig
+      ColumnType.merge(
+        columnTypeFloatSmall,
+        columnTypeUnknown
+      ) shouldBe columnTypeUnknown
+
       // ColumnTypeDouble
       ColumnType.merge(
         columnTypeDoubleSmall,
@@ -235,19 +300,23 @@ class ColumnTypeSpec extends AnyFunSpec with Matchers {
       ColumnType.merge(
         columnTypeDoubleSmall,
         columnTypeByteBig
-      ) shouldBe ColumnTypeDouble(ColumnLength(2))
+      ) shouldBe columnTypeDoubleBig
       ColumnType.merge(
         columnTypeDoubleSmall,
         columnTypeShortBig
-      ) shouldBe ColumnTypeDouble(ColumnLength(2))
+      ) shouldBe columnTypeDoubleBig
       ColumnType.merge(
         columnTypeDoubleSmall,
         columnTypeIntBig
-      ) shouldBe ColumnTypeDouble(ColumnLength(2))
+      ) shouldBe columnTypeDoubleBig
       ColumnType.merge(
         columnTypeDoubleSmall,
         columnTypeLongBig
-      ) shouldBe ColumnTypeDouble(ColumnLength(2))
+      ) shouldBe columnTypeDoubleBig
+      ColumnType.merge(
+        columnTypeDoubleSmall,
+        columnTypeFloatBig
+      ) shouldBe columnTypeDoubleBig
       ColumnType.merge(
         columnTypeDoubleSmall,
         columnTypeDoubleBig
@@ -273,23 +342,27 @@ class ColumnTypeSpec extends AnyFunSpec with Matchers {
       ColumnType.merge(
         columnTypeCharacterSmall,
         columnTypeByteBig
-      ) shouldBe ColumnTypeCharacter(ColumnLength(2))
+      ) shouldBe columnTypeCharacterBig
       ColumnType.merge(
         columnTypeCharacterSmall,
         columnTypeShortBig
-      ) shouldBe ColumnTypeCharacter(ColumnLength(2))
+      ) shouldBe columnTypeCharacterBig
       ColumnType.merge(
         columnTypeCharacterSmall,
         columnTypeIntBig
-      ) shouldBe ColumnTypeCharacter(ColumnLength(2))
+      ) shouldBe columnTypeCharacterBig
       ColumnType.merge(
         columnTypeCharacterSmall,
         columnTypeLongBig
-      ) shouldBe ColumnTypeCharacter(ColumnLength(2))
+      ) shouldBe columnTypeCharacterBig
+      ColumnType.merge(
+        columnTypeCharacterSmall,
+        columnTypeFloatBig
+      ) shouldBe columnTypeCharacterBig
       ColumnType.merge(
         columnTypeCharacterSmall,
         columnTypeDoubleBig
-      ) shouldBe ColumnTypeCharacter(ColumnLength(2))
+      ) shouldBe columnTypeCharacterBig
       ColumnType.merge(
         columnTypeCharacterSmall,
         columnTypeCharacterBig
@@ -311,23 +384,27 @@ class ColumnTypeSpec extends AnyFunSpec with Matchers {
       ColumnType.merge(
         columnTypeStringSmall,
         columnTypeByteBig
-      ) shouldBe ColumnTypeString(ColumnLength(2))
+      ) shouldBe columnTypeStringBig
       ColumnType.merge(
         columnTypeStringSmall,
         columnTypeShortBig
-      ) shouldBe ColumnTypeString(ColumnLength(2))
+      ) shouldBe columnTypeStringBig
       ColumnType.merge(
         columnTypeStringSmall,
         columnTypeIntBig
-      ) shouldBe ColumnTypeString(ColumnLength(2))
+      ) shouldBe columnTypeStringBig
       ColumnType.merge(
         columnTypeStringSmall,
         columnTypeLongBig
-      ) shouldBe ColumnTypeString(ColumnLength(2))
+      ) shouldBe columnTypeStringBig
+      ColumnType.merge(
+        columnTypeStringSmall,
+        columnTypeFloatBig
+      ) shouldBe columnTypeStringBig
       ColumnType.merge(
         columnTypeStringSmall,
         columnTypeDoubleBig
-      ) shouldBe ColumnTypeString(ColumnLength(2))
+      ) shouldBe columnTypeStringBig
       ColumnType.merge(
         columnTypeStringSmall,
         columnTypeCharacterBig
@@ -364,6 +441,10 @@ class ColumnTypeSpec extends AnyFunSpec with Matchers {
       ) shouldBe columnTypeUnknown
       ColumnType.merge(
         columnTypeUnknown,
+        columnTypeFloatBig
+      ) shouldBe columnTypeUnknown
+      ColumnType.merge(
+        columnTypeUnknown,
         columnTypeDoubleBig
       ) shouldBe columnTypeUnknown
       ColumnType.merge(
@@ -388,6 +469,7 @@ class ColumnTypeSpec extends AnyFunSpec with Matchers {
       ColumnType.apply(1.toShort).toSqlSentence shouldBe "SMALLINT(1)"
       ColumnType.apply(1).toSqlSentence shouldBe "INT(1)"
       ColumnType.apply(1.toLong).toSqlSentence shouldBe "INT(1)"
+      ColumnType.apply(1.1.toFloat).toSqlSentence shouldBe "FLOAT"
       ColumnType.apply(1.1).toSqlSentence shouldBe "DOUBLE"
       ColumnType.apply('a').toSqlSentence shouldBe "CHAR(1)"
       ColumnType.apply(Seq.empty).toSqlSentence shouldBe "TEXT"
