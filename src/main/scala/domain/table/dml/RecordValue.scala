@@ -8,6 +8,7 @@ import domain.table.ddl.column.{
   ColumnTypeDouble,
   ColumnTypeInt,
   ColumnTypeLong,
+  ColumnTypeShort,
   ColumnTypeString,
   ColumnTypeUnknown
 }
@@ -22,6 +23,7 @@ final case class RecordValue(private val value: Map[String, Any])
       ColumnType.apply(value) match {
         case ColumnTypeBoolean      => value
         case ColumnTypeByte(_)      => value
+        case ColumnTypeShort(_)     => value
         case ColumnTypeInt(_)       => value
         case ColumnTypeLong(_)      => value
         case ColumnTypeDouble(_)    => value

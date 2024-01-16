@@ -79,6 +79,9 @@ class RecordListSpec extends AnyFunSpec with Matchers {
         Map(("boolean", false))
       ).toSqlSentence shouldBe ("boolean", "false")
       RecordValue(Map(("byte", 1.toByte))).toSqlSentence shouldBe ("byte", "1")
+      RecordValue(
+        Map(("short", 1.toShort))
+      ).toSqlSentence shouldBe ("short", "1")
       RecordValue(Map(("int", 1))).toSqlSentence shouldBe ("int", "1")
       RecordValue(Map(("long", 1.toLong))).toSqlSentence shouldBe ("long", "1")
       RecordValue(
