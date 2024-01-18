@@ -24,12 +24,11 @@ class GraphVertexSpec extends AnyFunSpec with Matchers {
 
       vertex.toDdl shouldBe TableList(
         Map(
-          TableName("vertex") -> ColumnList(
+          TableName("vertex_person") -> ColumnList(
             Map(
               ColumnName("id") -> ColumnTypeInt(ColumnLength(1)),
-              ColumnName("property_name") -> ColumnTypeString(ColumnLength(5)),
               ColumnName("property_age") -> ColumnTypeInt(ColumnLength(2)),
-              ColumnName("label_person") -> ColumnTypeBoolean
+              ColumnName("property_name") -> ColumnTypeString(ColumnLength(5))
             )
           )
         )
@@ -45,12 +44,11 @@ class GraphVertexSpec extends AnyFunSpec with Matchers {
 
       vertex.toDml shouldBe RecordList(
         Map(
-          RecordKey((TableName("vertex"), RecordId(1))) -> RecordValue(
+          RecordKey((TableName("vertex_person"), RecordId(1))) -> RecordValue(
             Map(
               "id" -> 1,
               "property_name" -> "marko",
-              "property_age" -> 29,
-              "label_person" -> true
+              "property_age" -> 29
             )
           )
         )
@@ -65,9 +63,9 @@ class GraphVertexSpec extends AnyFunSpec with Matchers {
       graphVertex.toDml shouldBe RecordList(
         Map(
           RecordKey(
-            (TableName("vertex"), RecordId(vertex1.id()))
+            (TableName("vertex_testVertex1"), RecordId(vertex1.id()))
           ) -> RecordValue(
-            Map(("id" -> 0), "label_testVertex1" -> true)
+            Map("id" -> 0)
           )
         )
       )

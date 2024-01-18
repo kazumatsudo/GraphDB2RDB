@@ -33,10 +33,9 @@ class UsingSpecificKeyListSpec extends AnyFunSpec with Matchers {
       usecase.execute(checkUnique = true) shouldBe (Some(
         TableList(
           Map(
-            TableName("vertex") -> ColumnList(
+            TableName("vertex_person") -> ColumnList(
               Map(
                 ColumnName("id") -> ColumnTypeInt(ColumnLength(1)),
-                ColumnName("label_person") -> ColumnTypeBoolean,
                 ColumnName("property_age") -> ColumnTypeInt(ColumnLength(2)),
                 ColumnName("property_name") -> ColumnTypeString(
                   ColumnLength(5)
@@ -48,29 +47,32 @@ class UsingSpecificKeyListSpec extends AnyFunSpec with Matchers {
       ), Some(
         RecordList(
           Map(
-            RecordKey((TableName("vertex"), RecordId(1))) -> RecordValue(
-              Map(
-                "id" -> 1,
-                "label_person" -> true,
-                "property_age" -> 29,
-                "property_name" -> "marko"
-              )
+            RecordKey((TableName("vertex_person"), RecordId(1))) -> RecordValue(
+              Map("id" -> 1, "property_age" -> 29, "property_name" -> "marko")
             )
           )
         )
       ), Some(
         TableList(
           Map(
-            TableName("edge") -> ColumnList(
+            TableName("edge_created") -> ColumnList(
               Map(
+                ColumnName("id") -> ColumnTypeInt(ColumnLength(1)),
+                ColumnName("id_in_v") -> ColumnTypeInt(ColumnLength(1)),
                 ColumnName("id_out_v") -> ColumnTypeInt(ColumnLength(1)),
                 ColumnName("property_weight") -> ColumnTypeDouble(
                   ColumnLength(3)
-                ),
-                ColumnName("label_knows") -> ColumnTypeBoolean,
+                )
+              )
+            ),
+            TableName("edge_knows") -> ColumnList(
+              Map(
                 ColumnName("id") -> ColumnTypeInt(ColumnLength(1)),
                 ColumnName("id_in_v") -> ColumnTypeInt(ColumnLength(1)),
-                ColumnName("label_created") -> ColumnTypeBoolean
+                ColumnName("id_out_v") -> ColumnTypeInt(ColumnLength(1)),
+                ColumnName("property_weight") -> ColumnTypeDouble(
+                  ColumnLength(3)
+                )
               )
             )
           )
@@ -78,30 +80,27 @@ class UsingSpecificKeyListSpec extends AnyFunSpec with Matchers {
       ), Some(
         RecordList(
           Map(
-            RecordKey((TableName("edge"), RecordId(7))) -> RecordValue(
+            RecordKey((TableName("edge_knows"), RecordId(7))) -> RecordValue(
               Map(
                 "id" -> 7,
                 "id_in_v" -> 2,
                 "id_out_v" -> 1,
-                "label_knows" -> true,
                 "property_weight" -> 0.5
               )
             ),
-            RecordKey((TableName("edge"), RecordId(8))) -> RecordValue(
+            RecordKey((TableName("edge_knows"), RecordId(8))) -> RecordValue(
               Map(
                 "id" -> 8,
                 "id_in_v" -> 4,
                 "id_out_v" -> 1,
-                "label_knows" -> true,
                 "property_weight" -> 1.0
               )
             ),
-            RecordKey((TableName("edge"), RecordId(9))) -> RecordValue(
+            RecordKey((TableName("edge_created"), RecordId(9))) -> RecordValue(
               Map(
                 "id" -> 9,
                 "id_in_v" -> 3,
                 "id_out_v" -> 1,
-                "label_created" -> true,
                 "property_weight" -> 0.4
               )
             )

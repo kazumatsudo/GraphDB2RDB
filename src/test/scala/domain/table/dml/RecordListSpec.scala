@@ -89,12 +89,12 @@ class RecordListSpec extends AnyFunSpec with Matchers {
         }
 
       vertexAnalyzedResult.toSqlSentence shouldBe
-        """INSERT INTO vertex (id, label_software, property_lang, property_name) VALUES (5, true, "java", "ripple");
-          |INSERT INTO vertex (id, label_person, property_age, property_name) VALUES (6, true, 35, "peter");
-          |INSERT INTO vertex (id, label_person, property_age, property_name) VALUES (4, true, 32, "josh");
-          |INSERT INTO vertex (id, label_person, property_age, property_name) VALUES (2, true, 27, "vadas");
-          |INSERT INTO vertex (id, label_person, property_age, property_name) VALUES (1, true, 29, "marko");
-          |INSERT INTO vertex (id, label_software, property_lang, property_name) VALUES (3, true, "java", "lop");""".stripMargin
+        """INSERT INTO vertex_software (id, property_lang, property_name) VALUES (5, "java", "ripple");
+          |INSERT INTO vertex_person (id, property_age, property_name) VALUES (1, 29, "marko");
+          |INSERT INTO vertex_software (id, property_lang, property_name) VALUES (3, "java", "lop");
+          |INSERT INTO vertex_person (id, property_age, property_name) VALUES (2, 27, "vadas");
+          |INSERT INTO vertex_person (id, property_age, property_name) VALUES (6, 35, "peter");
+          |INSERT INTO vertex_person (id, property_age, property_name) VALUES (4, 32, "josh");""".stripMargin
 
     }
   }

@@ -22,14 +22,18 @@ class TableListSpec extends AnyFunSpec with Matchers {
 
       result shouldBe TableList(
         Map(
-          TableName("vertex") -> ColumnList(
+          TableName("vertex_person") -> ColumnList(
             Map(
               ColumnName("id") -> ColumnTypeInt(ColumnLength(1)),
               ColumnName("property_age") -> ColumnTypeInt(ColumnLength(2)),
+              ColumnName("property_name") -> ColumnTypeString(ColumnLength(5))
+            )
+          ),
+          TableName("vertex_software") -> ColumnList(
+            Map(
+              ColumnName("id") -> ColumnTypeInt(ColumnLength(1)),
               ColumnName("property_lang") -> ColumnTypeString(ColumnLength(4)),
-              ColumnName("property_name") -> ColumnTypeString(ColumnLength(6)),
-              ColumnName("label_person") -> ColumnTypeBoolean,
-              ColumnName("label_software") -> ColumnTypeBoolean
+              ColumnName("property_name") -> ColumnTypeString(ColumnLength(6))
             )
           )
         )
@@ -50,7 +54,9 @@ class TableListSpec extends AnyFunSpec with Matchers {
           accumulator.merge(currentValue)
         }
 
-      vertexAnalyzedResult.toSqlSentence shouldBe "CREATE TABLE IF NOT EXISTS vertex (id INT(1), label_person BOOLEAN, label_software BOOLEAN, property_age INT(2), property_lang VARCHAR(4), property_name VARCHAR(6));"
+      vertexAnalyzedResult.toSqlSentence shouldBe
+        """CREATE TABLE IF NOT EXISTS vertex_person (id INT(1), property_age INT(2), property_name VARCHAR(5));
+          |CREATE TABLE IF NOT EXISTS vertex_software (id INT(1), property_lang VARCHAR(4), property_name VARCHAR(6));""".stripMargin
     }
   }
 }
