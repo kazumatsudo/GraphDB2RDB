@@ -10,7 +10,9 @@ case class GraphVertex(private val value: Vertex) {
 
   private val config = ConfigFactory.load()
 
-  private val tableName = config.getString("table_name_vertex")
+  private val tableName = TableName(
+    s"${config.getString("table_name_vertex")}_${value.label()}"
+  )
   private val columnNamePrefixProperty =
     config.getString("column_name_prefix_property")
 
@@ -32,11 +34,7 @@ case class GraphVertex(private val value: Vertex) {
           value
         )
       }
-      Map(
-        TableName(s"${tableName}_${value.label()}") -> ColumnList(
-          idColumn ++ propertyColumn
-        )
-      )
+      Map(tableName -> ColumnList(idColumn ++ propertyColumn))
     }
 
   def toDml: RecordList = {
@@ -48,12 +46,7 @@ case class GraphVertex(private val value: Vertex) {
       Map((config.getString("column_name_vertex_id"), id)) ++ propertyColumnList
 
     RecordList(
-      Map(
-        (
-          RecordKey(TableName(s"${tableName}_${value.label()}"), RecordId(id)),
-          RecordValue(recordValue)
-        )
-      )
+      Map(RecordKey(tableName, RecordId(id)) -> RecordValue(recordValue))
     )
   }
 }
