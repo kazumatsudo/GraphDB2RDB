@@ -24,18 +24,24 @@ class ByExhaustiveSearchSpec extends AnyFunSpec with Matchers {
       usecase.execute(checkUnique = true) shouldBe (Some(
         TableList(
           Map(
-            TableName("vertex") -> ColumnList(
+            TableName("vertex_person") -> ColumnList(
               Map(
                 ColumnName("id") -> ColumnTypeInt(ColumnLength(1)),
                 ColumnName("property_age") -> ColumnTypeInt(ColumnLength(2)),
+                ColumnName("property_name") -> ColumnTypeString(
+                  ColumnLength(5)
+                )
+              )
+            ),
+            TableName("vertex_software") -> ColumnList(
+              Map(
+                ColumnName("id") -> ColumnTypeInt(ColumnLength(1)),
                 ColumnName("property_lang") -> ColumnTypeString(
                   ColumnLength(4)
                 ),
                 ColumnName("property_name") -> ColumnTypeString(
                   ColumnLength(6)
-                ),
-                ColumnName("label_software") -> ColumnTypeBoolean,
-                ColumnName("label_person") -> ColumnTypeBoolean
+                )
               )
             )
           )
@@ -43,52 +49,34 @@ class ByExhaustiveSearchSpec extends AnyFunSpec with Matchers {
       ), Some(
         RecordList(
           Map(
-            RecordKey((TableName("vertex"), RecordId(1))) -> RecordValue(
-              Map(
-                "id" -> 1,
-                "property_age" -> 29,
-                "property_name" -> "marko",
-                "label_person" -> true
-              )
+            RecordKey((TableName("vertex_person"), RecordId(1))) -> RecordValue(
+              Map("id" -> 1, "property_age" -> 29, "property_name" -> "marko")
             ),
-            RecordKey((TableName("vertex"), RecordId(2))) -> RecordValue(
-              Map(
-                "id" -> 2,
-                "property_age" -> 27,
-                "property_name" -> "vadas",
-                "label_person" -> true
-              )
+            RecordKey((TableName("vertex_person"), RecordId(2))) -> RecordValue(
+              Map("id" -> 2, "property_age" -> 27, "property_name" -> "vadas")
             ),
-            RecordKey((TableName("vertex"), RecordId(3))) -> RecordValue(
+            RecordKey((TableName("vertex_person"), RecordId(4))) -> RecordValue(
+              Map("id" -> 4, "property_age" -> 32, "property_name" -> "josh")
+            ),
+            RecordKey((TableName("vertex_person"), RecordId(6))) -> RecordValue(
+              Map("id" -> 6, "property_age" -> 35, "property_name" -> "peter")
+            ),
+            RecordKey(
+              (TableName("vertex_software"), RecordId(3))
+            ) -> RecordValue(
               Map(
                 "id" -> 3,
                 "property_lang" -> "java",
-                "property_name" -> "lop",
-                "label_software" -> true
+                "property_name" -> "lop"
               )
             ),
-            RecordKey((TableName("vertex"), RecordId(4))) -> RecordValue(
-              Map(
-                "id" -> 4,
-                "property_age" -> 32,
-                "property_name" -> "josh",
-                "label_person" -> true
-              )
-            ),
-            RecordKey((TableName("vertex"), RecordId(5))) -> RecordValue(
+            RecordKey(
+              (TableName("vertex_software"), RecordId(5))
+            ) -> RecordValue(
               Map(
                 "id" -> 5,
                 "property_lang" -> "java",
-                "property_name" -> "ripple",
-                "label_software" -> true
-              )
-            ),
-            RecordKey((TableName("vertex"), RecordId(6))) -> RecordValue(
-              Map(
-                "id" -> 6,
-                "property_age" -> 35,
-                "property_name" -> "peter",
-                "label_person" -> true
+                "property_name" -> "ripple"
               )
             )
           )
@@ -96,13 +84,21 @@ class ByExhaustiveSearchSpec extends AnyFunSpec with Matchers {
       ), Some(
         TableList(
           Map(
-            TableName("edge") -> ColumnList(
+            TableName("edge_created") -> ColumnList(
               Map(
                 ColumnName("id") -> ColumnTypeInt(ColumnLength(2)),
                 ColumnName("id_in_v") -> ColumnTypeInt(ColumnLength(1)),
                 ColumnName("id_out_v") -> ColumnTypeInt(ColumnLength(1)),
-                ColumnName("label_created") -> ColumnTypeBoolean,
-                ColumnName("label_knows") -> ColumnTypeBoolean,
+                ColumnName("property_weight") -> ColumnTypeDouble(
+                  ColumnLength(3)
+                )
+              )
+            ),
+            TableName("edge_knows") -> ColumnList(
+              Map(
+                ColumnName("id") -> ColumnTypeInt(ColumnLength(1)),
+                ColumnName("id_in_v") -> ColumnTypeInt(ColumnLength(1)),
+                ColumnName("id_out_v") -> ColumnTypeInt(ColumnLength(1)),
                 ColumnName("property_weight") -> ColumnTypeDouble(
                   ColumnLength(3)
                 )
@@ -113,57 +109,51 @@ class ByExhaustiveSearchSpec extends AnyFunSpec with Matchers {
       ), Some(
         RecordList(
           Map(
-            RecordKey((TableName("edge"), RecordId(7))) -> RecordValue(
+            RecordKey((TableName("edge_knows"), RecordId(7))) -> RecordValue(
               Map(
                 "id" -> 7,
                 "id_in_v" -> 2,
                 "id_out_v" -> 1,
-                "label_knows" -> true,
                 "property_weight" -> 0.5
               )
             ),
-            RecordKey((TableName("edge"), RecordId(8))) -> RecordValue(
+            RecordKey((TableName("edge_knows"), RecordId(8))) -> RecordValue(
               Map(
                 "id" -> 8,
                 "id_in_v" -> 4,
                 "id_out_v" -> 1,
-                "label_knows" -> true,
                 "property_weight" -> 1.0
               )
             ),
-            RecordKey((TableName("edge"), RecordId(9))) -> RecordValue(
+            RecordKey((TableName("edge_created"), RecordId(9))) -> RecordValue(
               Map(
                 "id" -> 9,
                 "id_in_v" -> 3,
                 "id_out_v" -> 1,
-                "label_created" -> true,
                 "property_weight" -> 0.4
               )
             ),
-            RecordKey((TableName("edge"), RecordId(10))) -> RecordValue(
+            RecordKey((TableName("edge_created"), RecordId(10))) -> RecordValue(
               Map(
                 "id" -> 10,
                 "id_in_v" -> 5,
                 "id_out_v" -> 4,
-                "label_created" -> true,
                 "property_weight" -> 1.0
               )
             ),
-            RecordKey((TableName("edge"), RecordId(11))) -> RecordValue(
+            RecordKey((TableName("edge_created"), RecordId(11))) -> RecordValue(
               Map(
                 "id" -> 11,
                 "id_in_v" -> 3,
                 "id_out_v" -> 4,
-                "label_created" -> true,
                 "property_weight" -> 0.4
               )
             ),
-            RecordKey((TableName("edge"), RecordId(12))) -> RecordValue(
+            RecordKey((TableName("edge_created"), RecordId(12))) -> RecordValue(
               Map(
                 "id" -> 12,
                 "id_in_v" -> 3,
                 "id_out_v" -> 6,
-                "label_created" -> true,
                 "property_weight" -> 0.2
               )
             )

@@ -10,12 +10,11 @@ case class GraphVertex(private val value: Vertex) {
 
   private val config = ConfigFactory.load()
 
-  // TODO: Set a more detailed table name
-  private val tableName = TableName(config.getString("table_name_vertex"))
+  private val tableName = TableName(
+    s"${config.getString("table_name_vertex")}_${value.label()}"
+  )
   private val columnNamePrefixProperty =
     config.getString("column_name_prefix_property")
-  private val columnNamePrefixLabel =
-    config.getString("column_name_prefix_label")
 
   val id: AnyRef = value.id()
 
@@ -35,27 +34,19 @@ case class GraphVertex(private val value: Vertex) {
           value
         )
       }
-      val labelColumn = Map(
-        ColumnName(
-          s"$columnNamePrefixLabel${value.label()}"
-        ) -> ColumnType.apply(true)
-      )
-
-      Map(tableName -> ColumnList(idColumn ++ propertyColumn ++ labelColumn))
+      Map(tableName -> ColumnList(idColumn ++ propertyColumn))
     }
 
   def toDml: RecordList = {
     val propertyColumnList = value.valueMap.map { case (columnName, value) =>
       (s"$columnNamePrefixProperty$columnName", value)
     }
-    val labelColumn = s"$columnNamePrefixLabel${value.label()}"
 
-    val recordValue = Map(
-      (config.getString("column_name_vertex_id"), id)
-    ) ++ propertyColumnList ++ Map((labelColumn, true))
+    val recordValue =
+      Map((config.getString("column_name_vertex_id"), id)) ++ propertyColumnList
 
     RecordList(
-      Map((RecordKey(tableName, RecordId(id)), RecordValue(recordValue)))
+      Map(RecordKey(tableName, RecordId(id)) -> RecordValue(recordValue))
     )
   }
 }

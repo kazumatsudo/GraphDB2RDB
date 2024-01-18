@@ -25,15 +25,12 @@ class GraphEdgeSpec extends AnyFunSpec with Matchers {
 
       edge.toDdl shouldBe TableList(
         Map(
-          TableName("edge") -> ColumnList(
+          TableName("edge_knows") -> ColumnList(
             Map(
               ColumnName("id") -> ColumnTypeInt(ColumnLength(1)),
               ColumnName("id_in_v") -> ColumnTypeInt(ColumnLength(1)),
               ColumnName("id_out_v") -> ColumnTypeInt(ColumnLength(1)),
-              ColumnName("property_weight") -> ColumnTypeDouble(
-                ColumnLength(3)
-              ),
-              ColumnName("label_knows") -> ColumnTypeBoolean
+              ColumnName("property_weight") -> ColumnTypeDouble(ColumnLength(3))
             )
           )
         )
@@ -49,12 +46,11 @@ class GraphEdgeSpec extends AnyFunSpec with Matchers {
 
       edge.toDml shouldBe RecordList(
         Map(
-          RecordKey((TableName("edge"), RecordId(7))) -> RecordValue(
+          RecordKey((TableName("edge_knows"), RecordId(7))) -> RecordValue(
             Map(
               "id" -> 7,
               "id_in_v" -> 2,
               "id_out_v" -> 1,
-              "label_knows" -> true,
               "property_weight" -> 0.5
             )
           )
@@ -71,13 +67,8 @@ class GraphEdgeSpec extends AnyFunSpec with Matchers {
       val graphEdge = GraphEdge(edge)
       graphEdge.toDml shouldBe RecordList(
         Map(
-          RecordKey((TableName("edge"), RecordId(14))) -> RecordValue(
-            Map(
-              "id" -> 14,
-              "id_in_v" -> 13,
-              "id_out_v" -> 0,
-              "label_testEdge" -> true
-            )
+          RecordKey((TableName("edge_testEdge"), RecordId(14))) -> RecordValue(
+            Map("id" -> 14, "id_in_v" -> 13, "id_out_v" -> 0)
           )
         )
       )
