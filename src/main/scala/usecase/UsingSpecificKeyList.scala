@@ -5,6 +5,7 @@ import domain.table.dml.RecordList
 import infrastructure.{EdgeQuery, VertexQuery}
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource
 
+import java.util.concurrent.Executors.newFixedThreadPool
 import scala.concurrent.duration.Duration
 import scala.concurrent.{Await, ExecutionContext, Future}
 
@@ -35,7 +36,9 @@ final case class UsingSpecificKeyList(
     private val value: UsingSpecificKeyListRequest
 ) extends UsecaseBase {
 
-  implicit private val ec: ExecutionContext = ExecutionContext.Implicits.global
+  // set gremlin server connection pool max size or less
+  implicit private val ec: ExecutionContext =
+    ExecutionContext.fromExecutor(newFixedThreadPool(1))
 
   override def execute(
       checkUnique: Boolean
