@@ -5,6 +5,9 @@ import domain.table.dml.RecordList
 import infrastructure.{EdgeQuery, VertexQuery}
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource
 
+import scala.concurrent.duration.Duration
+import scala.concurrent.{Await, ExecutionContext, Future}
+
 final case class UsingSpecificKeyListRequestKey(
     key: String,
     value: Seq[Any]
@@ -32,6 +35,8 @@ final case class UsingSpecificKeyList(
     private val value: UsingSpecificKeyListRequest
 ) extends UsecaseBase {
 
+  implicit private val ec: ExecutionContext = ExecutionContext.Implicits.global
+
   override def execute(
       checkUnique: Boolean
   ): (
@@ -42,73 +47,73 @@ final case class UsingSpecificKeyList(
   ) = {
 
     // 1. get vertex by specific key
-    val verticesOption = executeWithExceptionHandling({
-      val vertexQuery = VertexQuery(g)
-      value.value.view
-        .flatMap { label =>
-          label.value.view.flatMap { keyValue =>
-            keyValue.value.flatMap { value =>
-              vertexQuery.getListByPropertyKey(label.label, keyValue.key, value)
-            }
-          }
-        }
-    })
+    val vertexQuery = VertexQuery(g)
+    val edgeQuery = EdgeQuery(g)
 
-    verticesOption match {
-      case Some(vertices) =>
-        // 2. generate vertex SQL
-        val edgeQuery = EdgeQuery(g)
-
-        val (verticesDdl, verticesDml, edgesDdl, edgesDml) = {
-          vertices
-            .map { vertex =>
-              val (edgesDdl, edgesDml) =
-                (edgeQuery.getInEdgeList(vertex) ++ edgeQuery
-                  .getOutEdgeList(vertex)).view
-                  .map(edge => (edge.toDdl, edge.toDml))
-                  .reduce[(TableList, RecordList)] {
-                    case (
-                          (tableListAccumlator, dmlAccumlator),
-                          (tableListCurrentValue, dmlCurrentValue)
-                        ) =>
-                      (
-                        tableListAccumlator.merge(tableListCurrentValue),
-                        dmlAccumlator.merge(dmlCurrentValue, checkUnique)
-                      )
-                  }
-
-              (
-                vertex.toDdl,
-                vertex.toDml,
-                edgesDdl,
-                edgesDml
+    val (vertexTableList, vertexRecordList, edgeTableList, edgeRecordList) =
+      Await.result(
+        Future
+          .sequence {
+            for {
+              label <- value.value
+              keyValue <- label.value
+              value <- keyValue.value
+            } yield for {
+              vertices <- vertexQuery.getListByPropertyKey(
+                label.label,
+                keyValue.key,
+                value
               )
+              inEdgesSeq <- Future.sequence(
+                vertices.map(edgeQuery.getInEdgeList)
+              )
+              outEdgesSeq <- Future.sequence(
+                vertices.map(edgeQuery.getOutEdgeList)
+              )
+            } yield for {
+              vertex <- vertices
+              edge <- inEdgesSeq.flatten ++ outEdgesSeq.flatten
+            } yield (vertex.toDdl, vertex.toDml, edge.toDdl, edge.toDml)
+          }
+          .map { resultSeq =>
+            def r(
+                value: Seq[(TableList, RecordList, TableList, RecordList)]
+            ): (TableList, RecordList, TableList, RecordList) = {
+              value.reduce[(TableList, RecordList, TableList, RecordList)] {
+                case (
+                      (
+                        vertexDdlAccumlator,
+                        vertexDmlAccumlator,
+                        edgeDdlAccumlator,
+                        edgeDmlAccumlator
+                      ),
+                      (
+                        vertexDdlCurrentValue,
+                        vertexDmlCurrentValue,
+                        edgeDdlCurrentValue,
+                        edgeDmlCurrentValue
+                      )
+                    ) =>
+                  (
+                    vertexDdlAccumlator.merge(vertexDdlCurrentValue),
+                    vertexDmlAccumlator
+                      .merge(vertexDmlCurrentValue, checkUnique),
+                    edgeDdlAccumlator.merge(edgeDdlCurrentValue),
+                    edgeDmlAccumlator.merge(edgeDmlCurrentValue, checkUnique)
+                  )
+              }
             }
-            .reduce[(TableList, RecordList, TableList, RecordList)] {
-              case (
-                    (
-                      vertexDdlAccumlator,
-                      vertexDmlAccumlator,
-                      edgeDdlAccumlator,
-                      edgeDmlAccumlator
-                    ),
-                    (
-                      vertexDdlCurrentValue,
-                      vertexDmlCurrentValue,
-                      edgeDdlCurrentValue,
-                      edgeDmlCurrentValue
-                    )
-                  ) =>
-                (
-                  vertexDdlAccumlator.merge(vertexDdlCurrentValue),
-                  vertexDmlAccumlator.merge(vertexDmlCurrentValue, checkUnique),
-                  edgeDdlAccumlator.merge(edgeDdlCurrentValue),
-                  edgeDmlAccumlator.merge(edgeDmlCurrentValue, checkUnique)
-                )
-            }
-        }
-        (Some(verticesDdl), Some(verticesDml), Some(edgesDdl), Some(edgesDml))
-      case None => (None, None, None, None)
-    }
+
+            r(resultSeq.map(r))
+          },
+        Duration.Inf
+      )
+
+    (
+      Option(vertexTableList),
+      Option(vertexRecordList),
+      Option(edgeTableList),
+      Option(edgeRecordList)
+    )
   }
 }

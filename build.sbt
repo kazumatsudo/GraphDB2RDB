@@ -10,6 +10,8 @@ wartremoverErrors ++= Warts.allBut(
   Wart.AnyVal,
   Wart.AutoUnboxing,
   Wart.FinalCaseClass,
+  Wart.GlobalExecutionContext,
+  Wart.ImplicitParameter,
   Wart.IterableOps,
   Wart.JavaSerializable,
   Wart.LeakingSealed,
