@@ -50,35 +50,20 @@ final case class UsingSpecificKeyList(
     val vertexQuery = VertexQuery(g)
     val edgeQuery = EdgeQuery(g)
 
-    def r(
-        value: Seq[(TableList, RecordList, TableList, RecordList)]
-    ): (TableList, RecordList, TableList, RecordList) = {
-      value.reduce[(TableList, RecordList, TableList, RecordList)] {
+    def reduce(value: Seq[(TableList, RecordList)]): (TableList, RecordList) = {
+      value.reduce[(TableList, RecordList)] {
         case (
-              (
-                vertexDdlAccumlator,
-                vertexDmlAccumlator,
-                edgeDdlAccumlator,
-                edgeDmlAccumlator
-              ),
-              (
-                vertexDdlCurrentValue,
-                vertexDmlCurrentValue,
-                edgeDdlCurrentValue,
-                edgeDmlCurrentValue
-              )
+              (ddlAccumlator, dmlAccumlator),
+              (ddlCurrentValue, dmlCurrentValue)
             ) =>
           (
-            vertexDdlAccumlator.merge(vertexDdlCurrentValue),
-            vertexDmlAccumlator
-              .merge(vertexDmlCurrentValue, checkUnique),
-            edgeDdlAccumlator.merge(edgeDdlCurrentValue),
-            edgeDmlAccumlator.merge(edgeDmlCurrentValue, checkUnique)
+            ddlAccumlator.merge(ddlCurrentValue),
+            dmlAccumlator.merge(dmlCurrentValue, checkUnique)
           )
       }
     }
 
-    val (vertexTableList, vertexRecordList, edgeTableList, edgeRecordList) =
+    val ((vertexTableList, vertexRecordList), (edgeTableList, edgeRecordList)) =
       Await.result(
         Future
           .sequence {
@@ -93,19 +78,36 @@ final case class UsingSpecificKeyList(
                   keyValue.key,
                   value
                 )
-                inEdgesSeq <- Future.sequence(
-                  vertices.map(edgeQuery.getInEdgeList)
-                )
-                outEdgesSeq <- Future.sequence(
-                  vertices.map(edgeQuery.getOutEdgeList)
-                )
-              } yield for {
-                vertex <- vertices
-                edge <- inEdgesSeq.flatten ++ outEdgesSeq.flatten
-              } yield (vertex.toDdl, vertex.toDml, edge.toDdl, edge.toDml)
-            }.map(_.map(r))
+                inEdgesSql <- Future.sequence {
+                  vertices.map { vertex =>
+                    edgeQuery
+                      .getInEdgeList(vertex)
+                      .map(edgeList =>
+                        reduce(edgeList.map(edge => (edge.toDdl, edge.toDml)))
+                      )
+                  }
+                }
+                outEdgesSql <- Future.sequence {
+                  vertices.map { vertex =>
+                    edgeQuery
+                      .getOutEdgeList(vertex)
+                      .map(edgeList =>
+                        reduce(edgeList.map(edge => (edge.toDdl, edge.toDml)))
+                      )
+                  }
+                }
+              } yield {
+                val verticesSql =
+                  reduce(vertices.map(vertex => (vertex.toDdl, vertex.toDml)))
+                val edgesSql = reduce(inEdgesSql ++ outEdgesSql)
+                (verticesSql, edgesSql)
+              }
+            }
           }
-          .map(r),
+          .map { seq =>
+            val (verticesSql, edgesSql) = seq.unzip
+            (reduce(verticesSql), reduce(edgesSql))
+          },
         Duration.Inf
       )
 
