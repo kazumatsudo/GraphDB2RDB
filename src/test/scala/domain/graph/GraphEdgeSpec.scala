@@ -27,8 +27,9 @@ class GraphEdgeSpec extends AnyFunSpec with Matchers {
         Map(
           TableName("edge") -> ColumnList(
             Map(
-              ColumnName("in_v_id") -> ColumnTypeInt(ColumnLength(1)),
-              ColumnName("out_v_id") -> ColumnTypeInt(ColumnLength(1)),
+              ColumnName("id") -> ColumnTypeInt(ColumnLength(1)),
+              ColumnName("id_in_v") -> ColumnTypeInt(ColumnLength(1)),
+              ColumnName("id_out_v") -> ColumnTypeInt(ColumnLength(1)),
               ColumnName("property_weight") -> ColumnTypeDouble(
                 ColumnLength(3)
               ),
@@ -50,10 +51,11 @@ class GraphEdgeSpec extends AnyFunSpec with Matchers {
         Map(
           RecordKey((TableName("edge"), RecordId(7))) -> RecordValue(
             Map(
-              "in_v_id" -> 2,
-              "out_v_id" -> 1,
-              "property_weight" -> 0.5,
-              "label_knows" -> true
+              "id" -> 7,
+              "id_in_v" -> 2,
+              "id_out_v" -> 1,
+              "label_knows" -> true,
+              "property_weight" -> 0.5
             )
           )
         )
@@ -70,7 +72,12 @@ class GraphEdgeSpec extends AnyFunSpec with Matchers {
       graphEdge.toDml shouldBe RecordList(
         Map(
           RecordKey((TableName("edge"), RecordId(14))) -> RecordValue(
-            Map("in_v_id" -> 13, "out_v_id" -> 0, "label_testEdge" -> true)
+            Map(
+              "id" -> 14,
+              "id_in_v" -> 13,
+              "id_out_v" -> 0,
+              "label_testEdge" -> true
+            )
           )
         )
       )

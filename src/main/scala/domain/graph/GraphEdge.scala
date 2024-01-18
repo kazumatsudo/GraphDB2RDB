@@ -19,6 +19,8 @@ case class GraphEdge(private val value: Edge) {
   private val columnNamePrefixLabel =
     config.getString("column_name_prefix_label")
 
+  private val id = value.id()
+
   /** convert to Database Table Information
     *
     * @return
@@ -26,6 +28,10 @@ case class GraphEdge(private val value: Edge) {
     */
   def toDdl: TableList =
     TableList {
+      val idColumn = Map(
+        ColumnName(config.getString("column_name_edge_id")) -> ColumnType
+          .apply(id)
+      )
       val inVColumn =
         Map(
           ColumnName(config.getString("column_name_edge_in_v_id")) -> ColumnType
@@ -56,14 +62,12 @@ case class GraphEdge(private val value: Edge) {
 
       Map(
         tableName -> ColumnList(
-          inVColumn ++ outVColumn ++ propertyColumn ++ labelColumn
+          idColumn ++ inVColumn ++ outVColumn ++ propertyColumn ++ labelColumn
         )
       )
     }
 
   def toDml: RecordList = {
-    val id = value.id()
-
     // TODO: pull request for gremlin-scala
     val propertyColumnList = value
       .keys()
@@ -76,6 +80,8 @@ case class GraphEdge(private val value: Edge) {
     val labelColumn = s"$columnNamePrefixLabel${value.label()}"
 
     val recordValue = Map(
+      (config.getString("column_name_edge_id"), value.id())
+    ) ++ Map(
       (config.getString("column_name_edge_in_v_id"), value.inVertex().id())
     ) ++ Map(
       (

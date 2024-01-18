@@ -98,13 +98,14 @@ class ByExhaustiveSearchSpec extends AnyFunSpec with Matchers {
           Map(
             TableName("edge") -> ColumnList(
               Map(
-                ColumnName("in_v_id") -> ColumnTypeInt(ColumnLength(1)),
-                ColumnName("out_v_id") -> ColumnTypeInt(ColumnLength(1)),
+                ColumnName("id") -> ColumnTypeInt(ColumnLength(2)),
+                ColumnName("id_in_v") -> ColumnTypeInt(ColumnLength(1)),
+                ColumnName("id_out_v") -> ColumnTypeInt(ColumnLength(1)),
+                ColumnName("label_created") -> ColumnTypeBoolean,
+                ColumnName("label_knows") -> ColumnTypeBoolean,
                 ColumnName("property_weight") -> ColumnTypeDouble(
                   ColumnLength(3)
-                ),
-                ColumnName("label_created") -> ColumnTypeBoolean,
-                ColumnName("label_knows") -> ColumnTypeBoolean
+                )
               )
             )
           )
@@ -114,50 +115,56 @@ class ByExhaustiveSearchSpec extends AnyFunSpec with Matchers {
           Map(
             RecordKey((TableName("edge"), RecordId(7))) -> RecordValue(
               Map(
-                "in_v_id" -> 2,
-                "out_v_id" -> 1,
-                "property_weight" -> 0.5,
-                "label_knows" -> true
+                "id" -> 7,
+                "id_in_v" -> 2,
+                "id_out_v" -> 1,
+                "label_knows" -> true,
+                "property_weight" -> 0.5
               )
             ),
             RecordKey((TableName("edge"), RecordId(8))) -> RecordValue(
               Map(
-                "in_v_id" -> 4,
-                "out_v_id" -> 1,
-                "property_weight" -> 1.0,
-                "label_knows" -> true
+                "id" -> 8,
+                "id_in_v" -> 4,
+                "id_out_v" -> 1,
+                "label_knows" -> true,
+                "property_weight" -> 1.0
               )
             ),
             RecordKey((TableName("edge"), RecordId(9))) -> RecordValue(
               Map(
-                "in_v_id" -> 3,
-                "out_v_id" -> 1,
-                "property_weight" -> 0.4,
-                "label_created" -> true
+                "id" -> 9,
+                "id_in_v" -> 3,
+                "id_out_v" -> 1,
+                "label_created" -> true,
+                "property_weight" -> 0.4
               )
             ),
             RecordKey((TableName("edge"), RecordId(10))) -> RecordValue(
               Map(
-                "in_v_id" -> 5,
-                "out_v_id" -> 4,
-                "property_weight" -> 1.0,
-                "label_created" -> true
+                "id" -> 10,
+                "id_in_v" -> 5,
+                "id_out_v" -> 4,
+                "label_created" -> true,
+                "property_weight" -> 1.0
               )
             ),
             RecordKey((TableName("edge"), RecordId(11))) -> RecordValue(
               Map(
-                "in_v_id" -> 3,
-                "out_v_id" -> 4,
-                "property_weight" -> 0.4,
-                "label_created" -> true
+                "id" -> 11,
+                "id_in_v" -> 3,
+                "id_out_v" -> 4,
+                "label_created" -> true,
+                "property_weight" -> 0.4
               )
             ),
             RecordKey((TableName("edge"), RecordId(12))) -> RecordValue(
               Map(
-                "in_v_id" -> 3,
-                "out_v_id" -> 6,
-                "property_weight" -> 0.2,
-                "label_created" -> true
+                "id" -> 12,
+                "id_in_v" -> 3,
+                "id_out_v" -> 6,
+                "label_created" -> true,
+                "property_weight" -> 0.2
               )
             )
           )

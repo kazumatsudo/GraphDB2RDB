@@ -36,11 +36,11 @@ class UsingSpecificKeyListSpec extends AnyFunSpec with Matchers {
             TableName("vertex") -> ColumnList(
               Map(
                 ColumnName("id") -> ColumnTypeInt(ColumnLength(1)),
+                ColumnName("label_person") -> ColumnTypeBoolean,
                 ColumnName("property_age") -> ColumnTypeInt(ColumnLength(2)),
                 ColumnName("property_name") -> ColumnTypeString(
                   ColumnLength(5)
-                ),
-                ColumnName("label_person") -> ColumnTypeBoolean
+                )
               )
             )
           )
@@ -51,9 +51,9 @@ class UsingSpecificKeyListSpec extends AnyFunSpec with Matchers {
             RecordKey((TableName("vertex"), RecordId(1))) -> RecordValue(
               Map(
                 "id" -> 1,
+                "label_person" -> true,
                 "property_age" -> 29,
-                "property_name" -> "marko",
-                "label_person" -> true
+                "property_name" -> "marko"
               )
             )
           )
@@ -63,13 +63,14 @@ class UsingSpecificKeyListSpec extends AnyFunSpec with Matchers {
           Map(
             TableName("edge") -> ColumnList(
               Map(
-                ColumnName("in_v_id") -> ColumnTypeInt(ColumnLength(1)),
-                ColumnName("out_v_id") -> ColumnTypeInt(ColumnLength(1)),
+                ColumnName("id_out_v") -> ColumnTypeInt(ColumnLength(1)),
                 ColumnName("property_weight") -> ColumnTypeDouble(
                   ColumnLength(3)
                 ),
-                ColumnName("label_created") -> ColumnTypeBoolean,
-                ColumnName("label_knows") -> ColumnTypeBoolean
+                ColumnName("label_knows") -> ColumnTypeBoolean,
+                ColumnName("id") -> ColumnTypeInt(ColumnLength(1)),
+                ColumnName("id_in_v") -> ColumnTypeInt(ColumnLength(1)),
+                ColumnName("label_created") -> ColumnTypeBoolean
               )
             )
           )
@@ -79,26 +80,29 @@ class UsingSpecificKeyListSpec extends AnyFunSpec with Matchers {
           Map(
             RecordKey((TableName("edge"), RecordId(7))) -> RecordValue(
               Map(
-                "in_v_id" -> 2,
-                "out_v_id" -> 1,
-                "property_weight" -> 0.5,
-                "label_knows" -> true
+                "id" -> 7,
+                "id_in_v" -> 2,
+                "id_out_v" -> 1,
+                "label_knows" -> true,
+                "property_weight" -> 0.5
               )
             ),
             RecordKey((TableName("edge"), RecordId(8))) -> RecordValue(
               Map(
-                "in_v_id" -> 4,
-                "out_v_id" -> 1,
-                "property_weight" -> 1.0,
-                "label_knows" -> true
+                "id" -> 8,
+                "id_in_v" -> 4,
+                "id_out_v" -> 1,
+                "label_knows" -> true,
+                "property_weight" -> 1.0
               )
             ),
             RecordKey((TableName("edge"), RecordId(9))) -> RecordValue(
               Map(
-                "in_v_id" -> 3,
-                "out_v_id" -> 1,
-                "property_weight" -> 0.4,
-                "label_created" -> true
+                "id" -> 9,
+                "id_in_v" -> 3,
+                "id_out_v" -> 1,
+                "label_created" -> true,
+                "property_weight" -> 0.4
               )
             )
           )
