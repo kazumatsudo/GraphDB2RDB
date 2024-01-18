@@ -1,10 +1,10 @@
 package domain.table.dml
 
 import domain.table.ddl.TableName
+import infrastructure.VertexQuery
+import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerFactory
 import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.matchers.should.Matchers
-
-import java.util.UUID
 
 class RecordListSpec extends AnyFunSpec with Matchers {
   describe("merge") {
@@ -77,34 +77,25 @@ class RecordListSpec extends AnyFunSpec with Matchers {
 
   describe("toSqlSentence") {
     it("success") {
-      RecordValue(
-        Map(("boolean", false))
-      ).toSqlSentence shouldBe ("boolean", "false")
-      RecordValue(Map(("byte", 1.toByte))).toSqlSentence shouldBe ("byte", "1")
-      RecordValue(
-        Map(("short", 1.toShort))
-      ).toSqlSentence shouldBe ("short", "1")
-      RecordValue(Map(("int", 1))).toSqlSentence shouldBe ("int", "1")
-      RecordValue(Map(("long", 1.toLong))).toSqlSentence shouldBe ("long", "1")
-      RecordValue(
-        Map(("float", 1.toFloat))
-      ).toSqlSentence shouldBe ("float", "1.0")
-      RecordValue(
-        Map(("double", 1.toDouble))
-      ).toSqlSentence shouldBe ("double", "1.0")
-      val uuid = UUID.randomUUID()
-      RecordValue(
-        Map(("uuid", uuid))
-      ).toSqlSentence shouldBe ("uuid", s"\"$uuid\"")
-      RecordValue(
-        Map(("char", 'a'))
-      ).toSqlSentence shouldBe ("char", "\"a\"")
-      RecordValue(
-        Map(("string", 1.toString))
-      ).toSqlSentence shouldBe ("string", "\"1\"")
-      RecordValue(
-        Map(("unknown", Seq(1)))
-      ).toSqlSentence shouldBe ("unknown", "\"List(1)\"")
+      // TODO: not use Vertex
+      val graph = TinkerFactory.createModern().traversal()
+      val vertexQuery = VertexQuery(graph)
+      val vertex = vertexQuery.getList(0, vertexQuery.countAll.toInt)
+
+      val vertexAnalyzedResult = vertex
+        .map(_.toDml)
+        .reduce[RecordList] { case (accumulator, currentValue) =>
+          accumulator.merge(currentValue, checkUnique = false)
+        }
+
+      vertexAnalyzedResult.toSqlSentence shouldBe
+        """INSERT INTO vertex (id, label_software, property_lang, property_name) VALUES (5, true, "java", "ripple");
+          |INSERT INTO vertex (id, label_person, property_age, property_name) VALUES (6, true, 35, "peter");
+          |INSERT INTO vertex (id, label_person, property_age, property_name) VALUES (4, true, 32, "josh");
+          |INSERT INTO vertex (id, label_person, property_age, property_name) VALUES (2, true, 27, "vadas");
+          |INSERT INTO vertex (id, label_person, property_age, property_name) VALUES (1, true, 29, "marko");
+          |INSERT INTO vertex (id, label_software, property_lang, property_name) VALUES (3, true, "java", "lop");""".stripMargin
+
     }
   }
 }
