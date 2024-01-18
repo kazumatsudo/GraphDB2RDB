@@ -58,7 +58,7 @@ class ColumnListSpec extends AnyFunSpec with Matchers {
     it("success") {
       columnList1
         .merge(columnList2)
-        .toSqlSentence shouldBe "name VARCHAR(50), id INT(11), address VARCHAR(255), created_at TEXT, updated_at TEXT"
+        .toSqlSentence shouldBe "address VARCHAR(255), created_at TEXT, id INT(11), name VARCHAR(50), updated_at TEXT"
     }
   }
 }

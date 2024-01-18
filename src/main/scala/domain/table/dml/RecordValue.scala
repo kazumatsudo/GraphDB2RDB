@@ -19,7 +19,7 @@ final case class RecordValue(private val value: Map[String, Any])
     extends AnyVal {
 
   def toSqlSentence: (String, String) = {
-    val (keys, values) = value.toSeq.unzip
+    val (keys, values) = value.toSeq.sortBy { case (key, _) => key }.unzip
 
     val valuesForSql = values.map { value =>
       ColumnType.apply(value) match {
