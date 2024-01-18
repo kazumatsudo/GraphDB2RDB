@@ -3,10 +3,12 @@ package infrastructure
 import domain.graph.{GraphEdge, GraphVertex}
 import gremlin.scala.GremlinScala
 import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerFactory
-import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.funspec.AsyncFunSpec
 import org.scalatest.matchers.should.Matchers
 
-class EdgeQuerySpec extends AnyFunSpec with Matchers {
+import scala.concurrent.Future
+
+class EdgeQuerySpec extends AsyncFunSpec with Matchers {
   describe("countAll") {
     it("get the number of all edges") {
       val graph = TinkerFactory.createModern().traversal()
@@ -20,11 +22,9 @@ class EdgeQuerySpec extends AnyFunSpec with Matchers {
       val graph = TinkerFactory.createModern().traversal()
       val edgeQuery = EdgeQuery(graph)
       val edgeList = GremlinScala(graph.E()).toList().map(GraphEdge)
-      edgeQuery.getInEdgeList(
-        GraphVertex(GremlinScala(graph.V()).toList()(1))
-      ) shouldBe Seq(
-        edgeList.head
-      )
+      edgeQuery
+        .getInEdgeList(GraphVertex(GremlinScala(graph.V()).toList()(1)))
+        .map { result => result shouldBe Seq(edgeList.head) }
     }
   }
 
@@ -33,16 +33,20 @@ class EdgeQuerySpec extends AnyFunSpec with Matchers {
       it("start must be positive.") {
         val graph = TinkerFactory.createModern().traversal()
         val edgeQuery = EdgeQuery(graph)
-        intercept[IllegalArgumentException] {
-          edgeQuery.getList(-1, 0)
+        recoverToSucceededIf[IllegalArgumentException] {
+          Future {
+            edgeQuery.getList(-1, 0)
+          }
         }
       }
 
       it("count must be positive.") {
         val graph = TinkerFactory.createModern().traversal()
         val edgeQuery = EdgeQuery(graph)
-        intercept[IllegalArgumentException] {
-          edgeQuery.getList(-1, 0)
+        recoverToSucceededIf[IllegalArgumentException] {
+          Future {
+            edgeQuery.getList(0, -1)
+          }
         }
       }
     }
@@ -61,11 +65,9 @@ class EdgeQuerySpec extends AnyFunSpec with Matchers {
       val graph = TinkerFactory.createModern().traversal()
       val edgeQuery = EdgeQuery(graph)
       val edgeList = GremlinScala(graph.E()).toList().map(GraphEdge)
-      edgeQuery.getOutEdgeList(GraphVertex(graph.V().next())) shouldBe Seq(
-        edgeList(2),
-        edgeList.head,
-        edgeList(1)
-      )
+      edgeQuery.getOutEdgeList(GraphVertex(graph.V().next())).map { result =>
+        result shouldBe Seq(edgeList(2), edgeList.head, edgeList(1))
+      }
     }
   }
 }

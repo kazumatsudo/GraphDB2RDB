@@ -4,7 +4,6 @@ import domain.table.ddl.column.{
   ColumnLength,
   ColumnList,
   ColumnName,
-  ColumnTypeBoolean,
   ColumnTypeDouble,
   ColumnTypeInt,
   ColumnTypeString
@@ -15,6 +14,8 @@ import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerFactory
 import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.matchers.should.Matchers
 
+import scala.collection.parallel.immutable.ParMap
+
 class ByExhaustiveSearchSpec extends AnyFunSpec with Matchers {
   describe("execute") {
     it("success") {
@@ -23,9 +24,9 @@ class ByExhaustiveSearchSpec extends AnyFunSpec with Matchers {
 
       usecase.execute(checkUnique = true) shouldBe (Some(
         TableList(
-          Map(
+          ParMap(
             TableName("vertex_person") -> ColumnList(
-              Map(
+              ParMap(
                 ColumnName("id") -> ColumnTypeInt(ColumnLength(1)),
                 ColumnName("property_age") -> ColumnTypeInt(ColumnLength(2)),
                 ColumnName("property_name") -> ColumnTypeString(
@@ -34,7 +35,7 @@ class ByExhaustiveSearchSpec extends AnyFunSpec with Matchers {
               )
             ),
             TableName("vertex_software") -> ColumnList(
-              Map(
+              ParMap(
                 ColumnName("id") -> ColumnTypeInt(ColumnLength(1)),
                 ColumnName("property_lang") -> ColumnTypeString(
                   ColumnLength(4)
@@ -48,23 +49,35 @@ class ByExhaustiveSearchSpec extends AnyFunSpec with Matchers {
         )
       ), Some(
         RecordList(
-          Map(
+          ParMap(
             RecordKey((TableName("vertex_person"), RecordId(1))) -> RecordValue(
-              Map("id" -> 1, "property_age" -> 29, "property_name" -> "marko")
+              ParMap(
+                "id" -> 1,
+                "property_age" -> 29,
+                "property_name" -> "marko"
+              )
             ),
             RecordKey((TableName("vertex_person"), RecordId(2))) -> RecordValue(
-              Map("id" -> 2, "property_age" -> 27, "property_name" -> "vadas")
+              ParMap(
+                "id" -> 2,
+                "property_age" -> 27,
+                "property_name" -> "vadas"
+              )
             ),
             RecordKey((TableName("vertex_person"), RecordId(4))) -> RecordValue(
-              Map("id" -> 4, "property_age" -> 32, "property_name" -> "josh")
+              ParMap("id" -> 4, "property_age" -> 32, "property_name" -> "josh")
             ),
             RecordKey((TableName("vertex_person"), RecordId(6))) -> RecordValue(
-              Map("id" -> 6, "property_age" -> 35, "property_name" -> "peter")
+              ParMap(
+                "id" -> 6,
+                "property_age" -> 35,
+                "property_name" -> "peter"
+              )
             ),
             RecordKey(
               (TableName("vertex_software"), RecordId(3))
             ) -> RecordValue(
-              Map(
+              ParMap(
                 "id" -> 3,
                 "property_lang" -> "java",
                 "property_name" -> "lop"
@@ -73,7 +86,7 @@ class ByExhaustiveSearchSpec extends AnyFunSpec with Matchers {
             RecordKey(
               (TableName("vertex_software"), RecordId(5))
             ) -> RecordValue(
-              Map(
+              ParMap(
                 "id" -> 5,
                 "property_lang" -> "java",
                 "property_name" -> "ripple"
@@ -83,9 +96,9 @@ class ByExhaustiveSearchSpec extends AnyFunSpec with Matchers {
         )
       ), Some(
         TableList(
-          Map(
+          ParMap(
             TableName("edge_created") -> ColumnList(
-              Map(
+              ParMap(
                 ColumnName("id") -> ColumnTypeInt(ColumnLength(2)),
                 ColumnName("id_in_v") -> ColumnTypeInt(ColumnLength(1)),
                 ColumnName("id_out_v") -> ColumnTypeInt(ColumnLength(1)),
@@ -95,7 +108,7 @@ class ByExhaustiveSearchSpec extends AnyFunSpec with Matchers {
               )
             ),
             TableName("edge_knows") -> ColumnList(
-              Map(
+              ParMap(
                 ColumnName("id") -> ColumnTypeInt(ColumnLength(1)),
                 ColumnName("id_in_v") -> ColumnTypeInt(ColumnLength(1)),
                 ColumnName("id_out_v") -> ColumnTypeInt(ColumnLength(1)),
@@ -108,9 +121,9 @@ class ByExhaustiveSearchSpec extends AnyFunSpec with Matchers {
         )
       ), Some(
         RecordList(
-          Map(
+          ParMap(
             RecordKey((TableName("edge_knows"), RecordId(7))) -> RecordValue(
-              Map(
+              ParMap(
                 "id" -> 7,
                 "id_in_v" -> 2,
                 "id_out_v" -> 1,
@@ -118,7 +131,7 @@ class ByExhaustiveSearchSpec extends AnyFunSpec with Matchers {
               )
             ),
             RecordKey((TableName("edge_knows"), RecordId(8))) -> RecordValue(
-              Map(
+              ParMap(
                 "id" -> 8,
                 "id_in_v" -> 4,
                 "id_out_v" -> 1,
@@ -126,7 +139,7 @@ class ByExhaustiveSearchSpec extends AnyFunSpec with Matchers {
               )
             ),
             RecordKey((TableName("edge_created"), RecordId(9))) -> RecordValue(
-              Map(
+              ParMap(
                 "id" -> 9,
                 "id_in_v" -> 3,
                 "id_out_v" -> 1,
@@ -134,7 +147,7 @@ class ByExhaustiveSearchSpec extends AnyFunSpec with Matchers {
               )
             ),
             RecordKey((TableName("edge_created"), RecordId(10))) -> RecordValue(
-              Map(
+              ParMap(
                 "id" -> 10,
                 "id_in_v" -> 5,
                 "id_out_v" -> 4,
@@ -142,7 +155,7 @@ class ByExhaustiveSearchSpec extends AnyFunSpec with Matchers {
               )
             ),
             RecordKey((TableName("edge_created"), RecordId(11))) -> RecordValue(
-              Map(
+              ParMap(
                 "id" -> 11,
                 "id_in_v" -> 3,
                 "id_out_v" -> 4,
@@ -150,7 +163,7 @@ class ByExhaustiveSearchSpec extends AnyFunSpec with Matchers {
               )
             ),
             RecordKey((TableName("edge_created"), RecordId(12))) -> RecordValue(
-              Map(
+              ParMap(
                 "id" -> 12,
                 "id_in_v" -> 3,
                 "id_out_v" -> 6,

@@ -6,6 +6,8 @@ import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerFactory
 import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.matchers.should.Matchers
 
+import scala.collection.parallel.immutable.ParMap
+
 class TableListSpec extends AnyFunSpec with Matchers {
   describe("merge") {
     it("success") {
@@ -21,16 +23,16 @@ class TableListSpec extends AnyFunSpec with Matchers {
         }
 
       result shouldBe TableList(
-        Map(
+        ParMap(
           TableName("vertex_person") -> ColumnList(
-            Map(
+            ParMap(
               ColumnName("id") -> ColumnTypeInt(ColumnLength(1)),
               ColumnName("property_age") -> ColumnTypeInt(ColumnLength(2)),
               ColumnName("property_name") -> ColumnTypeString(ColumnLength(5))
             )
           ),
           TableName("vertex_software") -> ColumnList(
-            Map(
+            ParMap(
               ColumnName("id") -> ColumnTypeInt(ColumnLength(1)),
               ColumnName("property_lang") -> ColumnTypeString(ColumnLength(4)),
               ColumnName("property_name") -> ColumnTypeString(ColumnLength(6))

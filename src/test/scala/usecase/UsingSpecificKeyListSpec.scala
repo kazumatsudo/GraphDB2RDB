@@ -4,7 +4,6 @@ import domain.table.ddl.column.{
   ColumnLength,
   ColumnList,
   ColumnName,
-  ColumnTypeBoolean,
   ColumnTypeDouble,
   ColumnTypeInt,
   ColumnTypeString
@@ -14,6 +13,8 @@ import domain.table.dml.{RecordId, RecordKey, RecordList, RecordValue}
 import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerFactory
 import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.matchers.should.Matchers
+
+import scala.collection.parallel.immutable.ParMap
 
 class UsingSpecificKeyListSpec extends AnyFunSpec with Matchers {
   describe("execute") {
@@ -32,9 +33,9 @@ class UsingSpecificKeyListSpec extends AnyFunSpec with Matchers {
 
       usecase.execute(checkUnique = true) shouldBe (Some(
         TableList(
-          Map(
+          ParMap(
             TableName("vertex_person") -> ColumnList(
-              Map(
+              ParMap(
                 ColumnName("id") -> ColumnTypeInt(ColumnLength(1)),
                 ColumnName("property_age") -> ColumnTypeInt(ColumnLength(2)),
                 ColumnName("property_name") -> ColumnTypeString(
@@ -46,17 +47,21 @@ class UsingSpecificKeyListSpec extends AnyFunSpec with Matchers {
         )
       ), Some(
         RecordList(
-          Map(
+          ParMap(
             RecordKey((TableName("vertex_person"), RecordId(1))) -> RecordValue(
-              Map("id" -> 1, "property_age" -> 29, "property_name" -> "marko")
+              ParMap(
+                "id" -> 1,
+                "property_age" -> 29,
+                "property_name" -> "marko"
+              )
             )
           )
         )
       ), Some(
         TableList(
-          Map(
+          ParMap(
             TableName("edge_created") -> ColumnList(
-              Map(
+              ParMap(
                 ColumnName("id") -> ColumnTypeInt(ColumnLength(1)),
                 ColumnName("id_in_v") -> ColumnTypeInt(ColumnLength(1)),
                 ColumnName("id_out_v") -> ColumnTypeInt(ColumnLength(1)),
@@ -66,7 +71,7 @@ class UsingSpecificKeyListSpec extends AnyFunSpec with Matchers {
               )
             ),
             TableName("edge_knows") -> ColumnList(
-              Map(
+              ParMap(
                 ColumnName("id") -> ColumnTypeInt(ColumnLength(1)),
                 ColumnName("id_in_v") -> ColumnTypeInt(ColumnLength(1)),
                 ColumnName("id_out_v") -> ColumnTypeInt(ColumnLength(1)),
@@ -79,9 +84,9 @@ class UsingSpecificKeyListSpec extends AnyFunSpec with Matchers {
         )
       ), Some(
         RecordList(
-          Map(
+          ParMap(
             RecordKey((TableName("edge_knows"), RecordId(7))) -> RecordValue(
-              Map(
+              ParMap(
                 "id" -> 7,
                 "id_in_v" -> 2,
                 "id_out_v" -> 1,
@@ -89,7 +94,7 @@ class UsingSpecificKeyListSpec extends AnyFunSpec with Matchers {
               )
             ),
             RecordKey((TableName("edge_knows"), RecordId(8))) -> RecordValue(
-              Map(
+              ParMap(
                 "id" -> 8,
                 "id_in_v" -> 4,
                 "id_out_v" -> 1,
@@ -97,7 +102,7 @@ class UsingSpecificKeyListSpec extends AnyFunSpec with Matchers {
               )
             ),
             RecordKey((TableName("edge_created"), RecordId(9))) -> RecordValue(
-              Map(
+              ParMap(
                 "id" -> 9,
                 "id_in_v" -> 3,
                 "id_out_v" -> 1,

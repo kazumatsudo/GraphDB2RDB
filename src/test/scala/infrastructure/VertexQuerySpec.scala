@@ -3,10 +3,12 @@ package infrastructure
 import domain.graph.GraphVertex
 import gremlin.scala.GremlinScala
 import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerFactory
-import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.funspec.AsyncFunSpec
 import org.scalatest.matchers.should.Matchers
 
-class VertexQuerySpec extends AnyFunSpec with Matchers {
+import scala.concurrent.Future
+
+class VertexQuerySpec extends AsyncFunSpec with Matchers {
   describe("countAll") {
     it("get the number of all vertices") {
       val graph = TinkerFactory.createModern().traversal()
@@ -20,16 +22,20 @@ class VertexQuerySpec extends AnyFunSpec with Matchers {
       it("start must be positive.") {
         val graph = TinkerFactory.createModern().traversal()
         val vertexQuery = VertexQuery(graph)
-        intercept[IllegalArgumentException] {
-          vertexQuery.getList(-1, 0)
+        recoverToSucceededIf[IllegalArgumentException] {
+          Future {
+            vertexQuery.getList(-1, 0)
+          }
         }
       }
 
       it("count must be positive.") {
         val graph = TinkerFactory.createModern().traversal()
         val vertexQuery = VertexQuery(graph)
-        intercept[IllegalArgumentException] {
-          vertexQuery.getList(0, -1)
+        recoverToSucceededIf[IllegalArgumentException] {
+          Future {
+            vertexQuery.getList(0, -1)
+          }
         }
       }
     }
@@ -48,7 +54,7 @@ class VertexQuerySpec extends AnyFunSpec with Matchers {
       it("label must not be empty.") {
         val graph = TinkerFactory.createModern().traversal()
         val vertexQuery = VertexQuery(graph)
-        intercept[IllegalArgumentException] {
+        recoverToSucceededIf[IllegalArgumentException] {
           vertexQuery.getListByPropertyKey("", "key", "value")
         }
       }
@@ -56,7 +62,7 @@ class VertexQuerySpec extends AnyFunSpec with Matchers {
       it("key must not be empty.") {
         val graph = TinkerFactory.createModern().traversal()
         val vertexQuery = VertexQuery(graph)
-        intercept[IllegalArgumentException] {
+        recoverToSucceededIf[IllegalArgumentException] {
           vertexQuery.getListByPropertyKey("label", "", "value")
         }
       }
@@ -65,9 +71,10 @@ class VertexQuerySpec extends AnyFunSpec with Matchers {
     it("get vertices") {
       val graph = TinkerFactory.createModern().traversal()
       val vertexQuery = VertexQuery(graph)
-      vertexQuery.getListByPropertyKey("person", "name", "marko") shouldBe Seq(
-        GraphVertex(GremlinScala(graph.V()).head())
-      )
+      vertexQuery.getListByPropertyKey("person", "name", "marko").map {
+        result =>
+          result shouldBe Seq(GraphVertex(GremlinScala(graph.V()).head()))
+      }
     }
   }
 }

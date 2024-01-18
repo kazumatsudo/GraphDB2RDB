@@ -6,6 +6,8 @@ import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerFactory
 import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.matchers.should.Matchers
 
+import scala.collection.parallel.immutable.ParMap
+
 class RecordListSpec extends AnyFunSpec with Matchers {
   describe("merge") {
     describe("success") {
@@ -13,10 +15,10 @@ class RecordListSpec extends AnyFunSpec with Matchers {
         val tableName = TableName("test_table")
         val recordId = RecordId(1)
         val recordKey = RecordKey(tableName, recordId)
-        val recordValue = RecordValue(Map(("boolean", false)))
-        val recordList = RecordList(Map((recordKey, recordValue)))
+        val recordValue = RecordValue(ParMap(("boolean", false)))
+        val recordList = RecordList(ParMap((recordKey, recordValue)))
 
-        RecordList(Map.empty)
+        RecordList(ParMap.empty)
           .merge(recordList, checkUnique = true) shouldBe recordList
       }
 
@@ -24,11 +26,11 @@ class RecordListSpec extends AnyFunSpec with Matchers {
         val tableName = TableName("test_table")
         val recordId = RecordId(1)
         val recordKey = RecordKey(tableName, recordId)
-        val recordValue = RecordValue(Map(("boolean", false)))
-        val recordList = RecordList(Map((recordKey, recordValue)))
+        val recordValue = RecordValue(ParMap(("boolean", false)))
+        val recordList = RecordList(ParMap((recordKey, recordValue)))
 
         recordList.merge(
-          RecordList(Map.empty),
+          RecordList(ParMap.empty),
           checkUnique = true
         ) shouldBe recordList
       }
@@ -37,8 +39,8 @@ class RecordListSpec extends AnyFunSpec with Matchers {
         val tableName = TableName("test_table")
         val recordId = RecordId(1)
         val recordKey = RecordKey(tableName, recordId)
-        val recordValue = RecordValue(Map(("boolean", false)))
-        val recordList = RecordList(Map((recordKey, recordValue)))
+        val recordValue = RecordValue(ParMap(("boolean", false)))
+        val recordList = RecordList(ParMap((recordKey, recordValue)))
 
         recordList.merge(recordList, checkUnique = true) shouldBe recordList
       }
@@ -48,10 +50,10 @@ class RecordListSpec extends AnyFunSpec with Matchers {
         val recordId = RecordId(1)
         val recordKey = RecordKey(tableName, recordId)
 
-        val recordValue1 = RecordValue(Map(("boolean", false)))
-        val recordList1 = RecordList(Map((recordKey, recordValue1)))
-        val recordValue2 = RecordValue(Map(("int", 1)))
-        val recordList2 = RecordList(Map((recordKey, recordValue2)))
+        val recordValue1 = RecordValue(ParMap(("boolean", false)))
+        val recordList1 = RecordList(ParMap((recordKey, recordValue1)))
+        val recordValue2 = RecordValue(ParMap(("int", 1)))
+        val recordList2 = RecordList(ParMap((recordKey, recordValue2)))
 
         recordList1.merge(recordList2, checkUnique = false) shouldBe recordList2
       }
@@ -63,10 +65,10 @@ class RecordListSpec extends AnyFunSpec with Matchers {
         val recordId = RecordId(1)
         val recordKey = RecordKey(tableName, recordId)
 
-        val recordValue1 = RecordValue(Map(("boolean", false)))
-        val recordList1 = RecordList(Map((recordKey, recordValue1)))
-        val recordValue2 = RecordValue(Map(("int", 1)))
-        val recordList2 = RecordList(Map((recordKey, recordValue2)))
+        val recordValue1 = RecordValue(ParMap(("boolean", false)))
+        val recordList1 = RecordList(ParMap((recordKey, recordValue1)))
+        val recordValue2 = RecordValue(ParMap(("int", 1)))
+        val recordList2 = RecordList(ParMap((recordKey, recordValue2)))
 
         intercept[IllegalArgumentException] {
           recordList1.merge(recordList2, checkUnique = true)
@@ -89,12 +91,12 @@ class RecordListSpec extends AnyFunSpec with Matchers {
         }
 
       vertexAnalyzedResult.toSqlSentence shouldBe
-        """INSERT INTO vertex_software (id, property_lang, property_name) VALUES (5, "java", "ripple");
-          |INSERT INTO vertex_person (id, property_age, property_name) VALUES (1, 29, "marko");
-          |INSERT INTO vertex_software (id, property_lang, property_name) VALUES (3, "java", "lop");
-          |INSERT INTO vertex_person (id, property_age, property_name) VALUES (2, 27, "vadas");
+        """INSERT INTO vertex_person (id, property_age, property_name) VALUES (4, 32, "josh");
           |INSERT INTO vertex_person (id, property_age, property_name) VALUES (6, 35, "peter");
-          |INSERT INTO vertex_person (id, property_age, property_name) VALUES (4, 32, "josh");""".stripMargin
+          |INSERT INTO vertex_person (id, property_age, property_name) VALUES (2, 27, "vadas");
+          |INSERT INTO vertex_software (id, property_lang, property_name) VALUES (3, "java", "lop");
+          |INSERT INTO vertex_person (id, property_age, property_name) VALUES (1, 29, "marko");
+          |INSERT INTO vertex_software (id, property_lang, property_name) VALUES (5, "java", "ripple");""".stripMargin
 
     }
   }

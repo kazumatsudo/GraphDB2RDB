@@ -4,7 +4,6 @@ import domain.table.ddl.column.{
   ColumnLength,
   ColumnList,
   ColumnName,
-  ColumnTypeBoolean,
   ColumnTypeInt,
   ColumnTypeString
 }
@@ -15,6 +14,8 @@ import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerFactory
 import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.matchers.should.Matchers
 
+import scala.collection.parallel.immutable.ParMap
+
 class GraphVertexSpec extends AnyFunSpec with Matchers {
   describe("toDdl") {
     it("get Database Column Information") {
@@ -23,9 +24,9 @@ class GraphVertexSpec extends AnyFunSpec with Matchers {
       val vertex = vertexQuery.getList(0, 1).head
 
       vertex.toDdl shouldBe TableList(
-        Map(
+        ParMap(
           TableName("vertex_person") -> ColumnList(
-            Map(
+            ParMap(
               ColumnName("id") -> ColumnTypeInt(ColumnLength(1)),
               ColumnName("property_age") -> ColumnTypeInt(ColumnLength(2)),
               ColumnName("property_name") -> ColumnTypeString(ColumnLength(5))
@@ -43,9 +44,9 @@ class GraphVertexSpec extends AnyFunSpec with Matchers {
       val vertex = vertexQuery.getList(0, 1).head
 
       vertex.toDml shouldBe RecordList(
-        Map(
+        ParMap(
           RecordKey((TableName("vertex_person"), RecordId(1))) -> RecordValue(
-            Map(
+            ParMap(
               "id" -> 1,
               "property_name" -> "marko",
               "property_age" -> 29
@@ -61,11 +62,11 @@ class GraphVertexSpec extends AnyFunSpec with Matchers {
 
       val graphVertex = GraphVertex(vertex1)
       graphVertex.toDml shouldBe RecordList(
-        Map(
+        ParMap(
           RecordKey(
             (TableName("vertex_testVertex1"), RecordId(vertex1.id()))
           ) -> RecordValue(
-            Map("id" -> 0)
+            ParMap("id" -> 0)
           )
         )
       )

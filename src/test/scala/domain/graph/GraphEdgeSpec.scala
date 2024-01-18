@@ -4,7 +4,6 @@ import domain.table.ddl.column.{
   ColumnLength,
   ColumnList,
   ColumnName,
-  ColumnTypeBoolean,
   ColumnTypeDouble,
   ColumnTypeInt
 }
@@ -16,6 +15,8 @@ import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerFactory
 import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.matchers.should.Matchers
 
+import scala.collection.parallel.immutable.ParMap
+
 class GraphEdgeSpec extends AnyFunSpec with Matchers {
   describe("toDdl") {
     it("get Database Column Information") {
@@ -24,9 +25,9 @@ class GraphEdgeSpec extends AnyFunSpec with Matchers {
       val edge = edgeQuery.getList(0, 1).head
 
       edge.toDdl shouldBe TableList(
-        Map(
+        ParMap(
           TableName("edge_knows") -> ColumnList(
-            Map(
+            ParMap(
               ColumnName("id") -> ColumnTypeInt(ColumnLength(1)),
               ColumnName("id_in_v") -> ColumnTypeInt(ColumnLength(1)),
               ColumnName("id_out_v") -> ColumnTypeInt(ColumnLength(1)),
@@ -45,9 +46,9 @@ class GraphEdgeSpec extends AnyFunSpec with Matchers {
       val edge = edgeQuery.getList(0, 1).head
 
       edge.toDml shouldBe RecordList(
-        Map(
+        ParMap(
           RecordKey((TableName("edge_knows"), RecordId(7))) -> RecordValue(
-            Map(
+            ParMap(
               "id" -> 7,
               "id_in_v" -> 2,
               "id_out_v" -> 1,
@@ -66,9 +67,9 @@ class GraphEdgeSpec extends AnyFunSpec with Matchers {
 
       val graphEdge = GraphEdge(edge)
       graphEdge.toDml shouldBe RecordList(
-        Map(
+        ParMap(
           RecordKey((TableName("edge_testEdge"), RecordId(14))) -> RecordValue(
-            Map("id" -> 14, "id_in_v" -> 13, "id_out_v" -> 0)
+            ParMap("id" -> 14, "id_in_v" -> 13, "id_out_v" -> 0)
           )
         )
       )

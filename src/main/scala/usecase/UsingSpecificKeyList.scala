@@ -6,6 +6,7 @@ import infrastructure.{EdgeQuery, VertexQuery}
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource
 
 import java.util.concurrent.Executors.newFixedThreadPool
+import scala.collection.parallel.immutable.ParHashMap
 import scala.concurrent.duration.Duration
 import scala.concurrent.{Await, ExecutionContext, Future}
 
@@ -53,8 +54,12 @@ final case class UsingSpecificKeyList(
     val vertexQuery = VertexQuery(g)
     val edgeQuery = EdgeQuery(g)
 
-    def reduce(value: Seq[(TableList, RecordList)]): (TableList, RecordList) = {
-      value.reduce[(TableList, RecordList)] {
+    def foldLeft(
+        value: Seq[(TableList, RecordList)]
+    ): (TableList, RecordList) = {
+      value.foldLeft(
+        (TableList(ParHashMap.empty), RecordList(ParHashMap.empty))
+      ) {
         case (
               (ddlAccumlator, dmlAccumlator),
               (ddlCurrentValue, dmlCurrentValue)
@@ -86,7 +91,7 @@ final case class UsingSpecificKeyList(
                     edgeQuery
                       .getInEdgeList(vertex)
                       .map(edgeList =>
-                        reduce(edgeList.map(edge => (edge.toDdl, edge.toDml)))
+                        foldLeft(edgeList.map(edge => (edge.toDdl, edge.toDml)))
                       )
                   }
                 }
@@ -95,21 +100,21 @@ final case class UsingSpecificKeyList(
                     edgeQuery
                       .getOutEdgeList(vertex)
                       .map(edgeList =>
-                        reduce(edgeList.map(edge => (edge.toDdl, edge.toDml)))
+                        foldLeft(edgeList.map(edge => (edge.toDdl, edge.toDml)))
                       )
                   }
                 }
               } yield {
                 val verticesSql =
-                  reduce(vertices.map(vertex => (vertex.toDdl, vertex.toDml)))
-                val edgesSql = reduce(inEdgesSql ++ outEdgesSql)
+                  foldLeft(vertices.map(vertex => (vertex.toDdl, vertex.toDml)))
+                val edgesSql = foldLeft(inEdgesSql ++ outEdgesSql)
                 (verticesSql, edgesSql)
               }
             }
           }
           .map { seq =>
             val (verticesSql, edgesSql) = seq.unzip
-            (reduce(verticesSql), reduce(edgesSql))
+            (foldLeft(verticesSql), foldLeft(edgesSql))
           },
         Duration.Inf
       )
