@@ -166,7 +166,7 @@ class ByExhaustiveSearchSpec extends AnyFunSpec with Matchers {
                 "label_created" -> true,
                 "property_weight" -> 0.2
               )
-            ),
+            )
           )
         )
       ))
