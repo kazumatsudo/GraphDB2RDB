@@ -15,8 +15,6 @@ case class GraphEdge(private val value: Edge) {
   private val tableName = config.getString("table_name_edge")
   private val columnNamePrefixProperty =
     config.getString("column_name_prefix_property")
-  private val columnNamePrefixLabel =
-    config.getString("column_name_prefix_label")
 
   private val id = value.id()
 
