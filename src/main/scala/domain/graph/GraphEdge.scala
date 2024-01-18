@@ -12,8 +12,7 @@ case class GraphEdge(private val value: Edge) {
 
   private val config = ConfigFactory.load()
 
-  // TODO: Set a more detailed table name
-  private val tableName = TableName(config.getString("table_name_edge"))
+  private val tableName = config.getString("table_name_edge")
   private val columnNamePrefixProperty =
     config.getString("column_name_prefix_property")
   private val columnNamePrefixLabel =
@@ -54,15 +53,10 @@ case class GraphEdge(private val value: Edge) {
           )
         }
         .toMap
-      val labelColumn = Map(
-        ColumnName(
-          s"$columnNamePrefixLabel${value.label()}"
-        ) -> ColumnType.apply(true)
-      )
 
       Map(
-        tableName -> ColumnList(
-          idColumn ++ inVColumn ++ outVColumn ++ propertyColumn ++ labelColumn
+        TableName(s"${tableName}_${value.label()}") -> ColumnList(
+          idColumn ++ inVColumn ++ outVColumn ++ propertyColumn
         )
       )
     }
@@ -77,8 +71,6 @@ case class GraphEdge(private val value: Edge) {
       }
       .toMap
 
-    val labelColumn = s"$columnNamePrefixLabel${value.label()}"
-
     val recordValue = Map(
       (config.getString("column_name_edge_id"), value.id())
     ) ++ Map(
@@ -88,10 +80,15 @@ case class GraphEdge(private val value: Edge) {
         config.getString("column_name_edge_out_v_id"),
         value.outVertex().id()
       )
-    ) ++ propertyColumnList ++ Map((labelColumn, true))
+    ) ++ propertyColumnList
 
     RecordList(
-      Map((RecordKey(tableName, RecordId(id)), RecordValue(recordValue)))
+      Map(
+        (
+          RecordKey(TableName(s"${tableName}_${value.label()}"), RecordId(id)),
+          RecordValue(recordValue)
+        )
+      )
     )
   }
 }
