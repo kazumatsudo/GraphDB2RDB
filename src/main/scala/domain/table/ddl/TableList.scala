@@ -2,7 +2,9 @@ package domain.table.ddl
 
 import domain.table.ddl.column.ColumnList
 
-case class TableList(private val value: Map[TableName, ColumnList])
+import scala.collection.parallel.immutable.ParMap
+
+case class TableList(private val value: ParMap[TableName, ColumnList])
     extends AnyVal {
 
   /** merges tableList in two Tables into one

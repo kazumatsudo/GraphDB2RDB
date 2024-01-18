@@ -15,11 +15,13 @@ import domain.table.ddl.column.{
   ColumnTypeUnknown
 }
 
-final case class RecordValue(private val value: Map[String, Any])
+import scala.collection.parallel.immutable.ParMap
+
+final case class RecordValue(private val value: ParMap[String, Any])
     extends AnyVal {
 
   def toSqlSentence: (String, String) = {
-    val (keys, values) = value.toSeq.sortBy { case (key, _) => key }.unzip
+    val (keys, values) = value.toSeq.seq.sortBy { case (key, _) => key }.unzip
 
     val valuesForSql = values.map { value =>
       ColumnType.apply(value) match {

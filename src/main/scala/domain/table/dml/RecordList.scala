@@ -1,6 +1,8 @@
 package domain.table.dml
 
-final case class RecordList(private val value: Map[RecordKey, RecordValue])
+import scala.collection.parallel.immutable.ParMap
+
+final case class RecordList(private val value: ParMap[RecordKey, RecordValue])
     extends {
 
   /** merges recordList in two Records into one

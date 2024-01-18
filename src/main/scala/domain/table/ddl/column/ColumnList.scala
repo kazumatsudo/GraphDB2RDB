@@ -1,6 +1,8 @@
 package domain.table.ddl.column
 
-case class ColumnList(private val value: Map[ColumnName, ColumnType])
+import scala.collection.parallel.immutable.ParMap
+
+case class ColumnList(private val value: ParMap[ColumnName, ColumnType])
     extends AnyVal {
 
   /** merges columnList in two columns into one
@@ -25,11 +27,12 @@ case class ColumnList(private val value: Map[ColumnName, ColumnType])
       }
     }
 
-  def toSqlSentence: String =
-    value.toSeq
+  def toSqlSentence: String = {
+    value.toSeq.seq
       .sortBy { case (columnName, _) => columnName.toSqlSentence }
       .map { case (columnName, columnType) =>
         s"${columnName.toSqlSentence} ${columnType.toSqlSentence}"
       }
       .mkString(", ")
+  }
 }

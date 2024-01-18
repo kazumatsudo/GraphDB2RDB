@@ -6,6 +6,9 @@ import domain.table.ddl.{TableList, TableName}
 import domain.table.dml.{RecordId, RecordKey, RecordList, RecordValue}
 import gremlin.scala._
 
+import scala.collection.parallel.CollectionConverters.ImmutableMapIsParallelizable
+import scala.collection.parallel.immutable.ParMap
+
 case class GraphVertex(private val value: Vertex) {
 
   private val config = ConfigFactory.load()
@@ -25,7 +28,7 @@ case class GraphVertex(private val value: Vertex) {
     */
   def toDdl: TableList =
     TableList {
-      val idColumn = Map(
+      val idColumn = ParMap(
         ColumnName(config.getString("column_name_vertex_id")) -> ColumnType
           .apply(value.id())
       )
@@ -33,20 +36,22 @@ case class GraphVertex(private val value: Vertex) {
         ColumnName(s"$columnNamePrefixProperty$key") -> ColumnType.apply(
           value
         )
-      }
-      Map(tableName -> ColumnList(idColumn ++ propertyColumn))
+      }.par
+      ParMap(tableName -> ColumnList(idColumn ++ propertyColumn))
     }
 
   def toDml: RecordList = {
     val propertyColumnList = value.valueMap.map { case (columnName, value) =>
       (s"$columnNamePrefixProperty$columnName", value)
-    }
+    }.par
 
     val recordValue =
-      Map((config.getString("column_name_vertex_id"), id)) ++ propertyColumnList
+      ParMap(
+        (config.getString("column_name_vertex_id"), id)
+      ) ++ propertyColumnList
 
     RecordList(
-      Map(RecordKey(tableName, RecordId(id)) -> RecordValue(recordValue))
+      ParMap(RecordKey(tableName, RecordId(id)) -> RecordValue(recordValue))
     )
   }
 }

@@ -6,6 +6,8 @@ import domain.table.ddl.{TableList, TableName}
 import domain.table.dml.{RecordId, RecordKey, RecordList, RecordValue}
 import gremlin.scala.Edge
 
+import scala.collection.parallel.CollectionConverters.ImmutableMapIsParallelizable
+import scala.collection.parallel.immutable.ParMap
 import scala.jdk.CollectionConverters.SetHasAsScala
 
 case class GraphEdge(private val value: Edge) {
@@ -27,17 +29,17 @@ case class GraphEdge(private val value: Edge) {
     */
   def toDdl: TableList =
     TableList {
-      val idColumn = Map(
+      val idColumn = ParMap(
         ColumnName(config.getString("column_name_edge_id")) -> ColumnType
           .apply(id)
       )
       val inVColumn =
-        Map(
+        ParMap(
           ColumnName(config.getString("column_name_edge_in_v_id")) -> ColumnType
             .apply(value.inVertex().id())
         )
       val outVColumn =
-        Map(
+        ParMap(
           ColumnName(
             config.getString("column_name_edge_out_v_id")
           ) -> ColumnType.apply(value.outVertex().id())
@@ -53,8 +55,9 @@ case class GraphEdge(private val value: Edge) {
           )
         }
         .toMap
+        .par
 
-      Map(
+      ParMap(
         tableName -> ColumnList(
           idColumn ++ inVColumn ++ outVColumn ++ propertyColumn
         )
@@ -70,12 +73,13 @@ case class GraphEdge(private val value: Edge) {
         (s"$columnNamePrefixProperty$key", value.value[Any](key))
       }
       .toMap
+      .par
 
-    val recordValue = Map(
+    val recordValue = ParMap(
       (config.getString("column_name_edge_id"), value.id())
-    ) ++ Map(
+    ) ++ ParMap(
       (config.getString("column_name_edge_in_v_id"), value.inVertex().id())
-    ) ++ Map(
+    ) ++ ParMap(
       (
         config.getString("column_name_edge_out_v_id"),
         value.outVertex().id()
@@ -83,7 +87,7 @@ case class GraphEdge(private val value: Edge) {
     ) ++ propertyColumnList
 
     RecordList(
-      Map(RecordKey(tableName, RecordId(id)) -> RecordValue(recordValue))
+      ParMap(RecordKey(tableName, RecordId(id)) -> RecordValue(recordValue))
     )
   }
 }
