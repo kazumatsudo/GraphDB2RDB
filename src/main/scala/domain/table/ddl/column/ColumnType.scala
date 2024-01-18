@@ -1,5 +1,7 @@
 package domain.table.ddl.column
 
+import org.janusgraph.graphdb.relations.RelationIdentifier
+
 import java.util.UUID
 import scala.annotation.tailrec
 
@@ -61,6 +63,7 @@ case object ColumnTypeUnknown extends ColumnType {
 
 object ColumnType {
 
+  @tailrec
   def apply(value: Any): ColumnType = value match {
     case _: Boolean => ColumnTypeBoolean
     case valueByte: Byte =>
@@ -82,6 +85,8 @@ object ColumnType {
     case _: Char => ColumnTypeCharacter(ColumnLength(1))
     case valueString: String =>
       ColumnTypeString(ColumnLength(valueString.length))
+    case valueRelationIdentifier: RelationIdentifier =>
+      apply(valueRelationIdentifier.toString)
     case _ => ColumnTypeUnknown // TODO: classify the type in detail
   }
 
