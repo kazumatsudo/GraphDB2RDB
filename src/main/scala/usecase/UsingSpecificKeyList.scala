@@ -50,62 +50,62 @@ final case class UsingSpecificKeyList(
     val vertexQuery = VertexQuery(g)
     val edgeQuery = EdgeQuery(g)
 
+    def r(
+        value: Seq[(TableList, RecordList, TableList, RecordList)]
+    ): (TableList, RecordList, TableList, RecordList) = {
+      value.reduce[(TableList, RecordList, TableList, RecordList)] {
+        case (
+              (
+                vertexDdlAccumlator,
+                vertexDmlAccumlator,
+                edgeDdlAccumlator,
+                edgeDmlAccumlator
+              ),
+              (
+                vertexDdlCurrentValue,
+                vertexDmlCurrentValue,
+                edgeDdlCurrentValue,
+                edgeDmlCurrentValue
+              )
+            ) =>
+          (
+            vertexDdlAccumlator.merge(vertexDdlCurrentValue),
+            vertexDmlAccumlator
+              .merge(vertexDmlCurrentValue, checkUnique),
+            edgeDdlAccumlator.merge(edgeDdlCurrentValue),
+            edgeDmlAccumlator.merge(edgeDmlCurrentValue, checkUnique)
+          )
+      }
+    }
+
     val (vertexTableList, vertexRecordList, edgeTableList, edgeRecordList) =
       Await.result(
         Future
           .sequence {
-            for {
-              label <- value.value
-              keyValue <- label.value
-              value <- keyValue.value
-            } yield for {
-              vertices <- vertexQuery.getListByPropertyKey(
-                label.label,
-                keyValue.key,
-                value
-              )
-              inEdgesSeq <- Future.sequence(
-                vertices.map(edgeQuery.getInEdgeList)
-              )
-              outEdgesSeq <- Future.sequence(
-                vertices.map(edgeQuery.getOutEdgeList)
-              )
-            } yield for {
-              vertex <- vertices
-              edge <- inEdgesSeq.flatten ++ outEdgesSeq.flatten
-            } yield (vertex.toDdl, vertex.toDml, edge.toDdl, edge.toDml)
+            {
+              for {
+                label <- value.value
+                keyValue <- label.value
+                value <- keyValue.value
+              } yield for {
+                vertices <- vertexQuery.getListByPropertyKey(
+                  label.label,
+                  keyValue.key,
+                  value
+                )
+                inEdgesSeq <- Future.sequence(
+                  vertices.map(edgeQuery.getInEdgeList)
+                )
+                outEdgesSeq <- Future.sequence(
+                  vertices.map(edgeQuery.getOutEdgeList)
+                )
+              } yield for {
+                vertex <- vertices
+                edge <- inEdgesSeq.flatten ++ outEdgesSeq.flatten
+              } yield (vertex.toDdl, vertex.toDml, edge.toDdl, edge.toDml)
+            }.map(_.map(r))
           }
-          .map { resultSeq =>
-            def r(
-                value: Seq[(TableList, RecordList, TableList, RecordList)]
-            ): (TableList, RecordList, TableList, RecordList) = {
-              value.reduce[(TableList, RecordList, TableList, RecordList)] {
-                case (
-                      (
-                        vertexDdlAccumlator,
-                        vertexDmlAccumlator,
-                        edgeDdlAccumlator,
-                        edgeDmlAccumlator
-                      ),
-                      (
-                        vertexDdlCurrentValue,
-                        vertexDmlCurrentValue,
-                        edgeDdlCurrentValue,
-                        edgeDmlCurrentValue
-                      )
-                    ) =>
-                  (
-                    vertexDdlAccumlator.merge(vertexDdlCurrentValue),
-                    vertexDmlAccumlator
-                      .merge(vertexDmlCurrentValue, checkUnique),
-                    edgeDdlAccumlator.merge(edgeDdlCurrentValue),
-                    edgeDmlAccumlator.merge(edgeDmlCurrentValue, checkUnique)
-                  )
-              }
-            }
-
-            r(resultSeq.map(r))
-          },
+          .map(r),
         Duration.Inf
       )
 
