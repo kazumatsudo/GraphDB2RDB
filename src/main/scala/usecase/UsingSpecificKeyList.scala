@@ -41,7 +41,7 @@ final case class UsingSpecificKeyList(
   )(implicit ec: ExecutionContext): Future[UsecaseResponse] = {
 
     // 1. get vertex by specific key
-    val vertexQuery = VertexQuery(g)
+    val vertexQuery = VertexQuery(g, config)
     val edgeQuery = EdgeQuery(g, config)
 
     Future
@@ -89,7 +89,7 @@ final case class UsingSpecificKeyList(
               )
             }
             val edgesSql =
-              foldLeft((inEdgesSql ++ outEdgesSql), checkUnique)
+              foldLeft(inEdgesSql ++ outEdgesSql, checkUnique)
             (verticesSql, edgesSql)
           }
         }

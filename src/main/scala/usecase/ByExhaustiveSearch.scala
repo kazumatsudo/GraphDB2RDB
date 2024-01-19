@@ -28,7 +28,7 @@ final case class ByExhaustiveSearch(
   )(implicit ec: ExecutionContext): Future[UsecaseResponse] = {
 
     // 1. generate vertex SQL
-    val vertexQuery = VertexQuery(g)
+    val vertexQuery = VertexQuery(g, config)
     val edgeQuery = EdgeQuery(g, config)
 
     for {

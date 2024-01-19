@@ -16,13 +16,13 @@ final case class Sql(
 )
 final case class TableName(
     edge: String,
-    private val vertex: String
+    vertex: String
 )
 final case class ColumnName(
     edgeId: String,
     edgeInVId: String,
     edgeOutVId: String,
-    private val vertexId: String,
+    vertexId: String,
     prefixProperty: String
 )
 final case class Config(

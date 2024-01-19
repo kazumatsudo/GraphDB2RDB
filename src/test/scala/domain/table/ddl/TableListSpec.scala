@@ -5,6 +5,7 @@ import infrastructure.VertexQuery
 import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerFactory
 import org.scalatest.funspec.AsyncFunSpec
 import org.scalatest.matchers.should.Matchers
+import utils.Config
 
 import scala.collection.parallel.immutable.ParMap
 
@@ -13,7 +14,7 @@ class TableListSpec extends AsyncFunSpec with Matchers {
     it("success") {
       // TODO: not use Vertex
       val graph = TinkerFactory.createModern().traversal()
-      val vertexQuery = VertexQuery(graph)
+      val vertexQuery = VertexQuery(graph, Config.default)
       for {
         count <- vertexQuery.countAll
         vertex <- vertexQuery.getList(0, count.toInt)
@@ -46,7 +47,7 @@ class TableListSpec extends AsyncFunSpec with Matchers {
     it("success") {
       // TODO: not use Vertex
       val graph = TinkerFactory.createModern().traversal()
-      val vertexQuery = VertexQuery(graph)
+      val vertexQuery = VertexQuery(graph, Config.default)
       for {
         count <- vertexQuery.countAll
         vertex <- vertexQuery.getList(0, count.toInt)

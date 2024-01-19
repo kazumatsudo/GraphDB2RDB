@@ -1,18 +1,13 @@
 package domain.graph
 
-import domain.table.ddl.column.{
-  ColumnLength,
-  ColumnList,
-  ColumnName,
-  ColumnTypeInt,
-  ColumnTypeString
-}
+import domain.table.ddl.column.{ColumnLength, ColumnList, ColumnName, ColumnTypeInt, ColumnTypeString}
 import domain.table.ddl.{TableList, TableName}
 import domain.table.dml.{RecordId, RecordKey, RecordList, RecordValue}
 import infrastructure.VertexQuery
 import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerFactory
 import org.scalatest.funspec.AsyncFunSpec
 import org.scalatest.matchers.should.Matchers
+import utils.Config
 
 import scala.collection.parallel.immutable.ParMap
 
@@ -20,7 +15,7 @@ class GraphVertexSpec extends AsyncFunSpec with Matchers {
   describe("toDdl") {
     it("get Database Column Information") {
       val graph = TinkerFactory.createModern().traversal()
-      val vertexQuery = VertexQuery(graph)
+      val vertexQuery = VertexQuery(graph, Config.default)
       val vertex = vertexQuery.getList(0, 1)
 
       vertex.map { result =>
@@ -42,7 +37,7 @@ class GraphVertexSpec extends AsyncFunSpec with Matchers {
   describe("toDml") {
     it("get SQL Sentence") {
       val graph = TinkerFactory.createModern().traversal()
-      val vertexQuery = VertexQuery(graph)
+      val vertexQuery = VertexQuery(graph, Config.default)
       val vertex = vertexQuery.getList(0, 1)
 
       vertex.map { result =>
@@ -64,7 +59,7 @@ class GraphVertexSpec extends AsyncFunSpec with Matchers {
       val graph = TinkerFactory.createModern().traversal()
       val vertex1 = graph.addV("testVertex1").next()
 
-      val graphVertex = GraphVertex(vertex1)
+      val graphVertex = GraphVertex(vertex1, Config.default)
       graphVertex.toDml shouldBe RecordList(
         ParMap(
           RecordKey(

@@ -4,12 +4,15 @@ import com.typesafe.scalalogging.StrictLogging
 import domain.graph.GraphVertex
 import gremlin.scala.{GremlinScala, Key}
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource
+import utils.Config
 
 import scala.collection.SeqView
 import scala.concurrent.{ExecutionContext, Future}
 
-final case class VertexQuery(private val g: GraphTraversalSource)
-    extends StrictLogging {
+final case class VertexQuery(
+    private val g: GraphTraversalSource,
+    private val config: Config
+) extends StrictLogging {
 
   /** get the number of all vertices
     *
@@ -38,7 +41,7 @@ final case class VertexQuery(private val g: GraphTraversalSource)
     GremlinScala(g.V())
       .range(start, start + count)
       .toList()
-      .map(GraphVertex)
+      .map(GraphVertex(_, config))
       .view
   }
 
@@ -65,6 +68,6 @@ final case class VertexQuery(private val g: GraphTraversalSource)
       .has(label, Key[Any](key), value)
       .toList()
       .view
-      .map(GraphVertex)
+      .map(GraphVertex(_, config))
   }
 }
