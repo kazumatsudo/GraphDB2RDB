@@ -4,18 +4,22 @@ import org.apache.tinkerpop.gremlin.process.traversal.AnonymousTraversalSource.t
 import usecase.{ByExhaustiveSearch, UsingSpecificKeyList}
 import utils.{FileUtility, JsonUtility}
 
+import java.util.concurrent.Executors.newFixedThreadPool
+import scala.concurrent.duration.Duration
+import scala.concurrent.{Await, ExecutionContext, Future}
 import scala.util.{Failure, Success, Using}
 
 object Main extends StrictLogging {
 
-  private def displayOperationResult(
-      processName: String,
-      result: Boolean
-  ): Unit = {
+  // set gremlin server connection pool max size or less
+  implicit private val ec: ExecutionContext =
+    ExecutionContext.fromExecutor(newFixedThreadPool(1))
+
+  private def displayOperationResult(result: Boolean): Unit = {
     if (result) {
-      logger.info(s"$processName: success")
+      logger.info("generate SQL: success")
     } else {
-      logger.warn(s"$processName: failure")
+      logger.error("generate SQL: failure")
     }
   }
 
@@ -68,53 +72,38 @@ object Main extends StrictLogging {
       }
 
       /* execute analysis method */
-      val usecaseResponse =
-        usecase.execute(checkUnique = false)
+      val result = usecase.execute(checkUnique = false)
 
-      /* output SQL */
-      usecaseResponse.verticesDdl.foreach { vertexDdl =>
-        FileUtility.outputSql(
-          config.getString("sql_ddl_vertex"),
-          vertexDdl.toSqlSentence
-        )
-      }
-      displayOperationResult(
-        "generate vertices DDL",
-        usecaseResponse.verticesDdl.nonEmpty
-      )
+      result.onComplete {
+        case Failure(exception) =>
+          logger.error(s"${exception.getMessage}", exception)
 
-      usecaseResponse.verticesDml.foreach { vertexDml =>
-        FileUtility.outputSql(
-          config.getString("sql_dml_vertex"),
-          vertexDml.toSqlSentence
-        )
-      }
-      displayOperationResult(
-        "generate vertices DML",
-        usecaseResponse.verticesDml.nonEmpty
-      )
+          displayOperationResult(result = false)
+          sys.exit(1)
+        case Success(value) =>
+          /* output SQL */
+          FileUtility.outputSql(
+            config.getString("sql_ddl_vertex"),
+            value.verticesDdl.toSqlSentence
+          )
+          FileUtility.outputSql(
+            config.getString("sql_dml_vertex"),
+            value.verticesDml.toSqlSentence
+          )
+          FileUtility.outputSql(
+            config.getString("sql_ddl_edge"),
+            value.edgesDdl.toSqlSentence
+          )
+          FileUtility.outputSql(
+            config.getString("sql_dml_edge"),
+            value.edgesDml.toSqlSentence
+          )
 
-      usecaseResponse.edgesDdl.foreach { edgesDdlResult =>
-        FileUtility.outputSql(
-          config.getString("sql_ddl_edge"),
-          edgesDdlResult.toSqlSentence
-        )
+          displayOperationResult(result = true)
+          sys.exit(0)
       }
-      displayOperationResult(
-        "generate edges    DDL",
-        usecaseResponse.edgesDdl.nonEmpty
-      )
 
-      usecaseResponse.edgesDml.foreach { edgesDmlResult =>
-        FileUtility.outputSql(
-          config.getString("sql_dml_edge"),
-          edgesDmlResult.toSqlSentence
-        )
-      }
-      displayOperationResult(
-        "generate edges    DML",
-        usecaseResponse.edgesDml.nonEmpty
-      )
+      Await.result(Future.never, Duration.Inf)
     }
   }
 }

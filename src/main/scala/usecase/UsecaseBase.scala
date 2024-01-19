@@ -7,12 +7,13 @@ import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSo
 
 import scala.collection.View
 import scala.collection.parallel.immutable.ParHashMap
+import scala.concurrent.{ExecutionContext, Future}
 
 final case class UsecaseResponse(
-    verticesDdl: Option[TableList],
-    verticesDml: Option[RecordList],
-    edgesDdl: Option[TableList],
-    edgesDml: Option[RecordList]
+    verticesDdl: TableList,
+    verticesDml: RecordList,
+    edgesDdl: TableList,
+    edgesDml: RecordList
 )
 
 trait UsecaseBase extends StrictLogging {
@@ -36,5 +37,7 @@ trait UsecaseBase extends StrictLogging {
         )
     }
   }
-  def execute(checkUnique: Boolean): UsecaseResponse
+  def execute(checkUnique: Boolean)(implicit
+      ec: ExecutionContext
+  ): Future[UsecaseResponse]
 }

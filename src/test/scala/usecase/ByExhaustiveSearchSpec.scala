@@ -11,19 +11,19 @@ import domain.table.ddl.column.{
 import domain.table.ddl.{TableList, TableName}
 import domain.table.dml.{RecordId, RecordKey, RecordList, RecordValue}
 import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerFactory
-import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.funspec.AsyncFunSpec
 import org.scalatest.matchers.should.Matchers
 
 import scala.collection.parallel.immutable.ParMap
 
-class ByExhaustiveSearchSpec extends AnyFunSpec with Matchers {
+class ByExhaustiveSearchSpec extends AsyncFunSpec with Matchers {
   describe("execute") {
     it("success") {
       val graph = TinkerFactory.createModern().traversal()
       val usecase = ByExhaustiveSearch(graph)
 
-      usecase.execute(checkUnique = true) shouldBe UsecaseResponse(
-        Some(
+      usecase.execute(checkUnique = true).map {
+        _ shouldBe UsecaseResponse(
           TableList(
             ParMap(
               TableName("vertex_person") -> ColumnList(
@@ -47,9 +47,7 @@ class ByExhaustiveSearchSpec extends AnyFunSpec with Matchers {
                 )
               )
             )
-          )
-        ),
-        Some(
+          ),
           RecordList(
             ParMap(
               RecordKey(
@@ -107,9 +105,7 @@ class ByExhaustiveSearchSpec extends AnyFunSpec with Matchers {
                 )
               )
             )
-          )
-        ),
-        Some(
+          ),
           TableList(
             ParMap(
               TableName("edge_created") -> ColumnList(
@@ -133,9 +129,7 @@ class ByExhaustiveSearchSpec extends AnyFunSpec with Matchers {
                 )
               )
             )
-          )
-        ),
-        Some(
+          ),
           RecordList(
             ParMap(
               RecordKey((TableName("edge_knows"), RecordId(7))) -> RecordValue(
@@ -197,7 +191,7 @@ class ByExhaustiveSearchSpec extends AnyFunSpec with Matchers {
             )
           )
         )
-      )
+      }
     }
   }
 }
