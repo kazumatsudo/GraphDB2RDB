@@ -10,7 +10,7 @@ final case class Sql(
     ddl_vertex: String,
     dml_edge: String,
     dml_vertex: String,
-    private val output_directory: String
+    output_directory: String
 )
 final case class TableName(
     private val edge: String,

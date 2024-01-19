@@ -77,18 +77,22 @@ object Main extends StrictLogging {
         case Success(value) =>
           /* output SQL */
           FileUtility.outputSql(
+            config.sql.output_directory,
             config.sql.ddl_edge,
             value.verticesDdl.toSqlSentence
           )
           FileUtility.outputSql(
+            config.sql.output_directory,
             config.sql.dml_edge,
             value.verticesDml.toSqlSentence
           )
           FileUtility.outputSql(
+            config.sql.output_directory,
             config.sql.dml_vertex,
             value.edgesDdl.toSqlSentence
           )
           FileUtility.outputSql(
+            config.sql.output_directory,
             config.sql.dml_vertex,
             value.edgesDml.toSqlSentence
           )
