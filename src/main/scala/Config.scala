@@ -1,15 +1,15 @@
 import com.typesafe.config.ConfigFactory
 
 final case class AnalysysMethod(
-    private val value: String,
-    private val using_specific_key_list_filepath: String
+    value: String,
+    using_specific_key_list_filepath: String
 )
-final case class GraphDb(private val remoteGraphProperties: String)
+final case class GraphDb(remoteGraphProperties: String)
 final case class Sql(
-    private val ddl_edge: String,
-    private val ddl_vertex: String,
-    private val dml_edge: String,
-    private val dml_vertex: String,
+    ddl_edge: String,
+    ddl_vertex: String,
+    dml_edge: String,
+    dml_vertex: String,
     private val output_directory: String
 )
 final case class TableName(
@@ -24,9 +24,9 @@ final case class ColumnName(
     private val prefixProperty: String
 )
 final case class Config(
-    private val analysysMethod: AnalysysMethod,
-    private val graphDb: GraphDb,
-    private val sql: Sql,
+    analysysMethod: AnalysysMethod,
+    graphDb: GraphDb,
+    sql: Sql,
     private val tableName: TableName,
     private val columnName: ColumnName
 )

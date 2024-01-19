@@ -1,4 +1,3 @@
-import com.typesafe.config.ConfigFactory
 import com.typesafe.scalalogging.StrictLogging
 import org.apache.tinkerpop.gremlin.process.traversal.AnonymousTraversalSource.traversal
 import usecase.{ByExhaustiveSearch, UsingSpecificKeyList}
@@ -14,6 +13,8 @@ object Main extends StrictLogging {
   // set gremlin server connection pool max size or less
   implicit private val ec: ExecutionContext =
     ExecutionContext.fromExecutor(newFixedThreadPool(1))
+
+  private val config: Config = Config.default
 
   private def displayOperationResult(result: Boolean): Unit = {
     if (result) {
@@ -32,18 +33,13 @@ object Main extends StrictLogging {
     * @param args
     */
   def main(args: Array[String]): Unit = {
-    val config = ConfigFactory.load()
-    Using(
-      traversal().withRemote(
-        config.getString("graphdb_remote_graph_properties")
-      )
-    ) { g =>
+    Using(traversal().withRemote(config.graphDb.remoteGraphProperties)) { g =>
       /* select analysis method */
       sealed trait UsecaseCommand
       final case class UsecaseCommandByExhausiveSearch() extends UsecaseCommand
       final case class UsecaseCommandUsingSpecificKeyList()
           extends UsecaseCommand
-      val usecaseCommand = config.getString("analysis_method") match {
+      val usecaseCommand = config.analysysMethod.value match {
         case "by_exhaustive_search"    => UsecaseCommandByExhausiveSearch()
         case "using_specific_key_list" => UsecaseCommandUsingSpecificKeyList()
         case value =>
@@ -57,9 +53,7 @@ object Main extends StrictLogging {
           {
             for {
               jsonString <- FileUtility.readJson(
-                config.getString(
-                  "analysis_method_using_specific_key_list_filepath"
-                )
+                config.analysysMethod.using_specific_key_list_filepath
               )
               request <- JsonUtility.parseForUsingSpecificKeyListRequest(
                 jsonString
@@ -83,19 +77,19 @@ object Main extends StrictLogging {
         case Success(value) =>
           /* output SQL */
           FileUtility.outputSql(
-            config.getString("sql_ddl_vertex"),
+            config.sql.ddl_edge,
             value.verticesDdl.toSqlSentence
           )
           FileUtility.outputSql(
-            config.getString("sql_dml_vertex"),
+            config.sql.dml_edge,
             value.verticesDml.toSqlSentence
           )
           FileUtility.outputSql(
-            config.getString("sql_ddl_edge"),
+            config.sql.dml_vertex,
             value.edgesDdl.toSqlSentence
           )
           FileUtility.outputSql(
-            config.getString("sql_dml_edge"),
+            config.sql.dml_vertex,
             value.edgesDml.toSqlSentence
           )
 
