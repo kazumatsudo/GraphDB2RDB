@@ -2,6 +2,7 @@ package domain.table.ddl
 
 import domain.table.ddl.column.ColumnList
 
+import scala.collection.View
 import scala.collection.parallel.immutable.ParMap
 
 case class TableList(private val value: ParMap[TableName, ColumnList])
@@ -29,11 +30,11 @@ case class TableList(private val value: ParMap[TableName, ColumnList])
       }
     }
 
-  def toSqlSentence: String =
+  def toSqlSentence: View[String] =
     value
       .map { case (tableName, columnList) =>
         s"CREATE TABLE IF NOT EXISTS ${tableName.toSqlSentence} (${columnList.toSqlSentence});"
       }
-      .mkString("\n")
-
+      .seq
+      .view
 }

@@ -1,5 +1,6 @@
 package domain.table.dml
 
+import scala.collection.View
 import scala.collection.parallel.immutable.ParMap
 
 final case class RecordList(private val value: ParMap[RecordKey, RecordValue])
@@ -34,11 +35,12 @@ final case class RecordList(private val value: ParMap[RecordKey, RecordValue])
     }
   }
 
-  def toSqlSentence: String =
+  def toSqlSentence: View[String] =
     value
       .map { case (recordKey, recordValue) =>
         val (keys, values) = recordValue.toSqlSentence
         s"INSERT INTO ${recordKey.toSqlSentence} ($keys) VALUES ($values);"
       }
-      .mkString("\n")
+      .seq
+      .view
 }

@@ -90,12 +90,14 @@ class RecordListSpec extends AnyFunSpec with Matchers {
           accumulator.merge(currentValue, checkUnique = false)
         }
 
-      vertexAnalyzedResult.toSqlSentence contains "INSERT INTO vertex_person (id, property_age, property_name) VALUES (1, 29, \"marko\");"
-      vertexAnalyzedResult.toSqlSentence contains "INSERT INTO vertex_person (id, property_age, property_name) VALUES (2, 27, \"vadas\");"
-      vertexAnalyzedResult.toSqlSentence contains "INSERT INTO vertex_software (id, property_lang, property_name) VALUES (3, \"java\", \"lop\");"
-      vertexAnalyzedResult.toSqlSentence contains "INSERT INTO vertex_person (id, property_age, property_name) VALUES (4, 32, \"josh\");"
-      vertexAnalyzedResult.toSqlSentence contains "INSERT INTO vertex_software (id, property_lang, property_name) VALUES (5, \"java\", \"ripple\");"
-      vertexAnalyzedResult.toSqlSentence contains "INSERT INTO vertex_person (id, property_age, property_name) VALUES (6, 35, \"peter\");"
+      vertexAnalyzedResult.toSqlSentence.toSeq shouldBe List(
+        "INSERT INTO vertex_person (id, property_age, property_name) VALUES (4, 32, \"josh\");",
+        "INSERT INTO vertex_person (id, property_age, property_name) VALUES (6, 35, \"peter\");",
+        "INSERT INTO vertex_person (id, property_age, property_name) VALUES (2, 27, \"vadas\");",
+        "INSERT INTO vertex_software (id, property_lang, property_name) VALUES (3, \"java\", \"lop\");",
+        "INSERT INTO vertex_person (id, property_age, property_name) VALUES (1, 29, \"marko\");",
+        "INSERT INTO vertex_software (id, property_lang, property_name) VALUES (5, \"java\", \"ripple\");"
+      )
     }
   }
 }

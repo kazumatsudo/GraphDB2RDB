@@ -6,7 +6,7 @@ import infrastructure.{EdgeQuery, VertexQuery}
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource
 
 import java.util.concurrent.Executors.newFixedThreadPool
-import scala.collection.SeqView
+import scala.collection.View
 import scala.collection.parallel.immutable.ParHashMap
 import scala.concurrent.duration.Duration
 import scala.concurrent.{Await, ExecutionContext, Future}
@@ -56,7 +56,7 @@ final case class UsingSpecificKeyList(
     val edgeQuery = EdgeQuery(g)
 
     def foldLeft(
-        value: SeqView[(TableList, RecordList)]
+        value: View[(TableList, RecordList)]
     ): (TableList, RecordList) = {
       value.foldLeft(
         (TableList(ParHashMap.empty), RecordList(ParHashMap.empty))
@@ -78,9 +78,9 @@ final case class UsingSpecificKeyList(
           .sequence {
             {
               for {
-                label <- value.value
-                keyValue <- label.value
-                value <- keyValue.value
+                label <- value.value.view
+                keyValue <- label.value.view
+                value <- keyValue.value.view
               } yield for {
                 vertices <- vertexQuery.getListByPropertyKey(
                   label.label,
@@ -109,7 +109,7 @@ final case class UsingSpecificKeyList(
                 val verticesSql = {
                   foldLeft(vertices.map(vertex => (vertex.toDdl, vertex.toDml)))
                 }
-                val edgesSql = foldLeft((inEdgesSql ++ outEdgesSql).toSeq.view)
+                val edgesSql = foldLeft(inEdgesSql ++ outEdgesSql)
                 (verticesSql, edgesSql)
               }
             }

@@ -2,7 +2,8 @@ package utils
 
 import com.typesafe.config.ConfigFactory
 
-import java.io.{File, FileOutputStream, OutputStreamWriter}
+import java.io.{File, FileOutputStream, PrintWriter}
+import scala.collection.View
 import scala.io.Source
 import scala.util.{Try, Using}
 
@@ -14,7 +15,7 @@ object FileUtility {
     }
   }
 
-  def outputSql(filename: String, sqlSentence: String): Unit = {
+  def outputSql(filename: String, sqlSentenceList: => View[String]): Unit = {
     val config = ConfigFactory.load()
     val directory = new File(config.getString("sql_output_directory"))
 
@@ -25,8 +26,8 @@ object FileUtility {
     Using.Manager { use =>
       val fileOutputStream =
         use(new FileOutputStream(s"${directory.getPath}/$filename.sql"))
-      val writer = use(new OutputStreamWriter(fileOutputStream))
-      writer.write(sqlSentence)
+      val writer = use(new PrintWriter(fileOutputStream))
+      sqlSentenceList.foreach(writer.println)
     }
   }
 }

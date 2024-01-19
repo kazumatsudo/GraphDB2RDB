@@ -56,9 +56,10 @@ class TableListSpec extends AnyFunSpec with Matchers {
           accumulator.merge(currentValue)
         }
 
-      vertexAnalyzedResult.toSqlSentence shouldBe
-        """CREATE TABLE IF NOT EXISTS vertex_person (id INT(1), property_age INT(2), property_name VARCHAR(5));
-          |CREATE TABLE IF NOT EXISTS vertex_software (id INT(1), property_lang VARCHAR(4), property_name VARCHAR(6));""".stripMargin
+      vertexAnalyzedResult.toSqlSentence.toSeq shouldBe Seq(
+        "CREATE TABLE IF NOT EXISTS vertex_person (id INT(1), property_age INT(2), property_name VARCHAR(5));",
+        "CREATE TABLE IF NOT EXISTS vertex_software (id INT(1), property_lang VARCHAR(4), property_name VARCHAR(6));"
+      )
     }
   }
 }
