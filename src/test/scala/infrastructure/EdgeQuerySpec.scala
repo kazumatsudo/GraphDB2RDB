@@ -24,7 +24,7 @@ class EdgeQuerySpec extends AsyncFunSpec with Matchers {
       val edgeList = GremlinScala(graph.E()).toList().map(GraphEdge)
       edgeQuery
         .getInEdgeList(GraphVertex(GremlinScala(graph.V()).toList()(1)))
-        .map { result => result shouldBe Seq(edgeList.head) }
+        .map { result => result.toSeq shouldBe Seq(edgeList.head) }
     }
   }
 
@@ -66,7 +66,7 @@ class EdgeQuerySpec extends AsyncFunSpec with Matchers {
       val edgeQuery = EdgeQuery(graph)
       val edgeList = GremlinScala(graph.E()).toList().map(GraphEdge)
       edgeQuery.getOutEdgeList(GraphVertex(graph.V().next())).map { result =>
-        result shouldBe Seq(edgeList(2), edgeList.head, edgeList(1))
+        result.toSeq shouldBe Seq(edgeList(2), edgeList.head, edgeList(1))
       }
     }
   }

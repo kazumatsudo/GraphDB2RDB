@@ -5,6 +5,7 @@ import domain.graph.{GraphEdge, GraphVertex}
 import gremlin.scala.GremlinScala
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource
 
+import scala.collection.SeqView
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.control.NonFatal
 
@@ -27,8 +28,8 @@ final case class EdgeQuery(private val g: GraphTraversalSource)
     */
   def getInEdgeList(
       vertex: GraphVertex
-  )(implicit ec: ExecutionContext): Future[Seq[GraphEdge]] = Future {
-    GremlinScala(g.V(vertex.id)).inE().toList().map(GraphEdge)
+  )(implicit ec: ExecutionContext): Future[SeqView[GraphEdge]] = Future {
+    GremlinScala(g.V(vertex.id)).inE().toList().view.map(GraphEdge)
   }
 
   /** get Edges List
@@ -65,7 +66,7 @@ final case class EdgeQuery(private val g: GraphTraversalSource)
     */
   def getOutEdgeList(
       vertex: GraphVertex
-  )(implicit ec: ExecutionContext): Future[Seq[GraphEdge]] = Future {
-    GremlinScala(g.V(vertex.id)).outE().toList().map(GraphEdge)
+  )(implicit ec: ExecutionContext): Future[SeqView[GraphEdge]] = Future {
+    GremlinScala(g.V(vertex.id)).outE().toList().view.map(GraphEdge)
   }
 }

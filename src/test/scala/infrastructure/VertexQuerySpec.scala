@@ -73,7 +73,7 @@ class VertexQuerySpec extends AsyncFunSpec with Matchers {
       val vertexQuery = VertexQuery(graph)
       vertexQuery.getListByPropertyKey("person", "name", "marko").map {
         result =>
-          result shouldBe Seq(GraphVertex(GremlinScala(graph.V()).head()))
+          result.toSeq shouldBe Seq(GraphVertex(GremlinScala(graph.V()).head()))
       }
     }
   }

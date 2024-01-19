@@ -5,6 +5,7 @@ import domain.graph.GraphVertex
 import gremlin.scala.{GremlinScala, Key}
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource
 
+import scala.collection.SeqView
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.control.NonFatal
 
@@ -58,13 +59,14 @@ final case class VertexQuery(private val g: GraphTraversalSource)
       label: String,
       key: String,
       value: Any
-  )(implicit ec: ExecutionContext): Future[Seq[GraphVertex]] = Future {
+  )(implicit ec: ExecutionContext): Future[SeqView[GraphVertex]] = Future {
     require(label.nonEmpty, "label must not be empty.")
     require(key.nonEmpty, "key must not be empty.")
 
     GremlinScala(g.V())
       .has(label, Key[Any](key), value)
       .toList()
+      .view
       .map(GraphVertex)
   }
 }
