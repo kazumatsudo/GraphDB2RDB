@@ -25,7 +25,9 @@ class ColumnListSpec extends AnyFunSpec with Matchers {
 
   describe("merge") {
     it("succeeds when both lists are empty") {
-      ColumnList(ParMap.empty).merge(ColumnList(ParMap.empty)) shouldBe ColumnList(ParMap.empty)
+      ColumnList(ParMap.empty).merge(
+        ColumnList(ParMap.empty)
+      ) shouldBe ColumnList(ParMap.empty)
     }
 
     it("succeeds when one list is empty") {
