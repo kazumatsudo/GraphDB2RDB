@@ -14,6 +14,7 @@ import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__.V
 import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerFactory
 import org.scalatest.funspec.AsyncFunSpec
 import org.scalatest.matchers.should.Matchers
+import utils.Config
 
 import scala.collection.parallel.immutable.ParMap
 
@@ -21,7 +22,7 @@ class GraphEdgeSpec extends AsyncFunSpec with Matchers {
   describe("toDdl") {
     it("get Database Column Information") {
       val graph = TinkerFactory.createModern().traversal()
-      val edgeQuery = EdgeQuery(graph)
+      val edgeQuery = EdgeQuery(graph, Config.default)
       val edge = edgeQuery.getList(0, 1)
 
       edge.map { result =>
@@ -46,7 +47,7 @@ class GraphEdgeSpec extends AsyncFunSpec with Matchers {
   describe("toDml") {
     it("get SQL Sentence") {
       val graph = TinkerFactory.createModern().traversal()
-      val edgeQuery = EdgeQuery(graph)
+      val edgeQuery = EdgeQuery(graph, Config.default)
       val edge = edgeQuery.getList(0, 1)
 
       edge.map { result =>
@@ -71,7 +72,7 @@ class GraphEdgeSpec extends AsyncFunSpec with Matchers {
       val vertex2 = graph.addV("testVertex2").next()
       val edge = graph.V(vertex1).addE("testEdge").to(V(vertex2)).next()
 
-      val graphEdge = GraphEdge(edge)
+      val graphEdge = GraphEdge(edge, Config.default)
       graphEdge.toDml shouldBe RecordList(
         ParMap(
           RecordKey((TableName("edge_testEdge"), RecordId(14))) -> RecordValue(

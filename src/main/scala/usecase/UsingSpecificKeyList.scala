@@ -2,6 +2,7 @@ package usecase
 
 import infrastructure.{EdgeQuery, VertexQuery}
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource
+import utils.Config
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -26,9 +27,12 @@ final case class UsingSpecificKeyListRequest(
   *
   * @param g
   *   [[GraphTraversalSource]]
+  * @param config
+  *   [[Config]]
   */
 final case class UsingSpecificKeyList(
     override protected val g: GraphTraversalSource,
+    override protected val config: Config,
     private val value: UsingSpecificKeyListRequest
 ) extends UsecaseBase {
 
@@ -38,7 +42,7 @@ final case class UsingSpecificKeyList(
 
     // 1. get vertex by specific key
     val vertexQuery = VertexQuery(g)
-    val edgeQuery = EdgeQuery(g)
+    val edgeQuery = EdgeQuery(g, config)
 
     Future
       .sequence {

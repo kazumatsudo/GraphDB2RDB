@@ -1,3 +1,5 @@
+package utils
+
 import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.matchers.should.Matchers
 

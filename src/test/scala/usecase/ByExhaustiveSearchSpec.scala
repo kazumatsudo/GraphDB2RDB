@@ -13,6 +13,7 @@ import domain.table.dml.{RecordId, RecordKey, RecordList, RecordValue}
 import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerFactory
 import org.scalatest.funspec.AsyncFunSpec
 import org.scalatest.matchers.should.Matchers
+import utils.Config
 
 import scala.collection.parallel.immutable.ParMap
 
@@ -20,7 +21,7 @@ class ByExhaustiveSearchSpec extends AsyncFunSpec with Matchers {
   describe("execute") {
     it("success") {
       val graph = TinkerFactory.createModern().traversal()
-      val usecase = ByExhaustiveSearch(graph)
+      val usecase = ByExhaustiveSearch(graph, Config.default)
 
       usecase.execute(checkUnique = true).map {
         _ shouldBe UsecaseResponse(

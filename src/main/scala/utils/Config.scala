@@ -1,3 +1,5 @@
+package utils
+
 import com.typesafe.config.ConfigFactory
 
 final case class AnalysysMethod(
@@ -13,22 +15,22 @@ final case class Sql(
     output_directory: String
 )
 final case class TableName(
-    private val edge: String,
+    edge: String,
     private val vertex: String
 )
 final case class ColumnName(
-    private val edgeId: String,
-    private val edgeInVId: String,
-    private val edgeOutVId: String,
+    edgeId: String,
+    edgeInVId: String,
+    edgeOutVId: String,
     private val vertexId: String,
-    private val prefixProperty: String
+    prefixProperty: String
 )
 final case class Config(
     analysysMethod: AnalysysMethod,
     graphDb: GraphDb,
     sql: Sql,
-    private val tableName: TableName,
-    private val columnName: ColumnName
+    tableName: TableName,
+    columnName: ColumnName
 )
 
 object Config {

@@ -1,7 +1,7 @@
 import com.typesafe.scalalogging.StrictLogging
 import org.apache.tinkerpop.gremlin.process.traversal.AnonymousTraversalSource.traversal
 import usecase.{ByExhaustiveSearch, UsingSpecificKeyList}
-import utils.{FileUtility, JsonUtility}
+import utils.{Config, FileUtility, JsonUtility}
 
 import java.util.concurrent.Executors.newFixedThreadPool
 import scala.concurrent.duration.Duration
@@ -48,7 +48,7 @@ object Main extends StrictLogging {
           )
       }
       val usecase = usecaseCommand match {
-        case UsecaseCommandByExhausiveSearch() => ByExhaustiveSearch(g)
+        case UsecaseCommandByExhausiveSearch() => ByExhaustiveSearch(g, config)
         case UsecaseCommandUsingSpecificKeyList() =>
           {
             for {
@@ -58,7 +58,7 @@ object Main extends StrictLogging {
               request <- JsonUtility.parseForUsingSpecificKeyListRequest(
                 jsonString
               )
-            } yield UsingSpecificKeyList(g, request)
+            } yield UsingSpecificKeyList(g, config, request)
           } match {
             case Failure(exception) => throw new Exception(exception)
             case Success(value)     => value
@@ -78,22 +78,22 @@ object Main extends StrictLogging {
           /* output SQL */
           FileUtility.outputSql(
             config.sql.output_directory,
-            config.sql.ddl_edge,
+            config.sql.ddl_vertex,
             value.verticesDdl.toSqlSentence
           )
           FileUtility.outputSql(
             config.sql.output_directory,
-            config.sql.dml_edge,
+            config.sql.dml_vertex,
             value.verticesDml.toSqlSentence
           )
           FileUtility.outputSql(
             config.sql.output_directory,
-            config.sql.dml_vertex,
+            config.sql.ddl_edge,
             value.edgesDdl.toSqlSentence
           )
           FileUtility.outputSql(
             config.sql.output_directory,
-            config.sql.dml_vertex,
+            config.sql.dml_edge,
             value.edgesDml.toSqlSentence
           )
 

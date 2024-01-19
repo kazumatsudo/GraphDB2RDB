@@ -13,6 +13,7 @@ import domain.table.dml.{RecordId, RecordKey, RecordList, RecordValue}
 import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerFactory
 import org.scalatest.funspec.AsyncFunSpec
 import org.scalatest.matchers.should.Matchers
+import utils.Config
 
 import scala.collection.parallel.immutable.ParMap
 
@@ -29,7 +30,7 @@ class UsingSpecificKeyListSpec extends AsyncFunSpec with Matchers {
           )
         )
       )
-      val usecase = UsingSpecificKeyList(graph, value)
+      val usecase = UsingSpecificKeyList(graph, Config.default, value)
 
       usecase.execute(checkUnique = true).map {
         _ shouldBe UsecaseResponse(

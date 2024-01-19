@@ -4,6 +4,7 @@ import com.typesafe.scalalogging.StrictLogging
 import domain.table.ddl.TableList
 import domain.table.dml.RecordList
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource
+import utils.Config
 
 import scala.collection.View
 import scala.collection.parallel.immutable.ParHashMap
@@ -19,6 +20,7 @@ final case class UsecaseResponse(
 trait UsecaseBase extends StrictLogging {
 
   protected val g: GraphTraversalSource
+  protected val config: Config
 
   protected def foldLeft(
       value: View[(TableList, RecordList)],

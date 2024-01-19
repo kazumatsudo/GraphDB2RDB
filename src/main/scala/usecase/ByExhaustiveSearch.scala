@@ -2,6 +2,7 @@ package usecase
 
 import infrastructure.{EdgeQuery, VertexQuery}
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource
+import utils.Config
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -14,9 +15,12 @@ import scala.concurrent.{ExecutionContext, Future}
   *
   * @param g
   *   [[GraphTraversalSource]]
+  * @param config
+  *   [[Config]]
   */
 final case class ByExhaustiveSearch(
-    override protected val g: GraphTraversalSource
+    override protected val g: GraphTraversalSource,
+    override protected val config: Config
 ) extends UsecaseBase {
 
   override def execute(
@@ -25,7 +29,7 @@ final case class ByExhaustiveSearch(
 
     // 1. generate vertex SQL
     val vertexQuery = VertexQuery(g)
-    val edgeQuery = EdgeQuery(g)
+    val edgeQuery = EdgeQuery(g, config)
 
     for {
       (vertexTableList, vertexRecordList) <- for {
