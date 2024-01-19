@@ -68,16 +68,11 @@ object Main extends StrictLogging {
       }
 
       /* execute analysis method */
-      val (
-        verticesDdlResult,
-        verticesDmlResult,
-        edgesDdlResult,
-        edgesDmlResult
-      ) =
+      val usecaseResponse =
         usecase.execute(checkUnique = false)
 
       /* output SQL */
-      verticesDdlResult.foreach { vertexDdl =>
+      usecaseResponse.verticesDdl.foreach { vertexDdl =>
         FileUtility.outputSql(
           config.getString("sql_ddl_vertex"),
           vertexDdl.toSqlSentence
@@ -85,10 +80,10 @@ object Main extends StrictLogging {
       }
       displayOperationResult(
         "generate vertices DDL",
-        verticesDdlResult.nonEmpty
+        usecaseResponse.verticesDdl.nonEmpty
       )
 
-      verticesDmlResult.foreach { vertexDml =>
+      usecaseResponse.verticesDml.foreach { vertexDml =>
         FileUtility.outputSql(
           config.getString("sql_dml_vertex"),
           vertexDml.toSqlSentence
@@ -96,24 +91,30 @@ object Main extends StrictLogging {
       }
       displayOperationResult(
         "generate vertices DML",
-        verticesDmlResult.nonEmpty
+        usecaseResponse.verticesDml.nonEmpty
       )
 
-      edgesDdlResult.foreach { edgesDdlResult =>
+      usecaseResponse.edgesDdl.foreach { edgesDdlResult =>
         FileUtility.outputSql(
           config.getString("sql_ddl_edge"),
           edgesDdlResult.toSqlSentence
         )
       }
-      displayOperationResult("generate edges    DDL", edgesDdlResult.nonEmpty)
+      displayOperationResult(
+        "generate edges    DDL",
+        usecaseResponse.edgesDdl.nonEmpty
+      )
 
-      edgesDmlResult.foreach { edgesDmlResult =>
+      usecaseResponse.edgesDml.foreach { edgesDmlResult =>
         FileUtility.outputSql(
           config.getString("sql_dml_edge"),
           edgesDmlResult.toSqlSentence
         )
       }
-      displayOperationResult("generate edges    DML", edgesDmlResult.nonEmpty)
+      displayOperationResult(
+        "generate edges    DML",
+        usecaseResponse.edgesDml.nonEmpty
+      )
     }
   }
 }

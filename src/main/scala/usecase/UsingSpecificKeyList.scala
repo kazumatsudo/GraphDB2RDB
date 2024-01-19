@@ -42,14 +42,7 @@ final case class UsingSpecificKeyList(
   implicit private val ec: ExecutionContext =
     ExecutionContext.fromExecutor(newFixedThreadPool(1))
 
-  override def execute(
-      checkUnique: Boolean
-  ): (
-      Option[TableList],
-      Option[RecordList],
-      Option[TableList],
-      Option[RecordList]
-  ) = {
+  override def execute(checkUnique: Boolean): UsecaseResponse = {
 
     // 1. get vertex by specific key
     val vertexQuery = VertexQuery(g)
@@ -121,7 +114,7 @@ final case class UsingSpecificKeyList(
         Duration.Inf
       )
 
-    (
+    UsecaseResponse(
       Option(vertexTableList),
       Option(vertexRecordList),
       Option(edgeTableList),

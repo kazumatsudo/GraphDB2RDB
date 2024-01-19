@@ -19,14 +19,7 @@ final case class ByExhaustiveSearch(
     override protected val g: GraphTraversalSource
 ) extends UsecaseBase {
 
-  override def execute(
-      checkUnique: Boolean
-  ): (
-      Option[TableList],
-      Option[RecordList],
-      Option[TableList],
-      Option[RecordList]
-  ) = {
+  override def execute(checkUnique: Boolean): UsecaseResponse = {
 
     // 1. generate vertex SQL
     val (verticesDdl, verticesDml) = {
@@ -86,6 +79,11 @@ final case class ByExhaustiveSearch(
         }
     }
 
-    (Some(verticesDdl), Some(verticesDml), Some(edgesDdl), Some(edgesDml))
+    UsecaseResponse(
+      Some(verticesDdl),
+      Some(verticesDml),
+      Some(edgesDdl),
+      Some(edgesDml)
+    )
   }
 }

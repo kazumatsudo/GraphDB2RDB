@@ -31,7 +31,7 @@ class UsingSpecificKeyListSpec extends AnyFunSpec with Matchers {
       )
       val usecase = UsingSpecificKeyList(graph, value)
 
-      usecase.execute(checkUnique = true) shouldBe (Some(
+      usecase.execute(checkUnique = true) shouldBe UsecaseResponse(Some(
         TableList(
           ParMap(
             TableName("vertex_person") -> ColumnList(

@@ -22,157 +22,182 @@ class ByExhaustiveSearchSpec extends AnyFunSpec with Matchers {
       val graph = TinkerFactory.createModern().traversal()
       val usecase = ByExhaustiveSearch(graph)
 
-      usecase.execute(checkUnique = true) shouldBe (Some(
-        TableList(
-          ParMap(
-            TableName("vertex_person") -> ColumnList(
-              ParMap(
-                ColumnName("id") -> ColumnTypeInt(ColumnLength(1)),
-                ColumnName("property_age") -> ColumnTypeInt(ColumnLength(2)),
-                ColumnName("property_name") -> ColumnTypeString(
-                  ColumnLength(5)
+      usecase.execute(checkUnique = true) shouldBe UsecaseResponse(
+        Some(
+          TableList(
+            ParMap(
+              TableName("vertex_person") -> ColumnList(
+                ParMap(
+                  ColumnName("id") -> ColumnTypeInt(ColumnLength(1)),
+                  ColumnName("property_age") -> ColumnTypeInt(ColumnLength(2)),
+                  ColumnName("property_name") -> ColumnTypeString(
+                    ColumnLength(5)
+                  )
+                )
+              ),
+              TableName("vertex_software") -> ColumnList(
+                ParMap(
+                  ColumnName("id") -> ColumnTypeInt(ColumnLength(1)),
+                  ColumnName("property_lang") -> ColumnTypeString(
+                    ColumnLength(4)
+                  ),
+                  ColumnName("property_name") -> ColumnTypeString(
+                    ColumnLength(6)
+                  )
                 )
               )
-            ),
-            TableName("vertex_software") -> ColumnList(
-              ParMap(
-                ColumnName("id") -> ColumnTypeInt(ColumnLength(1)),
-                ColumnName("property_lang") -> ColumnTypeString(
-                  ColumnLength(4)
-                ),
-                ColumnName("property_name") -> ColumnTypeString(
-                  ColumnLength(6)
+            )
+          )
+        ),
+        Some(
+          RecordList(
+            ParMap(
+              RecordKey(
+                (TableName("vertex_person"), RecordId(1))
+              ) -> RecordValue(
+                ParMap(
+                  "id" -> 1,
+                  "property_age" -> 29,
+                  "property_name" -> "marko"
+                )
+              ),
+              RecordKey(
+                (TableName("vertex_person"), RecordId(2))
+              ) -> RecordValue(
+                ParMap(
+                  "id" -> 2,
+                  "property_age" -> 27,
+                  "property_name" -> "vadas"
+                )
+              ),
+              RecordKey(
+                (TableName("vertex_person"), RecordId(4))
+              ) -> RecordValue(
+                ParMap(
+                  "id" -> 4,
+                  "property_age" -> 32,
+                  "property_name" -> "josh"
+                )
+              ),
+              RecordKey(
+                (TableName("vertex_person"), RecordId(6))
+              ) -> RecordValue(
+                ParMap(
+                  "id" -> 6,
+                  "property_age" -> 35,
+                  "property_name" -> "peter"
+                )
+              ),
+              RecordKey(
+                (TableName("vertex_software"), RecordId(3))
+              ) -> RecordValue(
+                ParMap(
+                  "id" -> 3,
+                  "property_lang" -> "java",
+                  "property_name" -> "lop"
+                )
+              ),
+              RecordKey(
+                (TableName("vertex_software"), RecordId(5))
+              ) -> RecordValue(
+                ParMap(
+                  "id" -> 5,
+                  "property_lang" -> "java",
+                  "property_name" -> "ripple"
+                )
+              )
+            )
+          )
+        ),
+        Some(
+          TableList(
+            ParMap(
+              TableName("edge_created") -> ColumnList(
+                ParMap(
+                  ColumnName("id") -> ColumnTypeInt(ColumnLength(2)),
+                  ColumnName("id_in_v") -> ColumnTypeInt(ColumnLength(1)),
+                  ColumnName("id_out_v") -> ColumnTypeInt(ColumnLength(1)),
+                  ColumnName("property_weight") -> ColumnTypeDouble(
+                    ColumnLength(3)
+                  )
+                )
+              ),
+              TableName("edge_knows") -> ColumnList(
+                ParMap(
+                  ColumnName("id") -> ColumnTypeInt(ColumnLength(1)),
+                  ColumnName("id_in_v") -> ColumnTypeInt(ColumnLength(1)),
+                  ColumnName("id_out_v") -> ColumnTypeInt(ColumnLength(1)),
+                  ColumnName("property_weight") -> ColumnTypeDouble(
+                    ColumnLength(3)
+                  )
+                )
+              )
+            )
+          )
+        ),
+        Some(
+          RecordList(
+            ParMap(
+              RecordKey((TableName("edge_knows"), RecordId(7))) -> RecordValue(
+                ParMap(
+                  "id" -> 7,
+                  "id_in_v" -> 2,
+                  "id_out_v" -> 1,
+                  "property_weight" -> 0.5
+                )
+              ),
+              RecordKey((TableName("edge_knows"), RecordId(8))) -> RecordValue(
+                ParMap(
+                  "id" -> 8,
+                  "id_in_v" -> 4,
+                  "id_out_v" -> 1,
+                  "property_weight" -> 1.0
+                )
+              ),
+              RecordKey(
+                (TableName("edge_created"), RecordId(9))
+              ) -> RecordValue(
+                ParMap(
+                  "id" -> 9,
+                  "id_in_v" -> 3,
+                  "id_out_v" -> 1,
+                  "property_weight" -> 0.4
+                )
+              ),
+              RecordKey(
+                (TableName("edge_created"), RecordId(10))
+              ) -> RecordValue(
+                ParMap(
+                  "id" -> 10,
+                  "id_in_v" -> 5,
+                  "id_out_v" -> 4,
+                  "property_weight" -> 1.0
+                )
+              ),
+              RecordKey(
+                (TableName("edge_created"), RecordId(11))
+              ) -> RecordValue(
+                ParMap(
+                  "id" -> 11,
+                  "id_in_v" -> 3,
+                  "id_out_v" -> 4,
+                  "property_weight" -> 0.4
+                )
+              ),
+              RecordKey(
+                (TableName("edge_created"), RecordId(12))
+              ) -> RecordValue(
+                ParMap(
+                  "id" -> 12,
+                  "id_in_v" -> 3,
+                  "id_out_v" -> 6,
+                  "property_weight" -> 0.2
                 )
               )
             )
           )
         )
-      ), Some(
-        RecordList(
-          ParMap(
-            RecordKey((TableName("vertex_person"), RecordId(1))) -> RecordValue(
-              ParMap(
-                "id" -> 1,
-                "property_age" -> 29,
-                "property_name" -> "marko"
-              )
-            ),
-            RecordKey((TableName("vertex_person"), RecordId(2))) -> RecordValue(
-              ParMap(
-                "id" -> 2,
-                "property_age" -> 27,
-                "property_name" -> "vadas"
-              )
-            ),
-            RecordKey((TableName("vertex_person"), RecordId(4))) -> RecordValue(
-              ParMap("id" -> 4, "property_age" -> 32, "property_name" -> "josh")
-            ),
-            RecordKey((TableName("vertex_person"), RecordId(6))) -> RecordValue(
-              ParMap(
-                "id" -> 6,
-                "property_age" -> 35,
-                "property_name" -> "peter"
-              )
-            ),
-            RecordKey(
-              (TableName("vertex_software"), RecordId(3))
-            ) -> RecordValue(
-              ParMap(
-                "id" -> 3,
-                "property_lang" -> "java",
-                "property_name" -> "lop"
-              )
-            ),
-            RecordKey(
-              (TableName("vertex_software"), RecordId(5))
-            ) -> RecordValue(
-              ParMap(
-                "id" -> 5,
-                "property_lang" -> "java",
-                "property_name" -> "ripple"
-              )
-            )
-          )
-        )
-      ), Some(
-        TableList(
-          ParMap(
-            TableName("edge_created") -> ColumnList(
-              ParMap(
-                ColumnName("id") -> ColumnTypeInt(ColumnLength(2)),
-                ColumnName("id_in_v") -> ColumnTypeInt(ColumnLength(1)),
-                ColumnName("id_out_v") -> ColumnTypeInt(ColumnLength(1)),
-                ColumnName("property_weight") -> ColumnTypeDouble(
-                  ColumnLength(3)
-                )
-              )
-            ),
-            TableName("edge_knows") -> ColumnList(
-              ParMap(
-                ColumnName("id") -> ColumnTypeInt(ColumnLength(1)),
-                ColumnName("id_in_v") -> ColumnTypeInt(ColumnLength(1)),
-                ColumnName("id_out_v") -> ColumnTypeInt(ColumnLength(1)),
-                ColumnName("property_weight") -> ColumnTypeDouble(
-                  ColumnLength(3)
-                )
-              )
-            )
-          )
-        )
-      ), Some(
-        RecordList(
-          ParMap(
-            RecordKey((TableName("edge_knows"), RecordId(7))) -> RecordValue(
-              ParMap(
-                "id" -> 7,
-                "id_in_v" -> 2,
-                "id_out_v" -> 1,
-                "property_weight" -> 0.5
-              )
-            ),
-            RecordKey((TableName("edge_knows"), RecordId(8))) -> RecordValue(
-              ParMap(
-                "id" -> 8,
-                "id_in_v" -> 4,
-                "id_out_v" -> 1,
-                "property_weight" -> 1.0
-              )
-            ),
-            RecordKey((TableName("edge_created"), RecordId(9))) -> RecordValue(
-              ParMap(
-                "id" -> 9,
-                "id_in_v" -> 3,
-                "id_out_v" -> 1,
-                "property_weight" -> 0.4
-              )
-            ),
-            RecordKey((TableName("edge_created"), RecordId(10))) -> RecordValue(
-              ParMap(
-                "id" -> 10,
-                "id_in_v" -> 5,
-                "id_out_v" -> 4,
-                "property_weight" -> 1.0
-              )
-            ),
-            RecordKey((TableName("edge_created"), RecordId(11))) -> RecordValue(
-              ParMap(
-                "id" -> 11,
-                "id_in_v" -> 3,
-                "id_out_v" -> 4,
-                "property_weight" -> 0.4
-              )
-            ),
-            RecordKey((TableName("edge_created"), RecordId(12))) -> RecordValue(
-              ParMap(
-                "id" -> 12,
-                "id_in_v" -> 3,
-                "id_out_v" -> 6,
-                "property_weight" -> 0.2
-              )
-            )
-          )
-        )
-      ))
+      )
     }
   }
 }
