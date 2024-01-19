@@ -6,14 +6,12 @@ import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerFactory
 import org.scalatest.funspec.AsyncFunSpec
 import org.scalatest.matchers.should.Matchers
 
-import scala.concurrent.Future
-
 class VertexQuerySpec extends AsyncFunSpec with Matchers {
   describe("countAll") {
     it("get the number of all vertices") {
       val graph = TinkerFactory.createModern().traversal()
       val vertexQuery = VertexQuery(graph)
-      vertexQuery.countAll shouldBe 6
+      vertexQuery.countAll.map { _ shouldBe 6 }
     }
   }
 
@@ -23,9 +21,7 @@ class VertexQuerySpec extends AsyncFunSpec with Matchers {
         val graph = TinkerFactory.createModern().traversal()
         val vertexQuery = VertexQuery(graph)
         recoverToSucceededIf[IllegalArgumentException] {
-          Future {
-            vertexQuery.getList(-1, 0)
-          }
+          vertexQuery.getList(-1, 0)
         }
       }
 
@@ -33,9 +29,7 @@ class VertexQuerySpec extends AsyncFunSpec with Matchers {
         val graph = TinkerFactory.createModern().traversal()
         val vertexQuery = VertexQuery(graph)
         recoverToSucceededIf[IllegalArgumentException] {
-          Future {
-            vertexQuery.getList(0, -1)
-          }
+          vertexQuery.getList(0, -1)
         }
       }
     }
@@ -43,9 +37,11 @@ class VertexQuerySpec extends AsyncFunSpec with Matchers {
     it("get the number of all vertices") {
       val graph = TinkerFactory.createModern().traversal()
       val vertexQuery = VertexQuery(graph)
-      vertexQuery.getList(0, 1) shouldBe Seq(
-        GraphVertex(GremlinScala(graph.V()).head())
-      )
+      vertexQuery.getList(0, 1).map {
+        _.toSeq shouldBe Seq(
+          GraphVertex(GremlinScala(graph.V()).head())
+        )
+      }
     }
   }
 

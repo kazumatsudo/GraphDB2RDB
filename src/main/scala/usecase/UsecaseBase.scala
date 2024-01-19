@@ -5,6 +5,9 @@ import domain.table.ddl.TableList
 import domain.table.dml.RecordList
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource
 
+import scala.collection.View
+import scala.collection.parallel.immutable.ParHashMap
+
 final case class UsecaseResponse(
     verticesDdl: Option[TableList],
     verticesDml: Option[RecordList],
@@ -15,5 +18,23 @@ final case class UsecaseResponse(
 trait UsecaseBase extends StrictLogging {
 
   protected val g: GraphTraversalSource
+
+  protected def foldLeft(
+      value: View[(TableList, RecordList)],
+      checkUnique: Boolean
+  ): (TableList, RecordList) = {
+    value.foldLeft(
+      (TableList(ParHashMap.empty), RecordList(ParHashMap.empty))
+    ) {
+      case (
+            (ddlAccumlator, dmlAccumlator),
+            (ddlCurrentValue, dmlCurrentValue)
+          ) =>
+        (
+          ddlAccumlator.merge(ddlCurrentValue),
+          dmlAccumlator.merge(dmlCurrentValue, checkUnique)
+        )
+    }
+  }
   def execute(checkUnique: Boolean): UsecaseResponse
 }

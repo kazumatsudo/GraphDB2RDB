@@ -6,14 +6,12 @@ import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerFactory
 import org.scalatest.funspec.AsyncFunSpec
 import org.scalatest.matchers.should.Matchers
 
-import scala.concurrent.Future
-
 class EdgeQuerySpec extends AsyncFunSpec with Matchers {
   describe("countAll") {
     it("get the number of all edges") {
       val graph = TinkerFactory.createModern().traversal()
       val edgeQuery = EdgeQuery(graph)
-      edgeQuery.countAll shouldBe 6
+      edgeQuery.countAll.map(_ shouldBe 6)
     }
   }
 
@@ -34,9 +32,7 @@ class EdgeQuerySpec extends AsyncFunSpec with Matchers {
         val graph = TinkerFactory.createModern().traversal()
         val edgeQuery = EdgeQuery(graph)
         recoverToSucceededIf[IllegalArgumentException] {
-          Future {
-            edgeQuery.getList(-1, 0)
-          }
+          edgeQuery.getList(-1, 0)
         }
       }
 
@@ -44,9 +40,7 @@ class EdgeQuerySpec extends AsyncFunSpec with Matchers {
         val graph = TinkerFactory.createModern().traversal()
         val edgeQuery = EdgeQuery(graph)
         recoverToSucceededIf[IllegalArgumentException] {
-          Future {
-            edgeQuery.getList(0, -1)
-          }
+          edgeQuery.getList(0, -1)
         }
       }
     }
@@ -54,9 +48,11 @@ class EdgeQuerySpec extends AsyncFunSpec with Matchers {
     it("get the number of all edges") {
       val graph = TinkerFactory.createModern().traversal()
       val edgeQuery = EdgeQuery(graph)
-      edgeQuery.getList(0, 1) shouldBe Seq(
-        GraphEdge(GremlinScala(graph.E()).head())
-      )
+      edgeQuery.getList(0, 1).map {
+        _.toSeq shouldBe Seq(
+          GraphEdge(GremlinScala(graph.E()).head())
+        )
+      }
     }
   }
 

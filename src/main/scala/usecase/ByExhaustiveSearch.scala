@@ -1,9 +1,11 @@
 package usecase
 
-import domain.table.ddl.TableList
-import domain.table.dml.RecordList
 import infrastructure.{EdgeQuery, VertexQuery}
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource
+
+import java.util.concurrent.Executors.newFixedThreadPool
+import scala.concurrent.duration.Duration
+import scala.concurrent.{Await, ExecutionContext, Future}
 
 /** analyze all Vertices and Edges
   *
@@ -19,71 +21,52 @@ final case class ByExhaustiveSearch(
     override protected val g: GraphTraversalSource
 ) extends UsecaseBase {
 
+  // set gremlin server connection pool max size or less
+  implicit private val ec: ExecutionContext =
+    ExecutionContext.fromExecutor(newFixedThreadPool(1))
+
   override def execute(checkUnique: Boolean): UsecaseResponse = {
 
     // 1. generate vertex SQL
-    val (verticesDdl, verticesDml) = {
-      val vertexQuery = VertexQuery(g)
-      val totalVertexCount = vertexQuery.countAll.toInt
+    val vertexQuery = VertexQuery(g)
+    val edgeQuery = EdgeQuery(g)
 
-      (0 to totalVertexCount).view
-        .flatMap { start =>
-          vertexQuery
-            .getList(start, 1)
-            .headOption
-            .map(vertex =>
-              (
-                vertex.toDdl,
-                vertex.toDml
-              )
-            )
-        }
-        .reduce[(TableList, RecordList)] {
-          case (
-                (tableListAccumlator, dmlAccumlator),
-                (tableListCurrentValue, dmlCurrentValue)
-              ) =>
-            (
-              tableListAccumlator.merge(tableListCurrentValue),
-              dmlAccumlator.merge(dmlCurrentValue, checkUnique)
-            )
-        }
-    }
-
-    // 2. generate edge SQL
-    val (edgesDdl, edgesDml) = {
-      val edgeQuery = EdgeQuery(g)
-      val totalEdgeCount = edgeQuery.countAll.toInt
-
-      (0 to totalEdgeCount).view
-        .flatMap { start =>
-          edgeQuery
-            .getList(start, 1)
-            .headOption
-            .map(edge =>
-              (
-                edge.toDdl,
-                edge.toDml
-              )
-            )
-        }
-        .reduce[(TableList, RecordList)] {
-          case (
-                (tableListAccumlator, dmlAccumlator),
-                (tableListCurrentValue, dmlCurrentValue)
-              ) =>
-            (
-              tableListAccumlator.merge(tableListCurrentValue),
-              dmlAccumlator.merge(dmlCurrentValue, checkUnique)
-            )
-        }
-    }
+    val ((vertexTableList, vertexRecordList), (edgeTableList, edgeRecordList)) =
+      Await.result(
+        for {
+          vertexResult <- for {
+            count <- vertexQuery.countAll
+            vertices <- Future
+              .sequence {
+                (0 to count.toInt).view.map { start =>
+                  vertexQuery
+                    .getList(start, 1)
+                    .map(_.map(vertex => (vertex.toDdl, vertex.toDml)))
+                }
+              }
+              .map(_.map(foldLeft(_, checkUnique)))
+          } yield foldLeft(vertices, checkUnique)
+          edgeResult <- for {
+            count <- edgeQuery.countAll
+            edges <- Future
+              .sequence {
+                (0 to count.toInt).view.map { start =>
+                  edgeQuery
+                    .getList(start, 1)
+                    .map(_.map(edge => (edge.toDdl, edge.toDml)))
+                }
+              }
+              .map(_.map(foldLeft(_, checkUnique)))
+          } yield foldLeft(edges, checkUnique)
+        } yield (vertexResult, edgeResult),
+        Duration.Inf
+      )
 
     UsecaseResponse(
-      Some(verticesDdl),
-      Some(verticesDml),
-      Some(edgesDdl),
-      Some(edgesDml)
+      Some(vertexTableList),
+      Some(vertexRecordList),
+      Some(edgeTableList),
+      Some(edgeRecordList)
     )
   }
 }

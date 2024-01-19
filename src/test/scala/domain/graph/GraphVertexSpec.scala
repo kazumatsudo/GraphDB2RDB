@@ -11,29 +11,31 @@ import domain.table.ddl.{TableList, TableName}
 import domain.table.dml.{RecordId, RecordKey, RecordList, RecordValue}
 import infrastructure.VertexQuery
 import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerFactory
-import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.funspec.AsyncFunSpec
 import org.scalatest.matchers.should.Matchers
 
 import scala.collection.parallel.immutable.ParMap
 
-class GraphVertexSpec extends AnyFunSpec with Matchers {
+class GraphVertexSpec extends AsyncFunSpec with Matchers {
   describe("toDdl") {
     it("get Database Column Information") {
       val graph = TinkerFactory.createModern().traversal()
       val vertexQuery = VertexQuery(graph)
-      val vertex = vertexQuery.getList(0, 1).head
+      val vertex = vertexQuery.getList(0, 1)
 
-      vertex.toDdl shouldBe TableList(
-        ParMap(
-          TableName("vertex_person") -> ColumnList(
-            ParMap(
-              ColumnName("id") -> ColumnTypeInt(ColumnLength(1)),
-              ColumnName("property_age") -> ColumnTypeInt(ColumnLength(2)),
-              ColumnName("property_name") -> ColumnTypeString(ColumnLength(5))
+      vertex.map { result =>
+        result.head.toDdl shouldBe TableList(
+          ParMap(
+            TableName("vertex_person") -> ColumnList(
+              ParMap(
+                ColumnName("id") -> ColumnTypeInt(ColumnLength(1)),
+                ColumnName("property_age") -> ColumnTypeInt(ColumnLength(2)),
+                ColumnName("property_name") -> ColumnTypeString(ColumnLength(5))
+              )
             )
           )
         )
-      )
+      }
     }
   }
 
@@ -41,19 +43,21 @@ class GraphVertexSpec extends AnyFunSpec with Matchers {
     it("get SQL Sentence") {
       val graph = TinkerFactory.createModern().traversal()
       val vertexQuery = VertexQuery(graph)
-      val vertex = vertexQuery.getList(0, 1).head
+      val vertex = vertexQuery.getList(0, 1)
 
-      vertex.toDml shouldBe RecordList(
-        ParMap(
-          RecordKey((TableName("vertex_person"), RecordId(1))) -> RecordValue(
-            ParMap(
-              "id" -> 1,
-              "property_name" -> "marko",
-              "property_age" -> 29
+      vertex.map { result =>
+        result.head.toDml shouldBe RecordList(
+          ParMap(
+            RecordKey((TableName("vertex_person"), RecordId(1))) -> RecordValue(
+              ParMap(
+                "id" -> 1,
+                "property_name" -> "marko",
+                "property_age" -> 29
+              )
             )
           )
         )
-      )
+      }
     }
 
     it("not to write extra comma") {

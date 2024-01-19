@@ -3,12 +3,13 @@ package domain.table.dml
 import domain.table.ddl.TableName
 import infrastructure.VertexQuery
 import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerFactory
-import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.funspec.AsyncFunSpec
 import org.scalatest.matchers.should.Matchers
 
 import scala.collection.parallel.immutable.ParMap
+import scala.concurrent.Future
 
-class RecordListSpec extends AnyFunSpec with Matchers {
+class RecordListSpec extends AsyncFunSpec with Matchers {
   describe("merge") {
     describe("success") {
       it("if RecordList has no value") {
@@ -70,8 +71,8 @@ class RecordListSpec extends AnyFunSpec with Matchers {
         val recordValue2 = RecordValue(ParMap(("int", 1)))
         val recordList2 = RecordList(ParMap((recordKey, recordValue2)))
 
-        intercept[IllegalArgumentException] {
-          recordList1.merge(recordList2, checkUnique = true)
+        recoverToSucceededIf[IllegalArgumentException] {
+          Future(recordList1.merge(recordList2, checkUnique = true))
         }
       }
     }
@@ -82,15 +83,15 @@ class RecordListSpec extends AnyFunSpec with Matchers {
       // TODO: not use Vertex
       val graph = TinkerFactory.createModern().traversal()
       val vertexQuery = VertexQuery(graph)
-      val vertex = vertexQuery.getList(0, vertexQuery.countAll.toInt)
-
-      val vertexAnalyzedResult = vertex
-        .map(_.toDml)
-        .reduce[RecordList] { case (accumulator, currentValue) =>
-          accumulator.merge(currentValue, checkUnique = false)
-        }
-
-      vertexAnalyzedResult.toSqlSentence.toSeq shouldBe List(
+      for {
+        count <- vertexQuery.countAll
+        vertex <- vertexQuery.getList(0, count.toInt)
+        vertexAnalyzedResult = vertex
+          .map(_.toDml)
+          .reduce[RecordList] { case (accumulator, currentValue) =>
+            accumulator.merge(currentValue, checkUnique = false)
+          }
+      } yield vertexAnalyzedResult.toSqlSentence.toSeq shouldBe List(
         "INSERT INTO vertex_person (id, property_age, property_name) VALUES (4, 32, \"josh\");",
         "INSERT INTO vertex_person (id, property_age, property_name) VALUES (6, 35, \"peter\");",
         "INSERT INTO vertex_person (id, property_age, property_name) VALUES (2, 27, \"vadas\");",

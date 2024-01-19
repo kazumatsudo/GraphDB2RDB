@@ -7,7 +7,6 @@ import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSo
 
 import scala.collection.SeqView
 import scala.concurrent.{ExecutionContext, Future}
-import scala.util.control.NonFatal
 
 final case class EdgeQuery(private val g: GraphTraversalSource)
     extends StrictLogging {
@@ -17,7 +16,9 @@ final case class EdgeQuery(private val g: GraphTraversalSource)
     * @return
     *   the number of all edges
     */
-  def countAll: Long = GremlinScala(g.E()).count().head()
+  def countAll()(implicit ec: ExecutionContext): Future[Long] = Future(
+    GremlinScala(g.E()).count().head()
+  )
 
   /** get in Edges List
     *
@@ -41,20 +42,13 @@ final case class EdgeQuery(private val g: GraphTraversalSource)
     * @return
     *   A list of Edges based on the specified pagination parameters.
     */
-  def getList(start: Int, count: Int): Seq[GraphEdge] = {
+  def getList(start: Int, count: Int)(implicit
+      ec: ExecutionContext
+  ): Future[SeqView[GraphEdge]] = Future {
     require(start >= 0, "start must be positive.")
     require(count >= 0, "count must be positive.")
 
-    try {
-      GremlinScala(g.E()).range(start, start + count).toList().map(GraphEdge)
-    } catch {
-      case NonFatal(e) =>
-        logger.error(
-          s"An exception has occurred when getEdgesList is called. start: $start, count: $count",
-          e
-        )
-        throw e
-    }
+    GremlinScala(g.E()).range(start, start + count).toList().map(GraphEdge).view
   }
 
   /** get out Edges List

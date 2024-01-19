@@ -1,13 +1,9 @@
 package usecase
 
-import domain.table.ddl.TableList
-import domain.table.dml.RecordList
 import infrastructure.{EdgeQuery, VertexQuery}
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource
 
 import java.util.concurrent.Executors.newFixedThreadPool
-import scala.collection.View
-import scala.collection.parallel.immutable.ParHashMap
 import scala.concurrent.duration.Duration
 import scala.concurrent.{Await, ExecutionContext, Future}
 
@@ -48,23 +44,6 @@ final case class UsingSpecificKeyList(
     val vertexQuery = VertexQuery(g)
     val edgeQuery = EdgeQuery(g)
 
-    def foldLeft(
-        value: View[(TableList, RecordList)]
-    ): (TableList, RecordList) = {
-      value.foldLeft(
-        (TableList(ParHashMap.empty), RecordList(ParHashMap.empty))
-      ) {
-        case (
-              (ddlAccumlator, dmlAccumlator),
-              (ddlCurrentValue, dmlCurrentValue)
-            ) =>
-          (
-            ddlAccumlator.merge(ddlCurrentValue),
-            dmlAccumlator.merge(dmlCurrentValue, checkUnique)
-          )
-      }
-    }
-
     val ((vertexTableList, vertexRecordList), (edgeTableList, edgeRecordList)) =
       Await.result(
         Future
@@ -85,7 +64,10 @@ final case class UsingSpecificKeyList(
                     edgeQuery
                       .getInEdgeList(vertex)
                       .map(edgeList =>
-                        foldLeft(edgeList.map(edge => (edge.toDdl, edge.toDml)))
+                        foldLeft(
+                          edgeList.map(edge => (edge.toDdl, edge.toDml)),
+                          checkUnique
+                        )
                       )
                   }
                 }
@@ -94,22 +76,32 @@ final case class UsingSpecificKeyList(
                     edgeQuery
                       .getOutEdgeList(vertex)
                       .map(edgeList =>
-                        foldLeft(edgeList.map(edge => (edge.toDdl, edge.toDml)))
+                        foldLeft(
+                          edgeList.map(edge => (edge.toDdl, edge.toDml)),
+                          checkUnique
+                        )
                       )
                   }
                 }
               } yield {
                 val verticesSql = {
-                  foldLeft(vertices.map(vertex => (vertex.toDdl, vertex.toDml)))
+                  foldLeft(
+                    vertices.map(vertex => (vertex.toDdl, vertex.toDml)),
+                    checkUnique
+                  )
                 }
-                val edgesSql = foldLeft(inEdgesSql ++ outEdgesSql)
+                val edgesSql =
+                  foldLeft((inEdgesSql ++ outEdgesSql), checkUnique)
                 (verticesSql, edgesSql)
               }
             }
           }
           .map { seq =>
             val (verticesSql, edgesSql) = seq.unzip
-            (foldLeft(verticesSql.view), foldLeft(edgesSql.view))
+            (
+              foldLeft(verticesSql.view, checkUnique),
+              foldLeft(edgesSql.view, checkUnique)
+            )
           },
         Duration.Inf
       )

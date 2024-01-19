@@ -7,7 +7,6 @@ import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSo
 
 import scala.collection.SeqView
 import scala.concurrent.{ExecutionContext, Future}
-import scala.util.control.NonFatal
 
 final case class VertexQuery(private val g: GraphTraversalSource)
     extends StrictLogging {
@@ -17,7 +16,9 @@ final case class VertexQuery(private val g: GraphTraversalSource)
     * @return
     *   the number of all vertices
     */
-  def countAll: Long = GremlinScala(g.V()).count().head()
+  def countAll()(implicit ec: ExecutionContext): Future[Long] = Future {
+    GremlinScala(g.V()).count().head()
+  }
 
   /** get Vertices List
     *
@@ -28,20 +29,17 @@ final case class VertexQuery(private val g: GraphTraversalSource)
     * @return
     *   A list of Vertices based on the specified pagination parameters.
     */
-  def getList(start: Int, count: Int): Seq[GraphVertex] = {
+  def getList(start: Int, count: Int)(implicit
+      ec: ExecutionContext
+  ): Future[SeqView[GraphVertex]] = Future {
     require(start >= 0, "start must be positive.")
     require(count >= 0, "count must be positive.")
 
-    try {
-      GremlinScala(g.V()).range(start, start + count).toList().map(GraphVertex)
-    } catch {
-      case NonFatal(e) =>
-        logger.error(
-          s"An exception has occurred when getVerticesList is called. start: $start, count: $count",
-          e
-        )
-        throw e
-    }
+    GremlinScala(g.V())
+      .range(start, start + count)
+      .toList()
+      .map(GraphVertex)
+      .view
   }
 
   /** get Vertices List searched by property key
