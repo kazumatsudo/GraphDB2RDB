@@ -57,7 +57,7 @@ object Main extends StrictLogging {
                   "analysis_method_using_specific_key_list_filepath"
                 )
               )
-              request <- JsonUtility.parseForUsingSpecificKeyListRequest(
+              request <- JsonUtility.readForUsingSpecificKeyListRequest(
                 jsonString
               )
             } yield UsingSpecificKeyList(g, request)

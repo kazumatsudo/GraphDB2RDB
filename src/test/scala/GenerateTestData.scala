@@ -4,7 +4,12 @@ import faker.Faker
 import gremlin.scala.Vertex
 import org.apache.tinkerpop.gremlin.process.traversal.AnonymousTraversalSource.traversal
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource
-import usecase.UsingSpecificKeyListRequest
+import usecase.{
+  UsingSpecificKeyListRequest,
+  UsingSpecificKeyListRequestKey,
+  UsingSpecificKeyListRequestLabel
+}
+import utils.{FileUtility, JsonUtility}
 
 import scala.util.{Random, Using}
 
@@ -16,6 +21,7 @@ object GenerateTestData extends StrictLogging {
 
   private def generateVertexAddress(g: GraphTraversalSource) = g
     .addV("address")
+    .property("addressId", Random.nextInt(Int.MaxValue))
     .property("buildingNumber", faker.buildingNumber)
     .property("city", faker.city)
     .property("state", faker.state.name)
@@ -27,6 +33,7 @@ object GenerateTestData extends StrictLogging {
 
     val vertex = g
       .addV("company")
+      .property("companyId", Random.nextInt(Int.MaxValue))
       .property("name", faker.companyName)
       .property("phoneNumber", faker.phoneNumber)
 
@@ -46,6 +53,7 @@ object GenerateTestData extends StrictLogging {
 
     val vertex = g
       .addV("person")
+      .property("personId", Random.nextInt(Int.MaxValue))
       .property("firstName", faker.firstName)
       .property("lastName", lastName)
       .property("age", age)
@@ -61,6 +69,7 @@ object GenerateTestData extends StrictLogging {
 
   private def generateVertexPokemon(g: GraphTraversalSource) = g
     .addV("pokemon")
+    .property("pokemonId", Random.nextInt(Int.MaxValue))
     .property("pokemonName", faker.pokemonName)
     .property("pokemonLocation", faker.pokemonLocation)
     .property("pokemonMove", faker.pokemonMove)
@@ -71,6 +80,7 @@ object GenerateTestData extends StrictLogging {
 
     val vertex = g
       .addV("school")
+      .property("schoolId", Random.nextInt(Int.MaxValue))
       .property("name", s"${faker.streetName} school")
       .property("phoneNumber", faker.phoneNumber)
 
@@ -90,6 +100,7 @@ object GenerateTestData extends StrictLogging {
     .addE("belongTo")
     .from(from)
     .to(to)
+    .property("belongToId", Random.nextInt(Int.MaxValue))
     .next()
 
   private def connectEdgeBreedPokemonTo(
@@ -103,6 +114,7 @@ object GenerateTestData extends StrictLogging {
       .addE("breedPokemon")
       .from(from)
       .to(to)
+      .property("breedPokemonId", Random.nextInt(Int.MaxValue))
       .property("caught", faker.pokemonLocation())
 
     if (wantPokemonToLearn) {
@@ -121,6 +133,7 @@ object GenerateTestData extends StrictLogging {
     .addE("parent")
     .from(from)
     .to(to)
+    .property("parentId", Random.nextInt(Int.MaxValue))
     .next()
 
   private def connectEdgeLive(
@@ -131,6 +144,7 @@ object GenerateTestData extends StrictLogging {
     .addE("live")
     .from(from)
     .to(to)
+    .property("edgeId", Random.nextInt(Int.MaxValue))
     .next()
 
   private def connectEdgeLocation(
@@ -141,6 +155,7 @@ object GenerateTestData extends StrictLogging {
     .addE("location")
     .from(from)
     .to(to)
+    .property("locationId", Random.nextInt(Int.MaxValue))
     .next()
 
   /** @param args
@@ -156,7 +171,7 @@ object GenerateTestData extends StrictLogging {
       val companyCount = 5
       val schoolCount = 5
 
-      logger.info("[ 1/ 1] start : generate person Vertices")
+      logger.info("[ 1/ 6] start : generate person Vertices")
 
       val verticesPerson =
         (0 until personCount)
@@ -193,20 +208,20 @@ object GenerateTestData extends StrictLogging {
             children :+ person :+ parent
           }
 
-      logger.info("[ 1/ 1] finish: generate person Vertices")
-      logger.info("[ 2/ 2] start : generate company Vertices")
+      logger.info("[ 1/ 6] finish: generate person Vertices")
+      logger.info("[ 2/ 6] start : generate company Vertices")
 
       val verticesCompany =
         (0 until companyCount).map(_ => generateVertexCompany(g))
 
-      logger.info("[ 2/ 2] finish: generate company Vertices")
-      logger.info("[ 3/ 3] start : generate school Vertices")
+      logger.info("[ 2/ 6] finish: generate company Vertices")
+      logger.info("[ 3/ 6] start : generate school Vertices")
 
       val verticesSchool =
         (0 until schoolCount).map(_ => generateVertexSchool(g))
 
-      logger.info("[ 3/ 3] finish: generate company Vertices")
-      logger.info("[ 4/ 4] start : generate person edges")
+      logger.info("[ 3/ 6] finish: generate company Vertices")
+      logger.info("[ 4/ 6] start : generate person edges")
 
       verticesPerson.foreach { person =>
         // a person has one address
@@ -231,15 +246,58 @@ object GenerateTestData extends StrictLogging {
         }
       }
 
-      logger.info("[ 4/ 4] finish: generate person edges")
-      logger.info("[ 5/ 5] start : generate person companies")
+      logger.info("[ 4/ 6] finish: generate person edges")
+      logger.info("[ 5/ 6] start : generate person companies")
 
       verticesCompany.foreach { company =>
         // a company has one address
         connectEdgeLocation(g, company, generateVertexAddress(g))
       }
 
-      logger.info("[ 5/ 5] finish : generate person companies")
+      logger.info("[ 5/ 6] finish: generate person companies")
+      logger.info(
+        "[ 6/ 6] start : generate using specific key list request json"
+      )
+
+      val usingSpecificKeyListRequest = UsingSpecificKeyListRequest(
+        Seq(
+          UsingSpecificKeyListRequestLabel(
+            "person",
+            Seq(
+              UsingSpecificKeyListRequestKey(
+                "personId",
+                verticesPerson.map(_.value[Int]("personId"))
+              )
+            )
+          ),
+          UsingSpecificKeyListRequestLabel(
+            "company",
+            Seq(
+              UsingSpecificKeyListRequestKey(
+                "companyId",
+                verticesCompany.map(_.value[Int]("companyId"))
+              )
+            )
+          ),
+          UsingSpecificKeyListRequestLabel(
+            "school",
+            Seq(
+              UsingSpecificKeyListRequestKey(
+                "schoolId",
+                verticesSchool.map(_.value[Int]("schoolId"))
+              )
+            )
+          )
+        )
+      )
+      val jsonString = JsonUtility.writeForUsingSpecificKeyListRequest(
+        usingSpecificKeyListRequest
+      )
+      FileUtility.writeJson("using_key_list_file", jsonString)
+
+      logger.info(
+        "[ 6/ 6] finish: generate using specific key list request json"
+      )
     }
   }
 }
