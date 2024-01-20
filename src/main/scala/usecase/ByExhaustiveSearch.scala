@@ -33,11 +33,12 @@ final case class ByExhaustiveSearch(
     for {
       // 1. generate vertex SQL
       (vertexTableList, vertexRecordList) <- for {
-        count <- Future { vertexQuery.countAll }
+        count <- vertexQuery.countAll
         vertices <- Future
           .sequence {
             (0 to count.toInt).view.map { start =>
-              Future { vertexQuery.getList(start, 1) }
+              vertexQuery
+                .getList(start, 1)
                 .map(_.map(vertex => (vertex.toDdl, vertex.toDml)))
             }
           }

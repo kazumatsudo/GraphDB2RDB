@@ -7,6 +7,7 @@ import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSo
 import utils.Config
 
 import scala.collection.SeqView
+import scala.concurrent.{ExecutionContext, Future}
 import scala.util.control.NonFatal
 
 final case class VertexQuery(
@@ -19,7 +20,9 @@ final case class VertexQuery(
     * @return
     *   the number of all vertices
     */
-  def countAll: Long = GremlinScala(g.V()).count().head()
+  def countAll()(implicit ec: ExecutionContext): Future[Long] = Future {
+    GremlinScala(g.V()).count().head()
+  }
 
   /** get Vertices List
     *
@@ -30,24 +33,17 @@ final case class VertexQuery(
     * @return
     *   A list of Vertices based on the specified pagination parameters.
     */
-  def getList(start: Int, count: Int): SeqView[GraphVertex] = {
+  def getList(start: Int, count: Int)(implicit
+      ec: ExecutionContext
+  ): Future[SeqView[GraphVertex]] = Future {
     require(start >= 0, "start must be positive.")
     require(count >= 0, "count must be positive.")
 
-    try {
-      GremlinScala(g.V())
-        .range(start, start + count)
-        .toList()
-        .view
-        .map(GraphVertex(_, config))
-    } catch {
-      case NonFatal(e) =>
-        logger.error(
-          s"An exception has occurred when getVerticesList is called. start: $start, count: $count",
-          e
-        )
-        throw e
-    }
+    GremlinScala(g.V())
+      .range(start, start + count)
+      .toList()
+      .view
+      .map(GraphVertex(_, config))
   }
 
   /** get Vertices List searched by property key
@@ -65,7 +61,7 @@ final case class VertexQuery(
       label: String,
       key: String,
       value: Any
-  ): SeqView[GraphVertex] = {
+  )(implicit ec: ExecutionContext): Future[SeqView[GraphVertex]] = Future {
     require(label.nonEmpty, "label must not be empty.")
     require(key.nonEmpty, "key must not be empty.")
 

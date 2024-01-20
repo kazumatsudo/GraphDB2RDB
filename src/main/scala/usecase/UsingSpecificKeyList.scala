@@ -52,13 +52,11 @@ final case class UsingSpecificKeyList(
             keyValue <- label.value.view
             value <- keyValue.value.view
           } yield for {
-            vertices <- Future {
-              vertexQuery.getListByPropertyKey(
-                label.label,
-                keyValue.key,
-                value
-              )
-            }
+            vertices <- vertexQuery.getListByPropertyKey(
+              label.label,
+              keyValue.key,
+              value
+            )
             inEdgesSql <- Future.sequence {
               vertices.map { vertex =>
                 edgeQuery

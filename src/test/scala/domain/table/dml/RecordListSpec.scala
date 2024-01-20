@@ -3,11 +3,13 @@ package domain.table.dml
 import domain.table.ddl.TableName
 import infrastructure.VertexQuery
 import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerFactory
-import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.funspec.AsyncFunSpec
 import org.scalatest.matchers.should.Matchers
 import utils.Config
 
-class RecordListSpec extends AnyFunSpec with Matchers {
+import scala.concurrent.Future
+
+class RecordListSpec extends AsyncFunSpec with Matchers {
   private val config = Config.default
 
   describe("merge") {
@@ -71,8 +73,8 @@ class RecordListSpec extends AnyFunSpec with Matchers {
         val recordValue2 = RecordValue(Map(("int", 1)))
         val recordList2 = RecordList(Map((recordKey, recordValue2)))
 
-        intercept[IllegalArgumentException] {
-          recordList1.merge(recordList2, checkUnique = true)
+        recoverToSucceededIf[IllegalArgumentException] {
+          Future { recordList1.merge(recordList2, checkUnique = true) }
         }
       }
     }
@@ -83,21 +85,39 @@ class RecordListSpec extends AnyFunSpec with Matchers {
       // TODO: not use Vertex
       val graph = TinkerFactory.createModern().traversal()
       val vertexQuery = VertexQuery(graph, config)
-      val vertex = vertexQuery.getList(0, vertexQuery.countAll.toInt)
-
-      val vertexAnalyzedResult = vertex
-        .map(_.toDml)
-        .reduce[RecordList] { case (accumulator, currentValue) =>
-          accumulator.merge(currentValue, checkUnique = false)
-        }
-
-      vertexAnalyzedResult.toSqlSentence.toSeq shouldBe Seq(
-        "INSERT INTO vertex_software (id, property_lang, property_name) VALUES (5, 'java', 'ripple');",
-        "INSERT INTO vertex_person (id, property_age, property_name) VALUES (1, 29, 'marko');",
-        "INSERT INTO vertex_software (id, property_lang, property_name) VALUES (3, 'java', 'lop');",
-        "INSERT INTO vertex_person (id, property_age, property_name) VALUES (2, 27, 'vadas');",
-        "INSERT INTO vertex_person (id, property_age, property_name) VALUES (6, 35, 'peter');",
-        "INSERT INTO vertex_person (id, property_age, property_name) VALUES (4, 32, 'josh');"
+      for {
+        count <- vertexQuery.countAll
+        vertex <- vertexQuery.getList(0, count.toInt)
+        result = vertex
+          .map(_.toDml)
+          .reduce[RecordList] { case (accumulator, currentValue) =>
+            accumulator.merge(currentValue, checkUnique = false)
+          }
+      } yield result shouldBe RecordList(
+        Map(
+          RecordKey((TableName("vertex_person"), RecordId(1))) -> RecordValue(
+            Map("id" -> 1, "property_age" -> 29, "property_name" -> "marko")
+          ),
+          RecordKey((TableName("vertex_person"), RecordId(2))) -> RecordValue(
+            Map("id" -> 2, "property_age" -> 27, "property_name" -> "vadas")
+          ),
+          RecordKey((TableName("vertex_software"), RecordId(3))) -> RecordValue(
+            Map("id" -> 3, "property_lang" -> "java", "property_name" -> "lop")
+          ),
+          RecordKey((TableName("vertex_person"), RecordId(4))) -> RecordValue(
+            Map("id" -> 4, "property_age" -> 32, "property_name" -> "josh")
+          ),
+          RecordKey((TableName("vertex_software"), RecordId(5))) -> RecordValue(
+            Map(
+              "id" -> 5,
+              "property_lang" -> "java",
+              "property_name" -> "ripple"
+            )
+          ),
+          RecordKey((TableName("vertex_person"), RecordId(6))) -> RecordValue(
+            Map("id" -> 6, "property_age" -> 35, "property_name" -> "peter")
+          )
+        )
       )
     }
   }
