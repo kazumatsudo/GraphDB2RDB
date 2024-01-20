@@ -61,7 +61,8 @@ final case class UsingSpecificKeyList(
             }
             inEdgesSql <- Future.sequence {
               vertices.map { vertex =>
-                Future { edgeQuery.getInEdgeList(vertex) }
+                edgeQuery
+                  .getInEdgeList(vertex)
                   .map(edgeList =>
                     foldLeft(
                       edgeList.map(edge => (edge.toDdl, edge.toDml)),
@@ -72,7 +73,8 @@ final case class UsingSpecificKeyList(
             }
             outEdgesSql <- Future.sequence {
               vertices.map { vertex =>
-                Future { edgeQuery.getOutEdgeList(vertex) }
+                edgeQuery
+                  .getOutEdgeList(vertex)
                   .map(edgeList =>
                     foldLeft(
                       edgeList.map(edge => (edge.toDdl, edge.toDml)),

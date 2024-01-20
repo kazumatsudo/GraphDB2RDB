@@ -46,11 +46,12 @@ final case class ByExhaustiveSearch(
 
       // 2. generate edge SQL
       (edgeTableList, edgeRecordList) <- for {
-        count <- Future { edgeQuery.countAll }
+        count <- edgeQuery.countAll
         edges <- Future
           .sequence {
             (0 to count.toInt).view.map { start =>
-              Future { edgeQuery.getList(start, 1) }
+              edgeQuery
+                .getList(start, 1)
                 .map(_.map(edge => (edge.toDdl, edge.toDml)))
             }
           }
