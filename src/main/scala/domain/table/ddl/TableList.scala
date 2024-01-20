@@ -2,6 +2,8 @@ package domain.table.ddl
 
 import domain.table.ddl.column.ColumnList
 
+import scala.collection.View
+
 case class TableList(private val value: Map[TableName, ColumnList])
     extends AnyVal {
 
@@ -27,11 +29,8 @@ case class TableList(private val value: Map[TableName, ColumnList])
       }
     }
 
-  def toSqlSentence: String =
-    value
-      .map { case (tableName, columnList) =>
-        s"CREATE TABLE IF NOT EXISTS ${tableName.toSqlSentence} (${columnList.toSqlSentence});"
-      }
-      .mkString("\n")
+  def toSqlSentence: View[String] = value.map { case (tableName, columnList) =>
+    s"CREATE TABLE IF NOT EXISTS ${tableName.toSqlSentence} (${columnList.toSqlSentence});"
+  }.view
 
 }

@@ -1,5 +1,7 @@
 package domain.table.dml
 
+import scala.collection.View
+
 final case class RecordList(private val value: Map[RecordKey, RecordValue])
     extends {
 
@@ -32,11 +34,8 @@ final case class RecordList(private val value: Map[RecordKey, RecordValue])
     }
   }
 
-  def toSqlSentence: String =
-    value
-      .map { case (recordKey, recordValue) =>
-        val (keys, values) = recordValue.toSqlSentence
-        s"INSERT INTO ${recordKey.toSqlSentence} ($keys) VALUES ($values);"
-      }
-      .mkString("\n")
+  def toSqlSentence: View[String] = value.map { case (recordKey, recordValue) =>
+    val (keys, values) = recordValue.toSqlSentence
+    s"INSERT INTO ${recordKey.toSqlSentence} ($keys) VALUES ($values);"
+  }.view
 }

@@ -1,13 +1,5 @@
 package domain.table.ddl.column
 
-import domain.table.ddl.column.{
-  ColumnLength,
-  ColumnList,
-  ColumnName,
-  ColumnTypeInt,
-  ColumnTypeString,
-  ColumnTypeUnknown
-}
 import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.matchers.should.Matchers
 
@@ -58,7 +50,7 @@ class ColumnListSpec extends AnyFunSpec with Matchers {
     it("success") {
       columnList1
         .merge(columnList2)
-        .toSqlSentence shouldBe "address VARCHAR(255), created_at TEXT, id INT(11), name VARCHAR(50), updated_at TEXT"
+        .toSqlSentence shouldBe "address VARCHAR(255), created_at TEXT, id INT, name VARCHAR(50), updated_at TEXT"
     }
   }
 }
