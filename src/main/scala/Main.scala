@@ -78,7 +78,7 @@ object Main extends StrictLogging {
 
       /* output SQL */
       verticesDdlResult.foreach { vertexDdl =>
-        FileUtility.outputSql(
+        FileUtility.writeSql(
           config.getString("sql_ddl_vertex"),
           vertexDdl.toSqlSentence
         )
@@ -89,7 +89,7 @@ object Main extends StrictLogging {
       )
 
       verticesDmlResult.foreach { vertexDml =>
-        FileUtility.outputSql(
+        FileUtility.writeSql(
           config.getString("sql_dml_vertex"),
           vertexDml.toSqlSentence
         )
@@ -100,7 +100,7 @@ object Main extends StrictLogging {
       )
 
       edgesDdlResult.foreach { edgesDdlResult =>
-        FileUtility.outputSql(
+        FileUtility.writeSql(
           config.getString("sql_ddl_edge"),
           edgesDdlResult.toSqlSentence
         )
@@ -108,7 +108,7 @@ object Main extends StrictLogging {
       displayOperationResult("generate edges    DDL", edgesDdlResult.nonEmpty)
 
       edgesDmlResult.foreach { edgesDmlResult =>
-        FileUtility.outputSql(
+        FileUtility.writeSql(
           config.getString("sql_dml_edge"),
           edgesDmlResult.toSqlSentence
         )

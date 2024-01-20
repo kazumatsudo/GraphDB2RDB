@@ -32,7 +32,7 @@ object FileUtility {
     }
   }
 
-  def outputSql(filename: String, sqlSentence: String): Unit = {
+  def writeSql(filename: String, sqlSentence: String): Unit = {
     val config = ConfigFactory.load()
     val directory = new File(config.getString("sql_output_directory"))
 
