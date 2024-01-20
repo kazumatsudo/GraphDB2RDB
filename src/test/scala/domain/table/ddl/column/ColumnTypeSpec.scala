@@ -555,10 +555,10 @@ class ColumnTypeSpec extends AnyFunSpec with Matchers {
   describe("toSqlSentence") {
     it("success") {
       ColumnType.apply(false).toSqlSentence shouldBe "BOOLEAN"
-      ColumnType.apply(1.toByte).toSqlSentence shouldBe "TINYINT(1)"
-      ColumnType.apply(1.toShort).toSqlSentence shouldBe "SMALLINT(1)"
-      ColumnType.apply(1).toSqlSentence shouldBe "INT(1)"
-      ColumnType.apply(1.toLong).toSqlSentence shouldBe "INT(1)"
+      ColumnType.apply(1.toByte).toSqlSentence shouldBe "TINYINT"
+      ColumnType.apply(1.toShort).toSqlSentence shouldBe "SMALLINT"
+      ColumnType.apply(1).toSqlSentence shouldBe "INT"
+      ColumnType.apply(1.toLong).toSqlSentence shouldBe "INT"
       ColumnType.apply(1.1.toFloat).toSqlSentence shouldBe "FLOAT"
       ColumnType.apply(1.1).toSqlSentence shouldBe "DOUBLE"
       ColumnType.apply(UUID.randomUUID()).toSqlSentence shouldBe "CHAR(36)"

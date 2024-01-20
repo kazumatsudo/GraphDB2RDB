@@ -16,20 +16,20 @@ case object ColumnTypeBoolean extends ColumnType {
 }
 
 case class ColumnTypeByte(private val length: ColumnLength) extends ColumnType {
-  override def toSqlSentence: String = s"TINYINT(${length.toSqlSentence})"
+  override def toSqlSentence: String = s"TINYINT"
 }
 
 case class ColumnTypeShort(private val length: ColumnLength)
     extends ColumnType {
-  override def toSqlSentence: String = s"SMALLINT(${length.toSqlSentence})"
+  override def toSqlSentence: String = s"SMALLINT"
 }
 
 case class ColumnTypeInt(private val length: ColumnLength) extends ColumnType {
-  override def toSqlSentence: String = s"INT(${length.toSqlSentence})"
+  override def toSqlSentence: String = s"INT"
 }
 
 case class ColumnTypeLong(private val length: ColumnLength) extends ColumnType {
-  override def toSqlSentence: String = s"INT(${length.toSqlSentence})"
+  override def toSqlSentence: String = s"INT"
 }
 
 case class ColumnTypeFloat(private val length: ColumnLength)
