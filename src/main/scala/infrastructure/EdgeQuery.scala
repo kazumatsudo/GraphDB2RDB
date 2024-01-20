@@ -6,6 +6,8 @@ import gremlin.scala.GremlinScala
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource
 import utils.Config
 
+import scala.collection.SeqView
+import scala.concurrent.{ExecutionContext, Future}
 import scala.util.control.NonFatal
 
 final case class EdgeQuery(
@@ -18,7 +20,9 @@ final case class EdgeQuery(
     * @return
     *   the number of all edges
     */
-  def countAll: Long = GremlinScala(g.E()).count().head()
+  def countAll()(implicit ec: ExecutionContext): Future[Long] = Future(
+    GremlinScala(g.E()).count().head()
+  )
 
   /** get in Edges List
     *
@@ -27,8 +31,14 @@ final case class EdgeQuery(
     * @return
     *   A list of Edge
     */
-  def getInEdgeList(vertex: GraphVertex): Seq[GraphEdge] = {
-    GremlinScala(g.V(vertex.id)).inE().toList().map(GraphEdge(_, config))
+  def getInEdgeList(
+      vertex: GraphVertex
+  )(implicit ec: ExecutionContext): Future[SeqView[GraphEdge]] = Future {
+    GremlinScala(g.V(vertex.id))
+      .inE()
+      .toList()
+      .view
+      .map(GraphEdge(_, config))
   }
 
   /** get Edges List
@@ -40,7 +50,9 @@ final case class EdgeQuery(
     * @return
     *   A list of Edges based on the specified pagination parameters.
     */
-  def getList(start: Int, count: Int): Seq[GraphEdge] = {
+  def getList(start: Int, count: Int)(implicit
+      ec: ExecutionContext
+  ): Future[SeqView[GraphEdge]] = Future {
     require(start >= 0, "start must be positive.")
     require(count >= 0, "count must be positive.")
 
@@ -48,6 +60,7 @@ final case class EdgeQuery(
       GremlinScala(g.E())
         .range(start, start + count)
         .toList()
+        .view
         .map(GraphEdge(_, config))
     } catch {
       case NonFatal(e) =>
@@ -66,7 +79,13 @@ final case class EdgeQuery(
     * @return
     *   A list of Edge
     */
-  def getOutEdgeList(vertex: GraphVertex): Seq[GraphEdge] = {
-    GremlinScala(g.V(vertex.id)).outE().toList().map(GraphEdge(_, config))
+  def getOutEdgeList(
+      vertex: GraphVertex
+  )(implicit ec: ExecutionContext): Future[SeqView[GraphEdge]] = Future {
+    GremlinScala(g.V(vertex.id))
+      .outE()
+      .toList()
+      .view
+      .map(GraphEdge(_, config))
   }
 }

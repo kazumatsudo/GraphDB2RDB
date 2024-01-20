@@ -13,37 +13,35 @@ class MainSpec extends AsyncFunSpec with Matchers {
     it("H2") {
       val graph = TinkerFactory.createModern().traversal()
       val usecase = ByExhaustiveSearch(graph, config)
-      val (
-        verticesDdlResult,
-        verticesDmlResult,
-        edgesDdlResult,
-        edgesDmlResult
-      ) = usecase.execute(checkUnique = true)
 
       val result = for {
-        verticesDdl <- verticesDdlResult
-        verticesDml <- verticesDmlResult
-        edgesDdl <- edgesDdlResult
-        edgesDml <- edgesDmlResult
-      } yield {
-        val database = Database.forConfig("database-h2")
-        database.run(
+        usecaseResponse <- usecase.execute(checkUnique = true)
+        database = Database.forConfig("database-h2")
+        result <- database.run(
           DBIO.sequence(
-            verticesDdl.toSqlSentence.map(sql => sqlu"#$sql").toSeq ++
-              edgesDdl.toSqlSentence.map(sql => sqlu"#$sql").toSeq ++
-              verticesDml.toSqlSentence.map(sql => sqlu"#$sql").toSeq ++
-              edgesDml.toSqlSentence.map(sql => sqlu"#$sql").toSeq
+            usecaseResponse.verticesDdl.toSqlSentence
+              .map(sql => sqlu"#$sql")
+              ++
+                usecaseResponse.edgesDdl.toSqlSentence
+                  .map(sql => sqlu"#$sql")
+                ++
+                usecaseResponse.verticesDml.toSqlSentence
+                  .map(sql => sqlu"#$sql")
+                ++
+                usecaseResponse.edgesDml.toSqlSentence
+                  .map(sql => sqlu"#$sql")
           )
         )
-      }
+      } yield result
 
-      result match {
-        case Some(value) => value.map { _ => succeed }
-        case None =>
+      result
+        .map { _ => succeed }
+        .recover { case e =>
           fail(
-            s"usecase#execute returns None. verticesDdlResult: $verticesDdlResult, verticesDmlResult: $verticesDmlResult, edgesDdlResult: $edgesDdlResult, edgesDmlResult: $edgesDmlResult"
+            s"usecase#execute returns None. e: ${e.getMessage}",
+            e
           )
-      }
+        }
     }
   }
 }

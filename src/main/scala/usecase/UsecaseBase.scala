@@ -6,29 +6,38 @@ import domain.table.dml.RecordList
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource
 import utils.Config
 
-import scala.util.control.NonFatal
+import scala.collection.View
+import scala.concurrent.{ExecutionContext, Future}
+
+final case class UsecaseResponse(
+    verticesDdl: TableList,
+    verticesDml: RecordList,
+    edgesDdl: TableList,
+    edgesDml: RecordList
+)
 
 trait UsecaseBase extends StrictLogging {
 
   protected val g: GraphTraversalSource
   protected val config: Config
 
-  protected def executeWithExceptionHandling[T](
-      function: => T
-  ): Option[T] = {
-    try {
-      Some(function)
-    } catch {
-      case NonFatal(_) => None
+  protected def foldLeft(
+      value: View[(TableList, RecordList)],
+      checkUnique: Boolean
+  ): (TableList, RecordList) = {
+    value.foldLeft((TableList(Map.empty), RecordList(Map.empty))) {
+      case (
+            (ddlAccumlator, dmlAccumlator),
+            (ddlCurrentValue, dmlCurrentValue)
+          ) =>
+        (
+          ddlAccumlator.merge(ddlCurrentValue),
+          dmlAccumlator.merge(dmlCurrentValue, checkUnique)
+        )
     }
   }
 
-  def execute(
-      checkUnique: Boolean
-  ): (
-      Option[TableList],
-      Option[RecordList],
-      Option[TableList],
-      Option[RecordList]
-  )
+  def execute(checkUnique: Boolean)(implicit
+      ec: ExecutionContext
+  ): Future[UsecaseResponse]
 }
