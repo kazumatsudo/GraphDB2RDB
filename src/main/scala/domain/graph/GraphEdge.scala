@@ -1,22 +1,23 @@
 package domain.graph
 
-import com.typesafe.config.ConfigFactory
 import domain.table.ddl.column.{ColumnList, ColumnName, ColumnType}
 import domain.table.ddl.{TableList, TableName}
 import domain.table.dml.{RecordId, RecordKey, RecordList, RecordValue}
 import gremlin.scala.Edge
+import utils.Config
 
 import scala.jdk.CollectionConverters.SetHasAsScala
 
-case class GraphEdge(private val value: Edge) {
-
-  private val config = ConfigFactory.load()
+case class GraphEdge(private val value: Edge, private val config: Config) {
 
   private val tableName = TableName(
-    s"${config.getString("table_name_edge")}_${value.label()}"
+    s"${config.tableName.edge}_${value.label()}"
   )
-  private val columnNamePrefixProperty =
-    config.getString("column_name_prefix_property")
+  private val columnNamePrefixProperty = config.columnName.prefixProperty
+
+  private val columnNameEdgeId = config.columnName.edgeId
+  private val columnNameEdgeInVId = config.columnName.edgeInVId
+  private val columnNameEdgeOutVId = config.columnName.edgeOutVId
 
   private val id = value.id()
 
@@ -27,20 +28,18 @@ case class GraphEdge(private val value: Edge) {
     */
   def toDdl: TableList =
     TableList {
-      val idColumn = Map(
-        ColumnName(config.getString("column_name_edge_id")) -> ColumnType
-          .apply(id)
-      )
+      val idColumn = Map(ColumnName(columnNameEdgeId) -> ColumnType.apply(id))
       val inVColumn =
         Map(
-          ColumnName(config.getString("column_name_edge_in_v_id")) -> ColumnType
-            .apply(value.inVertex().id())
+          ColumnName(columnNameEdgeInVId) -> ColumnType.apply(
+            value.inVertex().id()
+          )
         )
       val outVColumn =
         Map(
-          ColumnName(
-            config.getString("column_name_edge_out_v_id")
-          ) -> ColumnType.apply(value.outVertex().id())
+          ColumnName(columnNameEdgeOutVId) -> ColumnType.apply(
+            value.outVertex().id()
+          )
         )
 
       // TODO: pull request for gremlin-scala
@@ -71,15 +70,10 @@ case class GraphEdge(private val value: Edge) {
       }
       .toMap
 
-    val recordValue = Map(
-      (config.getString("column_name_edge_id"), value.id())
+    val recordValue = Map(columnNameEdgeId -> value.id()) ++ Map(
+      columnNameEdgeInVId -> value.inVertex().id()
     ) ++ Map(
-      (config.getString("column_name_edge_in_v_id"), value.inVertex().id())
-    ) ++ Map(
-      (
-        config.getString("column_name_edge_out_v_id"),
-        value.outVertex().id()
-      )
+      columnNameEdgeOutVId -> value.outVertex().id()
     ) ++ propertyColumnList
 
     RecordList(

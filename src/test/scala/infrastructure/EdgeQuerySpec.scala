@@ -22,7 +22,7 @@ class EdgeQuerySpec extends AnyFunSpec with Matchers {
     it("get inE list") {
       val graph = TinkerFactory.createModern().traversal()
       val edgeQuery = EdgeQuery(graph, config)
-      val edgeList = GremlinScala(graph.E()).toList().map(GraphEdge)
+      val edgeList = GremlinScala(graph.E()).toList().map(GraphEdge(_, config))
       edgeQuery.getInEdgeList(
         GraphVertex(GremlinScala(graph.V()).toList()(1))
       ) shouldBe Seq(
@@ -54,7 +54,7 @@ class EdgeQuerySpec extends AnyFunSpec with Matchers {
       val graph = TinkerFactory.createModern().traversal()
       val edgeQuery = EdgeQuery(graph, config)
       edgeQuery.getList(0, 1) shouldBe Seq(
-        GraphEdge(GremlinScala(graph.E()).head())
+        GraphEdge(GremlinScala(graph.E()).head(), config)
       )
     }
   }
@@ -63,7 +63,7 @@ class EdgeQuerySpec extends AnyFunSpec with Matchers {
     it("get outE list") {
       val graph = TinkerFactory.createModern().traversal()
       val edgeQuery = EdgeQuery(graph, config)
-      val edgeList = GremlinScala(graph.E()).toList().map(GraphEdge)
+      val edgeList = GremlinScala(graph.E()).toList().map(GraphEdge(_, config))
       edgeQuery.getOutEdgeList(GraphVertex(graph.V().next())) shouldBe Seq(
         edgeList(2),
         edgeList.head,

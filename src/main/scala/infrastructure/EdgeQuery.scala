@@ -28,7 +28,7 @@ final case class EdgeQuery(
     *   A list of Edge
     */
   def getInEdgeList(vertex: GraphVertex): Seq[GraphEdge] = {
-    GremlinScala(g.V(vertex.id)).inE().toList().map(GraphEdge)
+    GremlinScala(g.V(vertex.id)).inE().toList().map(GraphEdge(_, config))
   }
 
   /** get Edges List
@@ -45,7 +45,10 @@ final case class EdgeQuery(
     require(count >= 0, "count must be positive.")
 
     try {
-      GremlinScala(g.E()).range(start, start + count).toList().map(GraphEdge)
+      GremlinScala(g.E())
+        .range(start, start + count)
+        .toList()
+        .map(GraphEdge(_, config))
     } catch {
       case NonFatal(e) =>
         logger.error(
@@ -64,6 +67,6 @@ final case class EdgeQuery(
     *   A list of Edge
     */
   def getOutEdgeList(vertex: GraphVertex): Seq[GraphEdge] = {
-    GremlinScala(g.V(vertex.id)).outE().toList().map(GraphEdge)
+    GremlinScala(g.V(vertex.id)).outE().toList().map(GraphEdge(_, config))
   }
 }

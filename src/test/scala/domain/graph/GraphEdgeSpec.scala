@@ -66,7 +66,7 @@ class GraphEdgeSpec extends AnyFunSpec with Matchers {
       val vertex2 = graph.addV("testVertex2").next()
       val edge = graph.V(vertex1).addE("testEdge").to(V(vertex2)).next()
 
-      val graphEdge = GraphEdge(edge)
+      val graphEdge = GraphEdge(edge, config)
       graphEdge.toDml shouldBe RecordList(
         Map(
           RecordKey((TableName("edge_testEdge"), RecordId(14))) -> RecordValue(
