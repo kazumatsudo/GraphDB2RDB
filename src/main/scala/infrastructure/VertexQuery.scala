@@ -6,6 +6,7 @@ import gremlin.scala.{GremlinScala, Key}
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource
 import utils.Config
 
+import scala.collection.SeqView
 import scala.util.control.NonFatal
 
 final case class VertexQuery(
@@ -29,7 +30,7 @@ final case class VertexQuery(
     * @return
     *   A list of Vertices based on the specified pagination parameters.
     */
-  def getList(start: Int, count: Int): Seq[GraphVertex] = {
+  def getList(start: Int, count: Int): SeqView[GraphVertex] = {
     require(start >= 0, "start must be positive.")
     require(count >= 0, "count must be positive.")
 
@@ -37,6 +38,7 @@ final case class VertexQuery(
       GremlinScala(g.V())
         .range(start, start + count)
         .toList()
+        .view
         .map(GraphVertex(_, config))
     } catch {
       case NonFatal(e) =>

@@ -40,7 +40,7 @@ class VertexQuerySpec extends AnyFunSpec with Matchers {
     it("get the number of all vertices") {
       val graph = TinkerFactory.createModern().traversal()
       val vertexQuery = VertexQuery(graph, config)
-      vertexQuery.getList(0, 1) shouldBe Seq(
+      vertexQuery.getList(0, 1).toSeq shouldBe Seq(
         GraphVertex(GremlinScala(graph.V()).head(), config)
       )
     }

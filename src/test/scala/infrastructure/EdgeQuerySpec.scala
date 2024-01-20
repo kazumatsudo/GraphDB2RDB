@@ -53,7 +53,7 @@ class EdgeQuerySpec extends AnyFunSpec with Matchers {
     it("get the number of all edges") {
       val graph = TinkerFactory.createModern().traversal()
       val edgeQuery = EdgeQuery(graph, config)
-      edgeQuery.getList(0, 1) shouldBe Seq(
+      edgeQuery.getList(0, 1).toSeq shouldBe Seq(
         GraphEdge(GremlinScala(graph.E()).head(), config)
       )
     }

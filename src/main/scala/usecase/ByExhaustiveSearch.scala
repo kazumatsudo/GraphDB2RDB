@@ -1,7 +1,5 @@
 package usecase
 
-import domain.table.ddl.TableList
-import domain.table.dml.RecordList
 import infrastructure.{EdgeQuery, VertexQuery}
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource
 import utils.Config
@@ -27,71 +25,42 @@ final case class ByExhaustiveSearch(
 
   override def execute(
       checkUnique: Boolean
-  )(implicit ec: ExecutionContext): Future[UsecaseResponse] = Future {
+  )(implicit ec: ExecutionContext): Future[UsecaseResponse] = {
 
-    // 1. generate vertex SQL
-    val (verticesDdl, verticesDml) = {
-      val vertexQuery = VertexQuery(g, config)
-      val totalVertexCount = vertexQuery.countAll.toInt
+    val vertexQuery = VertexQuery(g, config)
+    val edgeQuery = EdgeQuery(g, config)
 
-      (0 to totalVertexCount).view
-        .flatMap { start =>
-          vertexQuery
-            .getList(start, 1)
-            .headOption
-            .map(vertex =>
-              (
-                vertex.toDdl,
-                vertex.toDml
-              )
-            )
-        }
-        .reduce[(TableList, RecordList)] {
-          case (
-                (tableListAccumlator, dmlAccumlator),
-                (tableListCurrentValue, dmlCurrentValue)
-              ) =>
-            (
-              tableListAccumlator.merge(tableListCurrentValue),
-              dmlAccumlator.merge(dmlCurrentValue, checkUnique)
-            )
-        }
-    }
+    for {
+      // 1. generate vertex SQL
+      (vertexTableList, vertexRecordList) <- for {
+        count <- Future { vertexQuery.countAll }
+        vertices <- Future
+          .sequence {
+            (0 to count.toInt).view.map { start =>
+              Future { vertexQuery.getList(start, 1) }
+                .map(_.map(vertex => (vertex.toDdl, vertex.toDml)))
+            }
+          }
+          .map(_.map(foldLeft(_, checkUnique)))
+      } yield foldLeft(vertices, checkUnique)
 
-    // 2. generate edge SQL
-    val (edgesDdl, edgesDml) = {
-      val edgeQuery = EdgeQuery(g, config)
-      val totalEdgeCount = edgeQuery.countAll.toInt
-
-      (0 to totalEdgeCount).view
-        .flatMap { start =>
-          edgeQuery
-            .getList(start, 1)
-            .headOption
-            .map(edge =>
-              (
-                edge.toDdl,
-                edge.toDml
-              )
-            )
-        }
-        .reduce[(TableList, RecordList)] {
-          case (
-                (tableListAccumlator, dmlAccumlator),
-                (tableListCurrentValue, dmlCurrentValue)
-              ) =>
-            (
-              tableListAccumlator.merge(tableListCurrentValue),
-              dmlAccumlator.merge(dmlCurrentValue, checkUnique)
-            )
-        }
-    }
-
-    UsecaseResponse(
-      verticesDdl,
-      verticesDml,
-      edgesDdl,
-      edgesDml
+      // 2. generate edge SQL
+      (edgeTableList, edgeRecordList) <- for {
+        count <- Future { edgeQuery.countAll }
+        edges <- Future
+          .sequence {
+            (0 to count.toInt).view.map { start =>
+              Future { edgeQuery.getList(start, 1) }
+                .map(_.map(edge => (edge.toDdl, edge.toDml)))
+            }
+          }
+          .map(_.map(foldLeft(_, checkUnique)))
+      } yield foldLeft(edges, checkUnique)
+    } yield UsecaseResponse(
+      vertexTableList,
+      vertexRecordList,
+      edgeTableList,
+      edgeRecordList
     )
   }
 }

@@ -6,6 +6,7 @@ import gremlin.scala.GremlinScala
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource
 import utils.Config
 
+import scala.collection.SeqView
 import scala.util.control.NonFatal
 
 final case class EdgeQuery(
@@ -40,7 +41,7 @@ final case class EdgeQuery(
     * @return
     *   A list of Edges based on the specified pagination parameters.
     */
-  def getList(start: Int, count: Int): Seq[GraphEdge] = {
+  def getList(start: Int, count: Int): SeqView[GraphEdge] = {
     require(start >= 0, "start must be positive.")
     require(count >= 0, "count must be positive.")
 
@@ -48,6 +49,7 @@ final case class EdgeQuery(
       GremlinScala(g.E())
         .range(start, start + count)
         .toList()
+        .view
         .map(GraphEdge(_, config))
     } catch {
       case NonFatal(e) =>
