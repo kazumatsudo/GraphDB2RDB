@@ -48,5 +48,6 @@ libraryDependencies ++= Seq(
 
 // test
 libraryDependencies ++= Seq(
+  "io.github.etspaceman" %% "scalacheck-faker" % "8.0.2" % Test,
   "org.scalatest" %% "scalatest" % "3.2.17" % Test
 )
