@@ -14,7 +14,25 @@ object FileUtility {
     }
   }
 
-  def outputSql(filename: String, sqlSentence: String): Unit = {
+  def writeJson(filename: String, jsonString: String): Unit = {
+    val config = ConfigFactory.load()
+    val directory = new File(
+      config.getString("using_specific_key_list_output_directory")
+    )
+
+    if (!directory.exists()) {
+      directory.mkdirs()
+    }
+
+    Using.Manager { use =>
+      val fileOutputStream =
+        use(new FileOutputStream(s"${directory.getPath}/$filename.json"))
+      val writer = use(new OutputStreamWriter(fileOutputStream))
+      writer.write(jsonString)
+    }
+  }
+
+  def writeSql(filename: String, sqlSentence: String): Unit = {
     val config = ConfigFactory.load()
     val directory = new File(config.getString("sql_output_directory"))
 

@@ -4,6 +4,7 @@ import org.apache.tinkerpop.gremlin.process.traversal.AnonymousTraversalSource.t
 import usecase.{ByExhaustiveSearch, UsingSpecificKeyList}
 import utils.{FileUtility, JsonUtility}
 
+import scala.util.control.NonFatal
 import scala.util.{Failure, Success, Using}
 
 object Main extends StrictLogging {
@@ -57,7 +58,7 @@ object Main extends StrictLogging {
                   "analysis_method_using_specific_key_list_filepath"
                 )
               )
-              request <- JsonUtility.parseForUsingSpecificKeyListRequest(
+              request <- JsonUtility.readForUsingSpecificKeyListRequest(
                 jsonString
               )
             } yield UsingSpecificKeyList(g, request)
@@ -78,7 +79,7 @@ object Main extends StrictLogging {
 
       /* output SQL */
       verticesDdlResult.foreach { vertexDdl =>
-        FileUtility.outputSql(
+        FileUtility.writeSql(
           config.getString("sql_ddl_vertex"),
           vertexDdl.toSqlSentence
         )
@@ -89,7 +90,7 @@ object Main extends StrictLogging {
       )
 
       verticesDmlResult.foreach { vertexDml =>
-        FileUtility.outputSql(
+        FileUtility.writeSql(
           config.getString("sql_dml_vertex"),
           vertexDml.toSqlSentence
         )
@@ -100,7 +101,7 @@ object Main extends StrictLogging {
       )
 
       edgesDdlResult.foreach { edgesDdlResult =>
-        FileUtility.outputSql(
+        FileUtility.writeSql(
           config.getString("sql_ddl_edge"),
           edgesDdlResult.toSqlSentence
         )
@@ -108,12 +109,17 @@ object Main extends StrictLogging {
       displayOperationResult("generate edges    DDL", edgesDdlResult.nonEmpty)
 
       edgesDmlResult.foreach { edgesDmlResult =>
-        FileUtility.outputSql(
+        FileUtility.writeSql(
           config.getString("sql_dml_edge"),
           edgesDmlResult.toSqlSentence
         )
       }
       displayOperationResult("generate edges    DML", edgesDmlResult.nonEmpty)
+    }.recover {
+      case NonFatal(e) => {
+        logger.error(s"${e.getMessage}", e)
+        sys.exit(1)
+      }
     }
   }
 }
