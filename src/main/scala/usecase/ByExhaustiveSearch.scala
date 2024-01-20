@@ -4,6 +4,7 @@ import domain.table.ddl.TableList
 import domain.table.dml.RecordList
 import infrastructure.{EdgeQuery, VertexQuery}
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource
+import utils.Config
 
 /** analyze all Vertices and Edges
   *
@@ -14,9 +15,12 @@ import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSo
   *
   * @param g
   *   [[GraphTraversalSource]]
+  * @param config
+  *   [[Config]]
   */
 final case class ByExhaustiveSearch(
-    override protected val g: GraphTraversalSource
+    override protected val g: GraphTraversalSource,
+    override protected val config: Config
 ) extends UsecaseBase {
 
   override def execute(

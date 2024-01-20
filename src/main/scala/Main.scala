@@ -36,7 +36,7 @@ object Main extends StrictLogging {
         )
     }
     val usecase = usecaseCommand match {
-      case UsecaseCommandByExhausiveSearch() => ByExhaustiveSearch(g)
+      case UsecaseCommandByExhausiveSearch() => ByExhaustiveSearch(g, config)
       case UsecaseCommandUsingSpecificKeyList() =>
         {
           for {
@@ -46,7 +46,7 @@ object Main extends StrictLogging {
             request <- JsonUtility.readForUsingSpecificKeyListRequest(
               jsonString
             )
-          } yield UsingSpecificKeyList(g, request)
+          } yield UsingSpecificKeyList(g, config, request)
         } match {
           case Failure(exception) => throw new Exception(exception)
           case Success(value)     => value
