@@ -66,7 +66,7 @@ object Main extends StrictLogging {
       FileUtility.writeSql(
         config.sql.outputDirectory,
         config.sql.ddlVertex,
-        vertexDdl.toSqlSentence.mkString("\n")
+        vertexDdl.toSqlSentence
       )
     }
     displayOperationResult(
@@ -78,7 +78,7 @@ object Main extends StrictLogging {
       FileUtility.writeSql(
         config.sql.outputDirectory,
         config.sql.dmlVertex,
-        vertexDml.toSqlSentence.mkString("\n")
+        vertexDml.toSqlSentence
       )
     }
     displayOperationResult(
@@ -90,7 +90,7 @@ object Main extends StrictLogging {
       FileUtility.writeSql(
         config.sql.outputDirectory,
         config.sql.ddlEdge,
-        edgesDdlResult.toSqlSentence.mkString("\n")
+        edgesDdlResult.toSqlSentence
       )
     }
     displayOperationResult("generate edges    DDL", edgesDdlResult.nonEmpty)
@@ -99,7 +99,7 @@ object Main extends StrictLogging {
       FileUtility.writeSql(
         config.sql.outputDirectory,
         config.sql.dmlEdge,
-        edgesDmlResult.toSqlSentence.mkString("\n")
+        edgesDmlResult.toSqlSentence
       )
     }
     displayOperationResult("generate edges    DML", edgesDmlResult.nonEmpty)
