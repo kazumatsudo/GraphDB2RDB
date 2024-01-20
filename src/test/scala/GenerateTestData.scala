@@ -192,11 +192,11 @@ object GenerateTestData extends StrictLogging {
         config.getString("graphdb_remote_graph_properties")
       )
     ) { g =>
-      val personCount = 5
-      val companyCount = 5
-      val schoolCount = 5
+      val personCount = 1000
+      val companyCount = 10
+      val schoolCount = 10
 
-      logger.info("[ 1/ 6] start : generate person Vertices")
+      logger.info("[ 1/ 7] start : generate person Vertices")
 
       val verticesPerson =
         (0 until personCount)
@@ -233,20 +233,20 @@ object GenerateTestData extends StrictLogging {
             children :+ person :+ parent
           }
 
-      logger.info("[ 1/ 6] finish: generate person Vertices")
-      logger.info("[ 2/ 6] start : generate company Vertices")
+      logger.info("[ 1/ 7] finish: generate person Vertices")
+      logger.info("[ 2/ 7] start : generate company Vertices")
 
       val verticesCompany =
         (0 until companyCount).map(_ => generateVertexCompany(g))
 
-      logger.info("[ 2/ 6] finish: generate company Vertices")
-      logger.info("[ 3/ 6] start : generate school Vertices")
+      logger.info("[ 2/ 7] finish: generate company Vertices")
+      logger.info("[ 3/ 7] start : generate school Vertices")
 
       val verticesSchool =
         (0 until schoolCount).map(_ => generateVertexSchool(g))
 
-      logger.info("[ 3/ 6] finish: generate company Vertices")
-      logger.info("[ 4/ 6] start : generate person edges")
+      logger.info("[ 3/ 7] finish: generate school Vertices")
+      logger.info("[ 4/ 7] start : generate person edges")
 
       verticesPerson.foreach { person =>
         // a person has one address
@@ -271,17 +271,25 @@ object GenerateTestData extends StrictLogging {
         }
       }
 
-      logger.info("[ 4/ 6] finish: generate person edges")
-      logger.info("[ 5/ 6] start : generate person companies")
+      logger.info("[ 4/ 7] finish: generate person edges")
+      logger.info("[ 5/ 7] start : generate company edges")
 
       verticesCompany.foreach { company =>
         // a company has one address
         connectEdgeLocation(g, company, generateVertexAddress(g))
       }
 
-      logger.info("[ 5/ 6] finish: generate person companies")
+      logger.info("[ 5/ 7] finish: generate company edges")
+      logger.info("[ 5/ 7] start : generate school edges")
+
+      verticesSchool.foreach { school =>
+        // a school has one address
+        connectEdgeLocation(g, school, generateVertexAddress(g))
+      }
+
+      logger.info("[ 5/ 7] finish: generate school edges")
       logger.info(
-        "[ 6/ 6] start : generate using specific key list request json"
+        "[ 6/ 7] start : generate using specific key list request json"
       )
 
       val usingSpecificKeyListRequest = UsingSpecificKeyListRequest(
@@ -324,7 +332,7 @@ object GenerateTestData extends StrictLogging {
       )
 
       logger.info(
-        "[ 6/ 6] finish: generate using specific key list request json"
+        "[ 6/ 7] finish: generate using specific key list request json"
       )
     }.recover {
       case NonFatal(e) => {
