@@ -23,7 +23,9 @@ wartremoverErrors ++= Warts.allBut(
   Wart.StringPlusAny,
   Wart.SeqApply,
   Wart.Throw,
-  Wart.ToString
+  Wart.ToString,
+  Wart.Var,
+  Wart.While
 )
 
 coverageEnabled := true

@@ -11,6 +11,8 @@ import usecase.{
 }
 import utils.{FileUtility, JsonUtility}
 
+import scala.io.StdIn
+import scala.util.control.NonFatal
 import scala.util.{Random, Using}
 
 object GenerateTestData extends StrictLogging {
@@ -162,6 +164,29 @@ object GenerateTestData extends StrictLogging {
     */
   def main(args: Array[String]): Unit = {
     val config = ConfigFactory.load()
+
+    {
+      val grapdbConnection = config.getString("graphdb_remote_graph_properties")
+      logger.warn(s"This process stores test data on the gremlin server.")
+      logger.warn(s"Check the config file of the connection.")
+      logger.warn(s"config file: $grapdbConnection")
+
+      var input = ""
+      while (input.trim.isEmpty) {
+        logger.info("Enter [y/n]: ")
+
+        input = StdIn.readLine().trim
+        input match {
+          case "y" =>
+          case "n" =>
+            logger.info("suspend the process.")
+            sys.exit(1)
+          case invalidInput =>
+            logger.warn(s"invalid Input: $invalidInput")
+        }
+      }
+    }
+
     Using(
       traversal().withRemote(
         config.getString("graphdb_remote_graph_properties")
@@ -301,6 +326,11 @@ object GenerateTestData extends StrictLogging {
       logger.info(
         "[ 6/ 6] finish: generate using specific key list request json"
       )
+    }.recover {
+      case NonFatal(e) => {
+        logger.error(s"${e.getMessage}", e)
+        sys.exit(1)
+      }
     }
   }
 }
