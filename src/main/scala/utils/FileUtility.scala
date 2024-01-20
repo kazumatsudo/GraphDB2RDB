@@ -1,14 +1,21 @@
 package utils
 
-import java.io.{File, FileOutputStream, OutputStreamWriter}
+import com.typesafe.scalalogging.StrictLogging
+
+import java.io.{File, FileOutputStream, PrintWriter}
+import scala.collection.View
 import scala.io.Source
+import scala.util.control.NonFatal
 import scala.util.{Try, Using}
 
-object FileUtility {
+object FileUtility extends StrictLogging {
 
   def readJson(filePath: String): Try[String] = {
     Using(Source.fromFile(filePath)) { bufferedSource =>
       bufferedSource.mkString
+    }.recover { case NonFatal(e) =>
+      logger.error(s"${e.getMessage}", e)
+      throw e
     }
   }
 
@@ -23,18 +30,24 @@ object FileUtility {
       directory.mkdirs()
     }
 
-    Using.Manager { use =>
-      val fileOutputStream =
-        use(new FileOutputStream(s"${directory.getPath}/$filename.json"))
-      val writer = use(new OutputStreamWriter(fileOutputStream))
-      writer.write(jsonString)
-    }
+    Using
+      .Manager { use =>
+        val fileOutputStream =
+          use(new FileOutputStream(s"${directory.getPath}/$filename.json"))
+        val writer = use(new PrintWriter(fileOutputStream))
+
+        writer.write(jsonString)
+      }
+      .recover { case NonFatal(e) =>
+        logger.error(s"${e.getMessage}", e)
+        throw e
+      }
   }
 
   def writeSql(
       directoryPath: String,
       filename: String,
-      sqlSentence: String
+      sqlSentenceList: => View[String]
   ): Unit = {
     val directory = new File(directoryPath)
 
@@ -42,11 +55,17 @@ object FileUtility {
       directory.mkdirs()
     }
 
-    Using.Manager { use =>
-      val fileOutputStream =
-        use(new FileOutputStream(s"${directory.getPath}/$filename.sql"))
-      val writer = use(new OutputStreamWriter(fileOutputStream))
-      writer.write(sqlSentence)
-    }
+    Using
+      .Manager { use =>
+        val fileOutputStream =
+          use(new FileOutputStream(s"${directory.getPath}/$filename.sql"))
+        val writer = use(new PrintWriter(fileOutputStream))
+
+        sqlSentenceList.foreach(writer.println)
+      }
+      .recover { case NonFatal(e) =>
+        logger.error(s"${e.getMessage}", e)
+        throw e
+      }
   }
 }
