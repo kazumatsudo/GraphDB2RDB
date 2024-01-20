@@ -64,6 +64,7 @@ object Main extends StrictLogging {
     /* output SQL */
     verticesDdlResult.foreach { vertexDdl =>
       FileUtility.writeSql(
+        config.sql.outputDirectory,
         config.sql.ddlVertex,
         vertexDdl.toSqlSentence.mkString("\n")
       )
@@ -75,6 +76,7 @@ object Main extends StrictLogging {
 
     verticesDmlResult.foreach { vertexDml =>
       FileUtility.writeSql(
+        config.sql.outputDirectory,
         config.sql.dmlVertex,
         vertexDml.toSqlSentence.mkString("\n")
       )
@@ -86,6 +88,7 @@ object Main extends StrictLogging {
 
     edgesDdlResult.foreach { edgesDdlResult =>
       FileUtility.writeSql(
+        config.sql.outputDirectory,
         config.sql.ddlEdge,
         edgesDdlResult.toSqlSentence.mkString("\n")
       )
@@ -94,6 +97,7 @@ object Main extends StrictLogging {
 
     edgesDmlResult.foreach { edgesDmlResult =>
       FileUtility.writeSql(
+        config.sql.outputDirectory,
         config.sql.dmlEdge,
         edgesDmlResult.toSqlSentence.mkString("\n")
       )

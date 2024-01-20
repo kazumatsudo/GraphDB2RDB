@@ -1,7 +1,5 @@
 package utils
 
-import com.typesafe.config.ConfigFactory
-
 import java.io.{File, FileOutputStream, OutputStreamWriter}
 import scala.io.Source
 import scala.util.{Try, Using}
@@ -14,11 +12,12 @@ object FileUtility {
     }
   }
 
-  def writeJson(filename: String, jsonString: String): Unit = {
-    val config = ConfigFactory.load()
-    val directory = new File(
-      config.getString("using_specific_key_list_output_directory")
-    )
+  def writeJson(
+      directoryPath: String,
+      filename: String,
+      jsonString: String
+  ): Unit = {
+    val directory = new File(directoryPath)
 
     if (!directory.exists()) {
       directory.mkdirs()
@@ -32,9 +31,12 @@ object FileUtility {
     }
   }
 
-  def writeSql(filename: String, sqlSentence: String): Unit = {
-    val config = ConfigFactory.load()
-    val directory = new File(config.getString("sql_output_directory"))
+  def writeSql(
+      directoryPath: String,
+      filename: String,
+      sqlSentence: String
+  ): Unit = {
+    val directory = new File(directoryPath)
 
     if (!directory.exists()) {
       directory.mkdirs()
