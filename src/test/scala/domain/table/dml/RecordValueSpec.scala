@@ -26,16 +26,16 @@ class RecordValueSpec extends AnyFunSpec with Matchers {
       val uuid = UUID.randomUUID()
       RecordValue(
         Map(("uuid", uuid))
-      ).toSqlSentence shouldBe ("uuid", s"\"$uuid\"")
+      ).toSqlSentence shouldBe ("uuid", s"'$uuid'")
       RecordValue(
         Map(("char", 'a'))
-      ).toSqlSentence shouldBe ("char", "\"a\"")
+      ).toSqlSentence shouldBe ("char", "'a'")
       RecordValue(
         Map(("string", 1.toString))
-      ).toSqlSentence shouldBe ("string", "\"1\"")
+      ).toSqlSentence shouldBe ("string", "'1'")
       RecordValue(
         Map(("unknown", Seq(1)))
-      ).toSqlSentence shouldBe ("unknown", "\"List(1)\"")
+      ).toSqlSentence shouldBe ("unknown", "'List(1)'")
     }
   }
 }
