@@ -34,7 +34,10 @@ final case class VertexQuery(
     require(count >= 0, "count must be positive.")
 
     try {
-      GremlinScala(g.V()).range(start, start + count).toList().map(GraphVertex)
+      GremlinScala(g.V())
+        .range(start, start + count)
+        .toList()
+        .map(GraphVertex(_, config))
     } catch {
       case NonFatal(e) =>
         logger.error(
@@ -67,6 +70,6 @@ final case class VertexQuery(
     GremlinScala(g.V())
       .has(label, Key[Any](key), value)
       .toList()
-      .map(GraphVertex)
+      .map(GraphVertex(_, config))
   }
 }

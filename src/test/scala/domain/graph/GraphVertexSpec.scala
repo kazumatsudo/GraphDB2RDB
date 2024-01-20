@@ -4,7 +4,6 @@ import domain.table.ddl.column.{
   ColumnLength,
   ColumnList,
   ColumnName,
-  ColumnTypeBoolean,
   ColumnTypeInt,
   ColumnTypeString
 }
@@ -62,7 +61,7 @@ class GraphVertexSpec extends AnyFunSpec with Matchers {
       val graph = TinkerFactory.createModern().traversal()
       val vertex1 = graph.addV("testVertex1").next()
 
-      val graphVertex = GraphVertex(vertex1)
+      val graphVertex = GraphVertex(vertex1, config)
       graphVertex.toDml shouldBe RecordList(
         Map(
           RecordKey(

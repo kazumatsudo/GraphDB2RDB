@@ -41,7 +41,7 @@ class VertexQuerySpec extends AnyFunSpec with Matchers {
       val graph = TinkerFactory.createModern().traversal()
       val vertexQuery = VertexQuery(graph, config)
       vertexQuery.getList(0, 1) shouldBe Seq(
-        GraphVertex(GremlinScala(graph.V()).head())
+        GraphVertex(GremlinScala(graph.V()).head(), config)
       )
     }
   }
@@ -69,7 +69,7 @@ class VertexQuerySpec extends AnyFunSpec with Matchers {
       val graph = TinkerFactory.createModern().traversal()
       val vertexQuery = VertexQuery(graph, config)
       vertexQuery.getListByPropertyKey("person", "name", "marko") shouldBe Seq(
-        GraphVertex(GremlinScala(graph.V()).head())
+        GraphVertex(GremlinScala(graph.V()).head(), config)
       )
     }
   }
