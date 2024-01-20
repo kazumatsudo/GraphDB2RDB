@@ -4,7 +4,6 @@ import domain.table.ddl.column.{
   ColumnLength,
   ColumnList,
   ColumnName,
-  ColumnTypeBoolean,
   ColumnTypeInt,
   ColumnTypeString
 }
@@ -14,12 +13,15 @@ import infrastructure.VertexQuery
 import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerFactory
 import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.matchers.should.Matchers
+import utils.Config
 
 class GraphVertexSpec extends AnyFunSpec with Matchers {
+  private val config = Config.default
+
   describe("toDdl") {
     it("get Database Column Information") {
       val graph = TinkerFactory.createModern().traversal()
-      val vertexQuery = VertexQuery(graph)
+      val vertexQuery = VertexQuery(graph, config)
       val vertex = vertexQuery.getList(0, 1).head
 
       vertex.toDdl shouldBe TableList(
@@ -39,7 +41,7 @@ class GraphVertexSpec extends AnyFunSpec with Matchers {
   describe("toDml") {
     it("get SQL Sentence") {
       val graph = TinkerFactory.createModern().traversal()
-      val vertexQuery = VertexQuery(graph)
+      val vertexQuery = VertexQuery(graph, config)
       val vertex = vertexQuery.getList(0, 1).head
 
       vertex.toDml shouldBe RecordList(
@@ -59,7 +61,7 @@ class GraphVertexSpec extends AnyFunSpec with Matchers {
       val graph = TinkerFactory.createModern().traversal()
       val vertex1 = graph.addV("testVertex1").next()
 
-      val graphVertex = GraphVertex(vertex1)
+      val graphVertex = GraphVertex(vertex1, config)
       graphVertex.toDml shouldBe RecordList(
         Map(
           RecordKey(

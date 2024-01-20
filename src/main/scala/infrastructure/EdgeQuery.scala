@@ -4,11 +4,14 @@ import com.typesafe.scalalogging.StrictLogging
 import domain.graph.{GraphEdge, GraphVertex}
 import gremlin.scala.GremlinScala
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource
+import utils.Config
 
 import scala.util.control.NonFatal
 
-final case class EdgeQuery(private val g: GraphTraversalSource)
-    extends StrictLogging {
+final case class EdgeQuery(
+    private val g: GraphTraversalSource,
+    private val config: Config
+) extends StrictLogging {
 
   /** get the number of all edges
     *
@@ -25,7 +28,7 @@ final case class EdgeQuery(private val g: GraphTraversalSource)
     *   A list of Edge
     */
   def getInEdgeList(vertex: GraphVertex): Seq[GraphEdge] = {
-    GremlinScala(g.V(vertex.id)).inE().toList().map(GraphEdge)
+    GremlinScala(g.V(vertex.id)).inE().toList().map(GraphEdge(_, config))
   }
 
   /** get Edges List
@@ -42,7 +45,10 @@ final case class EdgeQuery(private val g: GraphTraversalSource)
     require(count >= 0, "count must be positive.")
 
     try {
-      GremlinScala(g.E()).range(start, start + count).toList().map(GraphEdge)
+      GremlinScala(g.E())
+        .range(start, start + count)
+        .toList()
+        .map(GraphEdge(_, config))
     } catch {
       case NonFatal(e) =>
         logger.error(
@@ -61,6 +67,6 @@ final case class EdgeQuery(private val g: GraphTraversalSource)
     *   A list of Edge
     */
   def getOutEdgeList(vertex: GraphVertex): Seq[GraphEdge] = {
-    GremlinScala(g.V(vertex.id)).outE().toList().map(GraphEdge)
+    GremlinScala(g.V(vertex.id)).outE().toList().map(GraphEdge(_, config))
   }
 }

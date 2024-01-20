@@ -1,4 +1,3 @@
-import com.typesafe.config.ConfigFactory
 import com.typesafe.scalalogging.StrictLogging
 import faker.Faker
 import gremlin.scala.Vertex
@@ -9,7 +8,7 @@ import usecase.{
   UsingSpecificKeyListRequestKey,
   UsingSpecificKeyListRequestLabel
 }
-import utils.{FileUtility, JsonUtility}
+import utils.{Config, FileUtility, JsonUtility}
 
 import scala.io.StdIn
 import scala.util.control.NonFatal
@@ -17,6 +16,7 @@ import scala.util.{Random, Using}
 
 object GenerateTestData extends StrictLogging {
 
+  private val config = Config.default
   private val faker = Faker.default
 
   /* generate vertices */
@@ -163,10 +163,9 @@ object GenerateTestData extends StrictLogging {
   /** @param args
     */
   def main(args: Array[String]): Unit = {
-    val config = ConfigFactory.load()
+    val grapdbConnection = config.graphDb.remoteGraphProperties
 
     {
-      val grapdbConnection = config.getString("graphdb_remote_graph_properties")
       logger.warn(s"This process stores test data on the gremlin server.")
       logger.warn(s"Check the config file of the connection.")
       logger.warn(s"config file: $grapdbConnection")
@@ -188,9 +187,7 @@ object GenerateTestData extends StrictLogging {
     }
 
     Using(
-      traversal().withRemote(
-        config.getString("graphdb_remote_graph_properties")
-      )
+      traversal().withRemote(grapdbConnection)
     ) { g =>
       val personCount = 1000
       val companyCount = 10
@@ -327,18 +324,17 @@ object GenerateTestData extends StrictLogging {
         usingSpecificKeyListRequest
       )
       FileUtility.writeJson(
-        config.getString("using_specific_key_list_filename"),
+        config.usingSpecificKeyList.outputDirectory,
+        config.usingSpecificKeyList.filename,
         jsonString
       )
 
       logger.info(
         "[ 6/ 7] finish: generate using specific key list request json"
       )
-    }.recover {
-      case NonFatal(e) => {
-        logger.error(s"${e.getMessage}", e)
-        sys.exit(1)
-      }
+    }.recover { case NonFatal(e) =>
+      logger.error(s"${e.getMessage}", e)
+      sys.exit(1)
     }
   }
 }

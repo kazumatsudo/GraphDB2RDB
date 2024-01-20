@@ -4,7 +4,6 @@ import domain.table.ddl.column.{
   ColumnLength,
   ColumnList,
   ColumnName,
-  ColumnTypeBoolean,
   ColumnTypeDouble,
   ColumnTypeInt,
   ColumnTypeString
@@ -14,8 +13,11 @@ import domain.table.dml.{RecordId, RecordKey, RecordList, RecordValue}
 import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerFactory
 import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.matchers.should.Matchers
+import utils.Config
 
 class UsingSpecificKeyListSpec extends AnyFunSpec with Matchers {
+  private val config = Config.default
+
   describe("execute") {
     it("success") {
       val graph = TinkerFactory.createModern().traversal()
@@ -28,7 +30,7 @@ class UsingSpecificKeyListSpec extends AnyFunSpec with Matchers {
           )
         )
       )
-      val usecase = UsingSpecificKeyList(graph, value)
+      val usecase = UsingSpecificKeyList(graph, config, value)
 
       usecase.execute(checkUnique = true) shouldBe (Some(
         TableList(

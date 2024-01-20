@@ -4,12 +4,15 @@ import org.scalatest.matchers.should.Matchers
 import slick.jdbc.H2Profile.api._
 import slick.jdbc.JdbcBackend.Database
 import usecase.ByExhaustiveSearch
+import utils.Config
 
 class MainSpec extends AsyncFunSpec with Matchers {
+  private val config = Config.default
+
   describe("enable to execute in") {
     it("H2") {
       val graph = TinkerFactory.createModern().traversal()
-      val usecase = ByExhaustiveSearch(graph)
+      val usecase = ByExhaustiveSearch(graph, config)
       val (
         verticesDdlResult,
         verticesDmlResult,

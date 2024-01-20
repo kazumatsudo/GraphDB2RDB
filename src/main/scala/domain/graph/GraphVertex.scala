@@ -1,20 +1,18 @@
 package domain.graph
 
-import com.typesafe.config.ConfigFactory
 import domain.table.ddl.column.{ColumnList, ColumnName, ColumnType}
 import domain.table.ddl.{TableList, TableName}
 import domain.table.dml.{RecordId, RecordKey, RecordList, RecordValue}
 import gremlin.scala._
+import utils.Config
 
-case class GraphVertex(private val value: Vertex) {
-
-  private val config = ConfigFactory.load()
+case class GraphVertex(private val value: Vertex, private val config: Config) {
 
   private val tableName = TableName(
-    s"${config.getString("table_name_vertex")}_${value.label()}"
+    s"${config.tableName.vertex}_${value.label()}"
   )
-  private val columnNamePrefixProperty =
-    config.getString("column_name_prefix_property")
+  private val columnNamePrefixProperty = config.columnName.prefixProperty
+  private val columnNameVertexId = config.columnName.vertexId
 
   val id: AnyRef = value.id()
 
@@ -25,14 +23,10 @@ case class GraphVertex(private val value: Vertex) {
     */
   def toDdl: TableList =
     TableList {
-      val idColumn = Map(
-        ColumnName(config.getString("column_name_vertex_id")) -> ColumnType
-          .apply(value.id())
-      )
+      val idColumn =
+        Map(ColumnName(columnNameVertexId) -> ColumnType.apply(value.id()))
       val propertyColumn = value.valueMap.map { case (key, value) =>
-        ColumnName(s"$columnNamePrefixProperty$key") -> ColumnType.apply(
-          value
-        )
+        ColumnName(s"$columnNamePrefixProperty$key") -> ColumnType.apply(value)
       }
       Map(tableName -> ColumnList(idColumn ++ propertyColumn))
     }
@@ -43,7 +37,7 @@ case class GraphVertex(private val value: Vertex) {
     }
 
     val recordValue =
-      Map((config.getString("column_name_vertex_id"), id)) ++ propertyColumnList
+      Map(columnNameVertexId -> id) ++ propertyColumnList
 
     RecordList(
       Map(RecordKey(tableName, RecordId(id)) -> RecordValue(recordValue))

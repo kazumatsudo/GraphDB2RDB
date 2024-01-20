@@ -4,11 +4,14 @@ import com.typesafe.scalalogging.StrictLogging
 import domain.graph.GraphVertex
 import gremlin.scala.{GremlinScala, Key}
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource
+import utils.Config
 
 import scala.util.control.NonFatal
 
-final case class VertexQuery(private val g: GraphTraversalSource)
-    extends StrictLogging {
+final case class VertexQuery(
+    private val g: GraphTraversalSource,
+    config: Config
+) extends StrictLogging {
 
   /** get the number of all vertices
     *
@@ -31,7 +34,10 @@ final case class VertexQuery(private val g: GraphTraversalSource)
     require(count >= 0, "count must be positive.")
 
     try {
-      GremlinScala(g.V()).range(start, start + count).toList().map(GraphVertex)
+      GremlinScala(g.V())
+        .range(start, start + count)
+        .toList()
+        .map(GraphVertex(_, config))
     } catch {
       case NonFatal(e) =>
         logger.error(
@@ -64,6 +70,6 @@ final case class VertexQuery(private val g: GraphTraversalSource)
     GremlinScala(g.V())
       .has(label, Key[Any](key), value)
       .toList()
-      .map(GraphVertex)
+      .map(GraphVertex(_, config))
   }
 }
