@@ -28,8 +28,12 @@ final case class EdgeQuery(
     * @return
     *   A list of Edge
     */
-  def getInEdgeList(vertex: GraphVertex): Seq[GraphEdge] = {
-    GremlinScala(g.V(vertex.id)).inE().toList().map(GraphEdge(_, config))
+  def getInEdgeList(vertex: GraphVertex): SeqView[GraphEdge] = {
+    GremlinScala(g.V(vertex.id))
+      .inE()
+      .toList()
+      .view
+      .map(GraphEdge(_, config))
   }
 
   /** get Edges List
@@ -68,7 +72,11 @@ final case class EdgeQuery(
     * @return
     *   A list of Edge
     */
-  def getOutEdgeList(vertex: GraphVertex): Seq[GraphEdge] = {
-    GremlinScala(g.V(vertex.id)).outE().toList().map(GraphEdge(_, config))
+  def getOutEdgeList(vertex: GraphVertex): SeqView[GraphEdge] = {
+    GremlinScala(g.V(vertex.id))
+      .outE()
+      .toList()
+      .view
+      .map(GraphEdge(_, config))
   }
 }

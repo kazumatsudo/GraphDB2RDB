@@ -1,7 +1,5 @@
 package usecase
 
-import domain.table.ddl.TableList
-import domain.table.dml.RecordList
 import infrastructure.{EdgeQuery, VertexQuery}
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource
 import utils.Config
@@ -40,78 +38,76 @@ final case class UsingSpecificKeyList(
 
   override def execute(
       checkUnique: Boolean
-  )(implicit ec: ExecutionContext): Future[UsecaseResponse] = Future {
+  )(implicit ec: ExecutionContext): Future[UsecaseResponse] = {
 
     // 1. get vertex by specific key
-    val vertices = {
-      val vertexQuery = VertexQuery(g, config)
-      value.value.view
-        .flatMap { label =>
-          label.value.view.flatMap { keyValue =>
-            keyValue.value.flatMap { value =>
-              vertexQuery.getListByPropertyKey(label.label, keyValue.key, value)
-            }
-          }
-        }
-    }
-
-    // 2. generate vertex SQL
+    val vertexQuery = VertexQuery(g, config)
     val edgeQuery = EdgeQuery(g, config)
 
-    val (verticesDdl, verticesDml, edgesDdl, edgesDml) = {
-      vertices
-        .map { vertex =>
-          val (edgesDdl, edgesDml) =
-            (edgeQuery.getInEdgeList(vertex) ++ edgeQuery
-              .getOutEdgeList(vertex)).view
-              .map(edge => (edge.toDdl, edge.toDml))
-              .reduce[(TableList, RecordList)] {
-                case (
-                      (tableListAccumlator, dmlAccumlator),
-                      (tableListCurrentValue, dmlCurrentValue)
-                    ) =>
-                  (
-                    tableListAccumlator.merge(tableListCurrentValue),
-                    dmlAccumlator.merge(dmlCurrentValue, checkUnique)
+    Future
+      .sequence {
+        {
+          for {
+            label <- value.value.view
+            keyValue <- label.value.view
+            value <- keyValue.value.view
+          } yield for {
+            vertices <- Future {
+              vertexQuery.getListByPropertyKey(
+                label.label,
+                keyValue.key,
+                value
+              )
+            }
+            inEdgesSql <- Future.sequence {
+              vertices.map { vertex =>
+                Future { edgeQuery.getInEdgeList(vertex) }
+                  .map(edgeList =>
+                    foldLeft(
+                      edgeList.map(edge => (edge.toDdl, edge.toDml)),
+                      checkUnique
+                    )
                   )
               }
-
-          (
-            vertex.toDdl,
-            vertex.toDml,
-            edgesDdl,
-            edgesDml
-          )
+            }
+            outEdgesSql <- Future.sequence {
+              vertices.map { vertex =>
+                Future { edgeQuery.getOutEdgeList(vertex) }
+                  .map(edgeList =>
+                    foldLeft(
+                      edgeList.map(edge => (edge.toDdl, edge.toDml)),
+                      checkUnique
+                    )
+                  )
+              }
+            }
+          } yield {
+            val verticesSql = {
+              foldLeft(
+                vertices.map(vertex => (vertex.toDdl, vertex.toDml)),
+                checkUnique
+              )
+            }
+            val edgesSql =
+              foldLeft(inEdgesSql ++ outEdgesSql, checkUnique)
+            (verticesSql, edgesSql)
+          }
         }
-        .reduce[(TableList, RecordList, TableList, RecordList)] {
-          case (
-                (
-                  vertexDdlAccumlator,
-                  vertexDmlAccumlator,
-                  edgeDdlAccumlator,
-                  edgeDmlAccumlator
-                ),
-                (
-                  vertexDdlCurrentValue,
-                  vertexDmlCurrentValue,
-                  edgeDdlCurrentValue,
-                  edgeDmlCurrentValue
-                )
-              ) =>
-            (
-              vertexDdlAccumlator.merge(vertexDdlCurrentValue),
-              vertexDmlAccumlator.merge(vertexDmlCurrentValue, checkUnique),
-              edgeDdlAccumlator.merge(edgeDdlCurrentValue),
-              edgeDmlAccumlator.merge(edgeDmlCurrentValue, checkUnique)
-            )
-        }
-    }
+      }
+      .map { seq =>
+        val (verticesSql, edgesSql) = seq.unzip
 
-    UsecaseResponse(
-      verticesDdl,
-      verticesDml,
-      edgesDdl,
-      edgesDml
-    )
+        val (vertexTableList, vertexRecordList) =
+          foldLeft(verticesSql.view, checkUnique)
+        val (edgeTableList, edgeRecordList) =
+          foldLeft(edgesSql.view, checkUnique)
+
+        UsecaseResponse(
+          vertexTableList,
+          vertexRecordList,
+          edgeTableList,
+          edgeRecordList
+        )
+      }
   }
 }

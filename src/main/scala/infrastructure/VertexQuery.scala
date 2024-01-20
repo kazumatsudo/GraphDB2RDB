@@ -65,13 +65,14 @@ final case class VertexQuery(
       label: String,
       key: String,
       value: Any
-  ): Seq[GraphVertex] = {
+  ): SeqView[GraphVertex] = {
     require(label.nonEmpty, "label must not be empty.")
     require(key.nonEmpty, "key must not be empty.")
 
     GremlinScala(g.V())
       .has(label, Key[Any](key), value)
       .toList()
+      .view
       .map(GraphVertex(_, config))
   }
 }
