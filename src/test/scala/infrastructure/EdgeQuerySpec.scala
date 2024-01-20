@@ -5,12 +5,15 @@ import gremlin.scala.GremlinScala
 import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerFactory
 import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.matchers.should.Matchers
+import utils.Config
 
 class EdgeQuerySpec extends AnyFunSpec with Matchers {
+  private val config = Config.default
+
   describe("countAll") {
     it("get the number of all edges") {
       val graph = TinkerFactory.createModern().traversal()
-      val edgeQuery = EdgeQuery(graph)
+      val edgeQuery = EdgeQuery(graph, config)
       edgeQuery.countAll shouldBe 6
     }
   }
@@ -18,7 +21,7 @@ class EdgeQuerySpec extends AnyFunSpec with Matchers {
   describe("getInEdgeList") {
     it("get inE list") {
       val graph = TinkerFactory.createModern().traversal()
-      val edgeQuery = EdgeQuery(graph)
+      val edgeQuery = EdgeQuery(graph, config)
       val edgeList = GremlinScala(graph.E()).toList().map(GraphEdge)
       edgeQuery.getInEdgeList(
         GraphVertex(GremlinScala(graph.V()).toList()(1))
@@ -32,7 +35,7 @@ class EdgeQuerySpec extends AnyFunSpec with Matchers {
     describe("require") {
       it("start must be positive.") {
         val graph = TinkerFactory.createModern().traversal()
-        val edgeQuery = EdgeQuery(graph)
+        val edgeQuery = EdgeQuery(graph, config)
         intercept[IllegalArgumentException] {
           edgeQuery.getList(-1, 0)
         }
@@ -40,7 +43,7 @@ class EdgeQuerySpec extends AnyFunSpec with Matchers {
 
       it("count must be positive.") {
         val graph = TinkerFactory.createModern().traversal()
-        val edgeQuery = EdgeQuery(graph)
+        val edgeQuery = EdgeQuery(graph, config)
         intercept[IllegalArgumentException] {
           edgeQuery.getList(-1, 0)
         }
@@ -49,7 +52,7 @@ class EdgeQuerySpec extends AnyFunSpec with Matchers {
 
     it("get the number of all edges") {
       val graph = TinkerFactory.createModern().traversal()
-      val edgeQuery = EdgeQuery(graph)
+      val edgeQuery = EdgeQuery(graph, config)
       edgeQuery.getList(0, 1) shouldBe Seq(
         GraphEdge(GremlinScala(graph.E()).head())
       )
@@ -59,7 +62,7 @@ class EdgeQuerySpec extends AnyFunSpec with Matchers {
   describe("getOutEdgeList") {
     it("get outE list") {
       val graph = TinkerFactory.createModern().traversal()
-      val edgeQuery = EdgeQuery(graph)
+      val edgeQuery = EdgeQuery(graph, config)
       val edgeList = GremlinScala(graph.E()).toList().map(GraphEdge)
       edgeQuery.getOutEdgeList(GraphVertex(graph.V().next())) shouldBe Seq(
         edgeList(2),

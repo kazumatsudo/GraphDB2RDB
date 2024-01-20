@@ -4,11 +4,14 @@ import com.typesafe.scalalogging.StrictLogging
 import domain.graph.GraphVertex
 import gremlin.scala.{GremlinScala, Key}
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource
+import utils.Config
 
 import scala.util.control.NonFatal
 
-final case class VertexQuery(private val g: GraphTraversalSource)
-    extends StrictLogging {
+final case class VertexQuery(
+    private val g: GraphTraversalSource,
+    config: Config
+) extends StrictLogging {
 
   /** get the number of all vertices
     *

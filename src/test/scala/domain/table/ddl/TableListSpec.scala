@@ -5,13 +5,16 @@ import infrastructure.VertexQuery
 import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerFactory
 import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.matchers.should.Matchers
+import utils.Config
 
 class TableListSpec extends AnyFunSpec with Matchers {
+  private val config = Config.default
+
   describe("merge") {
     it("success") {
       // TODO: not use Vertex
       val graph = TinkerFactory.createModern().traversal()
-      val vertexQuery = VertexQuery(graph)
+      val vertexQuery = VertexQuery(graph, config)
       val vertex = vertexQuery.getList(0, vertexQuery.countAll.toInt)
 
       val result = vertex
@@ -45,7 +48,7 @@ class TableListSpec extends AnyFunSpec with Matchers {
     it("success") {
       // TODO: not use Vertex
       val graph = TinkerFactory.createModern().traversal()
-      val vertexQuery = VertexQuery(graph)
+      val vertexQuery = VertexQuery(graph, config)
       val vertex = vertexQuery.getList(0, vertexQuery.countAll.toInt)
 
       val vertexAnalyzedResult = vertex

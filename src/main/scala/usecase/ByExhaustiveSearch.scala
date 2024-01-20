@@ -34,7 +34,7 @@ final case class ByExhaustiveSearch(
 
     // 1. generate vertex SQL
     val (verticesDdl, verticesDml) = {
-      val vertexQuery = VertexQuery(g)
+      val vertexQuery = VertexQuery(g, config)
       val totalVertexCount = vertexQuery.countAll.toInt
 
       (0 to totalVertexCount).view
@@ -63,7 +63,7 @@ final case class ByExhaustiveSearch(
 
     // 2. generate edge SQL
     val (edgesDdl, edgesDml) = {
-      val edgeQuery = EdgeQuery(g)
+      val edgeQuery = EdgeQuery(g, config)
       val totalEdgeCount = edgeQuery.countAll.toInt
 
       (0 to totalEdgeCount).view

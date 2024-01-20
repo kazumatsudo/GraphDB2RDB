@@ -4,11 +4,14 @@ import com.typesafe.scalalogging.StrictLogging
 import domain.graph.{GraphEdge, GraphVertex}
 import gremlin.scala.GremlinScala
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource
+import utils.Config
 
 import scala.util.control.NonFatal
 
-final case class EdgeQuery(private val g: GraphTraversalSource)
-    extends StrictLogging {
+final case class EdgeQuery(
+    private val g: GraphTraversalSource,
+    private val config: Config
+) extends StrictLogging {
 
   /** get the number of all edges
     *

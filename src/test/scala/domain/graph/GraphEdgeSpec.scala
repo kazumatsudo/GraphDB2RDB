@@ -4,7 +4,6 @@ import domain.table.ddl.column.{
   ColumnLength,
   ColumnList,
   ColumnName,
-  ColumnTypeBoolean,
   ColumnTypeDouble,
   ColumnTypeInt
 }
@@ -15,12 +14,15 @@ import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__.V
 import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerFactory
 import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.matchers.should.Matchers
+import utils.Config
 
 class GraphEdgeSpec extends AnyFunSpec with Matchers {
+  private val config = Config.default
+
   describe("toDdl") {
     it("get Database Column Information") {
       val graph = TinkerFactory.createModern().traversal()
-      val edgeQuery = EdgeQuery(graph)
+      val edgeQuery = EdgeQuery(graph, config)
       val edge = edgeQuery.getList(0, 1).head
 
       edge.toDdl shouldBe TableList(
@@ -41,7 +43,7 @@ class GraphEdgeSpec extends AnyFunSpec with Matchers {
   describe("toDml") {
     it("get SQL Sentence") {
       val graph = TinkerFactory.createModern().traversal()
-      val edgeQuery = EdgeQuery(graph)
+      val edgeQuery = EdgeQuery(graph, config)
       val edge = edgeQuery.getList(0, 1).head
 
       edge.toDml shouldBe RecordList(
