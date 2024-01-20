@@ -4,6 +4,7 @@ import org.apache.tinkerpop.gremlin.process.traversal.AnonymousTraversalSource.t
 import usecase.{ByExhaustiveSearch, UsingSpecificKeyList}
 import utils.{FileUtility, JsonUtility}
 
+import scala.util.control.NonFatal
 import scala.util.{Failure, Success, Using}
 
 object Main extends StrictLogging {
@@ -114,6 +115,11 @@ object Main extends StrictLogging {
         )
       }
       displayOperationResult("generate edges    DML", edgesDmlResult.nonEmpty)
+    }.recover {
+      case NonFatal(e) => {
+        logger.error(s"${e.getMessage}", e)
+        sys.exit(1)
+      }
     }
   }
 }
