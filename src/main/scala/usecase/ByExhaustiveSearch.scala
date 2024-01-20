@@ -6,6 +6,8 @@ import infrastructure.{EdgeQuery, VertexQuery}
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource
 import utils.Config
 
+import scala.concurrent.{ExecutionContext, Future}
+
 /** analyze all Vertices and Edges
   *
   * pros:
@@ -25,12 +27,7 @@ final case class ByExhaustiveSearch(
 
   override def execute(
       checkUnique: Boolean
-  ): (
-      Option[TableList],
-      Option[RecordList],
-      Option[TableList],
-      Option[RecordList]
-  ) = {
+  )(implicit ec: ExecutionContext): Future[UsecaseResponse] = Future {
 
     // 1. generate vertex SQL
     val (verticesDdl, verticesDml) = {
@@ -90,6 +87,11 @@ final case class ByExhaustiveSearch(
         }
     }
 
-    (Some(verticesDdl), Some(verticesDml), Some(edgesDdl), Some(edgesDml))
+    UsecaseResponse(
+      verticesDdl,
+      verticesDml,
+      edgesDdl,
+      edgesDml
+    )
   }
 }
