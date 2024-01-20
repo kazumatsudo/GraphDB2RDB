@@ -16,7 +16,9 @@ object FileUtility {
 
   def writeJson(filename: String, jsonString: String): Unit = {
     val config = ConfigFactory.load()
-    val directory = new File(config.getString("sql_output_directory"))
+    val directory = new File(
+      config.getString("using_specific_key_list_output_directory")
+    )
 
     if (!directory.exists()) {
       directory.mkdirs()

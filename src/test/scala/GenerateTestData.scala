@@ -293,7 +293,10 @@ object GenerateTestData extends StrictLogging {
       val jsonString = JsonUtility.writeForUsingSpecificKeyListRequest(
         usingSpecificKeyListRequest
       )
-      FileUtility.writeJson("using_key_list_file", jsonString)
+      FileUtility.writeJson(
+        config.getString("using_specific_key_list_filename"),
+        jsonString
+      )
 
       logger.info(
         "[ 6/ 6] finish: generate using specific key list request json"
