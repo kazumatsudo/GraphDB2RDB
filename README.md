@@ -1,6 +1,6 @@
 # GraphDB2RDB
 
-generate RDB (MySQL) DDL and INSERT sentence from GraphDB (Tinkerpop).
+generate RDB DDL/DML from GraphDB (Tinkerpop).
 
 ![Latest GitHub release](https://img.shields.io/github/release/kazumatsudo/GraphDB2RDB.svg)
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
