@@ -9,7 +9,7 @@ generate RDB (MySQL) DDL and INSERT sentence from GraphDB (Tinkerpop).
 
 ## Demo
 
-![demo](https://github.com/kazumatsudo/GraphDB2RDB/assets/25892776/fd9a5a56-c099-4088-91e7-31f4702e1ff1)
+![demo2](https://github.com/kazumatsudo/GraphDB2RDB/assets/25892776/0f5e7f43-9f02-4a85-b376-e1a1acf163d9)
 
 ## Features
 
