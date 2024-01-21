@@ -18,7 +18,8 @@ import scala.util.{Random, Using}
 object GenerateTestData extends StrictLogging {
 
   private val config = Config.default
-  private val faker = Faker.default
+  // TODO: use Faker.all
+  private val faker = Faker.ja
 
   /* generate vertices */
 
@@ -169,6 +170,147 @@ object GenerateTestData extends StrictLogging {
     .property("locationId", UUID.randomUUID())
     .next()
 
+  def generate(
+      g: GraphTraversalSource,
+      personCount: Int,
+      companyCount: Int,
+      schoolCount: Int
+  ): (GraphTraversalSource, UsingSpecificKeyListRequest) = {
+    logger.info("[ 1/ 7] start : generate person Vertices")
+
+    val verticesPerson =
+      (0 until personCount)
+        .map(_ => generateVertexPerson(g, faker.lastName, Random.nextInt(60)))
+        .flatMap { person =>
+          val lastName = person.value[String]("lastName")
+          val age = person.value[Int]("age")
+
+          // a person has a parent
+          val parent = generateVertexPerson(
+            g,
+            lastName,
+            Random.between(age + 25, age + 35)
+          )
+          connectEdgeParent(g, person, parent)
+
+          // a person may have children
+          val children = if (age >= 30) {
+            val childrenCount = Random.nextInt(4)
+            (0 until childrenCount).map { _ =>
+              val child = generateVertexPerson(
+                g,
+                lastName,
+                Math.max(Random.between(age - 35, age - 25), 0)
+              )
+
+              connectEdgeParent(g, child, parent)
+              child
+            }
+          } else {
+            Seq.empty
+          }
+
+          children :+ person :+ parent
+        }
+
+    logger.info("[ 1/ 7] finish: generate person Vertices")
+    logger.info("[ 2/ 7] start : generate company Vertices")
+
+    val verticesCompany =
+      (0 until companyCount).map(_ => generateVertexCompany(g))
+
+    logger.info("[ 2/ 7] finish: generate company Vertices")
+    logger.info("[ 3/ 7] start : generate school Vertices")
+
+    val verticesSchool =
+      (0 until schoolCount).map(_ => generateVertexSchool(g))
+
+    logger.info("[ 3/ 7] finish: generate school Vertices")
+    logger.info("[ 4/ 7] start : generate person edges")
+
+    verticesPerson.foreach { person =>
+      // a person has one address
+      connectEdgeLive(g, person, generateVertexAddress(g))
+
+      // a person may belongs to a school or company
+      val belongsVertexOption = person.value[Int]("age") match {
+        case age if 6 <= age && age <= 18 =>
+          val randomIndex = Random.nextInt(verticesSchool.length)
+          Some(verticesSchool(randomIndex))
+        case age if 18 < age && age <= 60 =>
+          val randomIndex = Random.nextInt(verticesCompany.length)
+          Some(verticesCompany(randomIndex))
+        case _ => None
+      }
+      belongsVertexOption.map(connectEdgeBelongTo(g, person, _))
+
+      // a person may love a certain Pokemon
+      val likePokemon = Random.nextBoolean()
+      if (likePokemon) {
+        connectEdgeBreedPokemonTo(g, person, generateVertexPokemon(g))
+      }
+    }
+
+    logger.info("[ 4/ 7] finish: generate person edges")
+    logger.info("[ 5/ 7] start : generate company edges")
+
+    verticesCompany.foreach { company =>
+      // a company has one address
+      connectEdgeLocation(g, company, generateVertexAddress(g))
+    }
+
+    logger.info("[ 5/ 7] finish: generate company edges")
+    logger.info("[ 6/ 7] start : generate school edges")
+
+    verticesSchool.foreach { school =>
+      // a school has one address
+      connectEdgeLocation(g, school, generateVertexAddress(g))
+    }
+
+    logger.info("[ 6/ 7] finish: generate school edges")
+    logger.info(
+      "[ 7/ 7] start : generate using specific key list request json"
+    )
+
+    val usingSpecificKeyListRequest = UsingSpecificKeyListRequest(
+      Seq(
+        UsingSpecificKeyListRequestLabel(
+          "person",
+          Seq(
+            UsingSpecificKeyListRequestKey(
+              "personId",
+              verticesPerson.map(_.value[UUID]("personId"))
+            )
+          )
+        ),
+        UsingSpecificKeyListRequestLabel(
+          "company",
+          Seq(
+            UsingSpecificKeyListRequestKey(
+              "companyId",
+              verticesCompany.map(_.value[UUID]("companyId"))
+            )
+          )
+        ),
+        UsingSpecificKeyListRequestLabel(
+          "school",
+          Seq(
+            UsingSpecificKeyListRequestKey(
+              "schoolId",
+              verticesSchool.map(_.value[UUID]("schoolId"))
+            )
+          )
+        )
+      )
+    )
+
+    logger.info(
+      "[ 7/ 7] finish: generate using specific key list request json"
+    )
+
+    (g, usingSpecificKeyListRequest)
+  }
+
   /** @param args
     */
   def main(args: Array[String]): Unit = {
@@ -191,6 +333,7 @@ object GenerateTestData extends StrictLogging {
             sys.exit(1)
           case invalidInput =>
             logger.warn(s"invalid Input: $invalidInput")
+            input = ""
         }
       }
     }
@@ -198,148 +341,14 @@ object GenerateTestData extends StrictLogging {
     Using(
       traversal().withRemote(grapdbConnection)
     ) { g =>
-      val personCount = 100
-      val companyCount = 5
-      val schoolCount = 5
+      val (_, usingSpecificKeyListRequest) = generate(g, 100, 5, 5)
 
-      logger.info("[ 1/ 7] start : generate person Vertices")
-
-      val verticesPerson =
-        (0 until personCount)
-          .map(_ => generateVertexPerson(g, faker.lastName, Random.nextInt(60)))
-          .flatMap { person =>
-            val lastName = person.value[String]("lastName")
-            val age = person.value[Int]("age")
-
-            // a person has a parent
-            val parent = generateVertexPerson(
-              g,
-              lastName,
-              Random.between(age + 25, age + 35)
-            )
-            connectEdgeParent(g, person, parent)
-
-            // a person may have children
-            val children = if (age >= 30) {
-              val childrenCount = Random.nextInt(4)
-              (0 until childrenCount).map { _ =>
-                val child = generateVertexPerson(
-                  g,
-                  lastName,
-                  Math.max(Random.between(age - 35, age - 25), 0)
-                )
-
-                connectEdgeParent(g, child, parent)
-                child
-              }
-            } else {
-              Seq.empty
-            }
-
-            children :+ person :+ parent
-          }
-
-      logger.info("[ 1/ 7] finish: generate person Vertices")
-      logger.info("[ 2/ 7] start : generate company Vertices")
-
-      val verticesCompany =
-        (0 until companyCount).map(_ => generateVertexCompany(g))
-
-      logger.info("[ 2/ 7] finish: generate company Vertices")
-      logger.info("[ 3/ 7] start : generate school Vertices")
-
-      val verticesSchool =
-        (0 until schoolCount).map(_ => generateVertexSchool(g))
-
-      logger.info("[ 3/ 7] finish: generate school Vertices")
-      logger.info("[ 4/ 7] start : generate person edges")
-
-      verticesPerson.foreach { person =>
-        // a person has one address
-        connectEdgeLive(g, person, generateVertexAddress(g))
-
-        // a person may belongs to a school or company
-        val belongsVertexOption = person.value[Int]("age") match {
-          case age if 6 <= age && age <= 18 =>
-            val randomIndex = Random.nextInt(verticesSchool.length)
-            Some(verticesSchool(randomIndex))
-          case age if 18 < age && age <= 60 =>
-            val randomIndex = Random.nextInt(verticesCompany.length)
-            Some(verticesCompany(randomIndex))
-          case _ => None
-        }
-        belongsVertexOption.map(connectEdgeBelongTo(g, person, _))
-
-        // a person may love a certain Pokemon
-        val likePokemon = Random.nextBoolean()
-        if (likePokemon) {
-          connectEdgeBreedPokemonTo(g, person, generateVertexPokemon(g))
-        }
-      }
-
-      logger.info("[ 4/ 7] finish: generate person edges")
-      logger.info("[ 5/ 7] start : generate company edges")
-
-      verticesCompany.foreach { company =>
-        // a company has one address
-        connectEdgeLocation(g, company, generateVertexAddress(g))
-      }
-
-      logger.info("[ 5/ 7] finish: generate company edges")
-      logger.info("[ 5/ 7] start : generate school edges")
-
-      verticesSchool.foreach { school =>
-        // a school has one address
-        connectEdgeLocation(g, school, generateVertexAddress(g))
-      }
-
-      logger.info("[ 5/ 7] finish: generate school edges")
-      logger.info(
-        "[ 6/ 7] start : generate using specific key list request json"
-      )
-
-      val usingSpecificKeyListRequest = UsingSpecificKeyListRequest(
-        Seq(
-          UsingSpecificKeyListRequestLabel(
-            "person",
-            Seq(
-              UsingSpecificKeyListRequestKey(
-                "personId",
-                verticesPerson.map(_.value[UUID]("personId"))
-              )
-            )
-          ),
-          UsingSpecificKeyListRequestLabel(
-            "company",
-            Seq(
-              UsingSpecificKeyListRequestKey(
-                "companyId",
-                verticesCompany.map(_.value[UUID]("companyId"))
-              )
-            )
-          ),
-          UsingSpecificKeyListRequestLabel(
-            "school",
-            Seq(
-              UsingSpecificKeyListRequestKey(
-                "schoolId",
-                verticesSchool.map(_.value[UUID]("schoolId"))
-              )
-            )
-          )
-        )
-      )
-      val jsonString = JsonUtility.writeForUsingSpecificKeyListRequest(
-        usingSpecificKeyListRequest
-      )
       FileUtility.writeJson(
         config.usingSpecificKeyList.outputDirectory,
         config.usingSpecificKeyList.filename,
-        jsonString
-      )
-
-      logger.info(
-        "[ 6/ 7] finish: generate using specific key list request json"
+        JsonUtility.writeForUsingSpecificKeyListRequest(
+          usingSpecificKeyListRequest
+        )
       )
     }.recover { case NonFatal(e) =>
       logger.error(s"${e.getMessage}", e)
