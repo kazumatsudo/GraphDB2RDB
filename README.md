@@ -37,7 +37,7 @@ generate RDB DDL/DML from GraphDB (Tinkerpop).
 - Scala 2.13
 - sbt 1.9.8
 
-## installation
+## Installation
 
 1. checkout this repository
     ```shell
@@ -78,7 +78,7 @@ generate RDB DDL/DML from GraphDB (Tinkerpop).
 | pros          |no advance preparation required| faster than by_exhaustive_search (enable to search by index) |
 | cons          |inefficient (execute full search all vertices and edges count times)| required to prepare search condition                         |
 
-#### how to choose
+#### How to choose
 
 ##### by_exhaustive_search
 
@@ -102,7 +102,7 @@ You can define following settings as you like.
 
 The settings you can be changed are summarized in [application.conf](./src/main/resources/application.conf).
 
-## design
+## Design (for developer)
 
 The design (ex. structure, each diagrams, ...) is summarised in [wiki](https://github.com/kazumatsudo/GraphDB2RDB/wiki).  
 this document contains how to contribute to this repository.
