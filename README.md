@@ -72,11 +72,11 @@ generate RDB DDL/DML from GraphDB (Tinkerpop).
 
 ### Analysis method
 
-|               |by_exhaustive_search| using_specific_key_list                                      |
-|---------------|-|--------------------------------------------------------------|
-| summary       |analyze all Vertices and Edges.| analyze specific vertices searched by keys                   |
-| pros          |no advance preparation required| faster than by_exhaustive_search (enable to search by index) |
-| cons          |inefficient (execute full search all vertices and edges count times)| required to prepare search condition                         |
+|               | by_exhaustive_search                                                                                                      | using_specific_key_list                                                                                                                  |
+|---------------|---------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------|
+| summary       | analyze all Vertices and Edges.<br/>[Sequence Diagram](https://github.com/kazumatsudo/GraphDB2RDB/wiki#byexaustivesearch) | analyze specific vertices searched by keys.<br/>[Sequence Diagram](https://github.com/kazumatsudo/GraphDB2RDB/wiki#usingspecifickeylist) |
+| pros          | no advance preparation required                                                                                           | faster than by_exhaustive_search (enable to search by index)                                                                             |
+| cons          | inefficient (execute full search all vertices and edges count times)                                                      | required to prepare search condition                                                                                                     |
 
 #### How to choose
 
