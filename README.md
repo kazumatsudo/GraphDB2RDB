@@ -106,10 +106,13 @@ The settings you can be changed are summarized in [application.conf](./src/main/
 
 - [CODE_OF_CONDUCT](CODE_OF_CONDUCT.md)
 
-### Design (for developer)
+## Contributing
 
-The design (ex. structure, each diagrams, ...) is summarised in [wiki](https://github.com/kazumatsudo/GraphDB2RDB/wiki).  
-this document contains how to contribute to this repository.
+- [CONTRIBUTING](CONTRIBUTING.md)
+
+## License
+
+- [LICENSE](LICENSE)
 
 ## Authors
 
@@ -118,7 +121,3 @@ this document contains how to contribute to this repository.
 ## Contributors
 
 - xxx
-
-## License
-
-[LICENSE](LICENSE)
