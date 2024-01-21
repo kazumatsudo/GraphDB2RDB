@@ -3,6 +3,7 @@ package domain.table.ddl.column
 import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.matchers.should.Matchers
 
+import java.time.Instant
 import java.util.UUID
 
 class ColumnTypeSpec extends AnyFunSpec with Matchers {
@@ -16,6 +17,8 @@ class ColumnTypeSpec extends AnyFunSpec with Matchers {
       ColumnType.apply(1.1.toFloat) shouldBe ColumnTypeFloat(ColumnLength(3))
       ColumnType.apply(1.1) shouldBe ColumnTypeDouble(ColumnLength(3))
       ColumnType.apply(UUID.randomUUID()) shouldBe ColumnTypeUUID
+      ColumnType.apply(Instant.MAX) shouldBe ColumnTypeDate(ColumnLength(37))
+      ColumnType.apply(Instant.MIN) shouldBe ColumnTypeDate(ColumnLength(27))
       ColumnType.apply('a') shouldBe ColumnTypeCharacter(ColumnLength(1))
       ColumnType.apply("string") shouldBe ColumnTypeString(ColumnLength(6))
       ColumnType.apply(Seq.empty) shouldBe ColumnTypeUnknown
@@ -38,6 +41,8 @@ class ColumnTypeSpec extends AnyFunSpec with Matchers {
       val columnTypeDoubleSmall = ColumnTypeDouble(ColumnLength(1))
       val columnTypeDoubleBig = ColumnTypeDouble(ColumnLength(2))
       val columnTypeUUID = ColumnTypeUUID
+      val columnTypeDateMin = ColumnType.apply(Instant.MIN)
+      val columnTypeDateMax = ColumnType.apply(Instant.MAX)
       val columnTypeCharacterSmall = ColumnTypeCharacter(ColumnLength(1))
       val columnTypeCharacterBig = ColumnTypeCharacter(ColumnLength(2))
       val columnTypeStringSmall = ColumnTypeString(ColumnLength(1))
@@ -77,6 +82,10 @@ class ColumnTypeSpec extends AnyFunSpec with Matchers {
         columnTypeBoolean,
         columnTypeUUID
       ) shouldBe ColumnTypeCharacter(ColumnLength(36))
+      ColumnType.merge(
+        columnTypeBoolean,
+        columnTypeDateMax
+      ) shouldBe ColumnTypeString(ColumnLength(37))
       ColumnType.merge(
         columnTypeBoolean,
         columnTypeCharacterBig
@@ -125,6 +134,10 @@ class ColumnTypeSpec extends AnyFunSpec with Matchers {
       ) shouldBe ColumnTypeCharacter(ColumnTypeUUID.length)
       ColumnType.merge(
         columnTypeByteSmall,
+        columnTypeDateMax
+      ) shouldBe ColumnTypeString(ColumnLength(37))
+      ColumnType.merge(
+        columnTypeByteSmall,
         columnTypeCharacterBig
       ) shouldBe columnTypeCharacterBig
       ColumnType.merge(
@@ -171,6 +184,10 @@ class ColumnTypeSpec extends AnyFunSpec with Matchers {
       ) shouldBe ColumnTypeCharacter(ColumnTypeUUID.length)
       ColumnType.merge(
         columnTypeShortSmall,
+        columnTypeDateMax
+      ) shouldBe ColumnTypeString(ColumnLength(37))
+      ColumnType.merge(
+        columnTypeShortSmall,
         columnTypeCharacterBig
       ) shouldBe columnTypeCharacterBig
       ColumnType.merge(
@@ -215,6 +232,10 @@ class ColumnTypeSpec extends AnyFunSpec with Matchers {
         columnTypeIntSmall,
         columnTypeUUID
       ) shouldBe ColumnTypeCharacter(ColumnTypeUUID.length)
+      ColumnType.merge(
+        columnTypeIntSmall,
+        columnTypeDateMax
+      ) shouldBe ColumnTypeString(ColumnLength(37))
       ColumnType.merge(
         columnTypeIntSmall,
         columnTypeCharacterBig
@@ -267,6 +288,10 @@ class ColumnTypeSpec extends AnyFunSpec with Matchers {
       ) shouldBe ColumnTypeCharacter(ColumnTypeUUID.length)
       ColumnType.merge(
         columnTypeLongSmall,
+        columnTypeDateMax
+      ) shouldBe ColumnTypeString(ColumnLength(37))
+      ColumnType.merge(
+        columnTypeLongSmall,
         columnTypeStringBig
       ) shouldBe columnTypeStringBig
       ColumnType.merge(
@@ -307,6 +332,10 @@ class ColumnTypeSpec extends AnyFunSpec with Matchers {
         columnTypeFloatSmall,
         columnTypeUUID
       ) shouldBe ColumnTypeCharacter(ColumnTypeUUID.length)
+      ColumnType.merge(
+        columnTypeFloatSmall,
+        columnTypeDateMax
+      ) shouldBe ColumnTypeString(ColumnLength(37))
       ColumnType.merge(
         columnTypeFloatSmall,
         columnTypeCharacterBig
@@ -355,6 +384,10 @@ class ColumnTypeSpec extends AnyFunSpec with Matchers {
       ) shouldBe ColumnTypeCharacter(ColumnTypeUUID.length)
       ColumnType.merge(
         columnTypeDoubleSmall,
+        columnTypeDateMax
+      ) shouldBe ColumnTypeString(ColumnLength(37))
+      ColumnType.merge(
+        columnTypeDoubleSmall,
         columnTypeCharacterBig
       ) shouldBe columnTypeCharacterBig
       ColumnType.merge(
@@ -400,6 +433,10 @@ class ColumnTypeSpec extends AnyFunSpec with Matchers {
         ColumnTypeUUID
       ) shouldBe ColumnTypeUUID
       ColumnType.merge(
+        columnTypeUUID,
+        columnTypeDateMax
+      ) shouldBe ColumnTypeString(ColumnLength(37))
+      ColumnType.merge(
         ColumnTypeUUID,
         columnTypeCharacterBig
       ) shouldBe ColumnTypeCharacter(ColumnTypeUUID.length)
@@ -409,6 +446,56 @@ class ColumnTypeSpec extends AnyFunSpec with Matchers {
       ) shouldBe ColumnTypeString(ColumnTypeUUID.length)
       ColumnType.merge(
         ColumnTypeUUID,
+        columnTypeUnknown
+      ) shouldBe columnTypeUnknown
+
+      // ColumnTypeDate
+      ColumnType.merge(
+        columnTypeDateMin,
+        columnTypeBoolean
+      ) shouldBe ColumnTypeString(ColumnLength(27))
+      ColumnType.merge(
+        columnTypeDateMin,
+        columnTypeByteBig
+      ) shouldBe ColumnTypeString(ColumnLength(27))
+      ColumnType.merge(
+        columnTypeDateMin,
+        columnTypeShortBig
+      ) shouldBe ColumnTypeString(ColumnLength(27))
+      ColumnType.merge(
+        columnTypeDateMin,
+        columnTypeIntBig
+      ) shouldBe ColumnTypeString(ColumnLength(27))
+      ColumnType.merge(
+        columnTypeDateMin,
+        columnTypeLongBig
+      ) shouldBe ColumnTypeString(ColumnLength(27))
+      ColumnType.merge(
+        columnTypeDateMin,
+        columnTypeFloatBig
+      ) shouldBe ColumnTypeString(ColumnLength(27))
+      ColumnType.merge(
+        columnTypeDateMin,
+        columnTypeDoubleBig
+      ) shouldBe ColumnTypeString(ColumnLength(27))
+      ColumnType.merge(
+        columnTypeDateMin,
+        ColumnTypeUUID
+      ) shouldBe ColumnTypeString(ColumnTypeUUID.length)
+      ColumnType.merge(
+        columnTypeDateMin,
+        columnTypeDateMax
+      ) shouldBe columnTypeDateMax
+      ColumnType.merge(
+        columnTypeDateMin,
+        columnTypeCharacterBig
+      ) shouldBe ColumnTypeCharacter(ColumnLength(27))
+      ColumnType.merge(
+        columnTypeDateMin,
+        columnTypeStringBig
+      ) shouldBe ColumnTypeString(ColumnLength(27))
+      ColumnType.merge(
+        columnTypeDateMin,
         columnTypeUnknown
       ) shouldBe columnTypeUnknown
 
@@ -445,6 +532,10 @@ class ColumnTypeSpec extends AnyFunSpec with Matchers {
         columnTypeCharacterSmall,
         columnTypeUUID
       ) shouldBe ColumnTypeCharacter(ColumnTypeUUID.length)
+      ColumnType.merge(
+        columnTypeCharacterSmall,
+        columnTypeDateMax
+      ) shouldBe ColumnTypeCharacter(ColumnLength(37))
       ColumnType.merge(
         columnTypeCharacterSmall,
         columnTypeCharacterBig
@@ -493,6 +584,10 @@ class ColumnTypeSpec extends AnyFunSpec with Matchers {
       ) shouldBe ColumnTypeString(ColumnTypeUUID.length)
       ColumnType.merge(
         columnTypeStringSmall,
+        columnTypeDateMax
+      ) shouldBe ColumnTypeString(ColumnLength(37))
+      ColumnType.merge(
+        columnTypeStringSmall,
         columnTypeCharacterBig
       ) shouldBe columnTypeStringBig
       ColumnType.merge(
@@ -539,6 +634,10 @@ class ColumnTypeSpec extends AnyFunSpec with Matchers {
       ) shouldBe columnTypeUnknown
       ColumnType.merge(
         columnTypeUnknown,
+        columnTypeDateMax
+      ) shouldBe ColumnTypeUnknown
+      ColumnType.merge(
+        columnTypeUnknown,
         columnTypeCharacterBig
       ) shouldBe columnTypeUnknown
       ColumnType.merge(
@@ -562,6 +661,8 @@ class ColumnTypeSpec extends AnyFunSpec with Matchers {
       ColumnType.apply(1.1.toFloat).toSqlSentence shouldBe "FLOAT"
       ColumnType.apply(1.1).toSqlSentence shouldBe "DOUBLE"
       ColumnType.apply(UUID.randomUUID()).toSqlSentence shouldBe "CHAR(36)"
+      ColumnType.apply(Instant.MIN).toSqlSentence shouldBe "DATETIME"
+      ColumnType.apply(Instant.MAX).toSqlSentence shouldBe "DATETIME"
       ColumnType.apply('a').toSqlSentence shouldBe "CHAR(1)"
       ColumnType.apply(Seq.empty).toSqlSentence shouldBe "TEXT"
     }

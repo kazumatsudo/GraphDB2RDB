@@ -2,6 +2,7 @@ package domain.table.ddl.column
 
 import org.janusgraph.graphdb.relations.RelationIdentifier
 
+import java.time.Instant
 import java.util.UUID
 import scala.annotation.tailrec
 
@@ -47,6 +48,10 @@ case object ColumnTypeUUID extends ColumnType {
   override def toSqlSentence: String = s"CHAR(${length.toSqlSentence})"
 }
 
+case class ColumnTypeDate(private val length: ColumnLength) extends ColumnType {
+  override def toSqlSentence: String = s"DATETIME"
+}
+
 case class ColumnTypeCharacter(private val length: ColumnLength)
     extends ColumnType {
   override def toSqlSentence: String = s"CHAR(${length.toSqlSentence})"
@@ -82,6 +87,8 @@ object ColumnType {
         ColumnLength(valueDouble.toString.replaceAll("0*$", "").length)
       )
     case _: UUID => ColumnTypeUUID
+    case valueDate: Instant =>
+      ColumnTypeDate(ColumnLength(valueDate.toString.length))
     case _: Char => ColumnTypeCharacter(ColumnLength(1))
     case valueString: String =>
       ColumnTypeString(ColumnLength(valueString.length))
@@ -119,6 +126,9 @@ object ColumnType {
       case (ColumnTypeBoolean, ColumnTypeUUID) =>
         // change UUID -> Character
         ColumnTypeCharacter(ColumnTypeUUID.length)
+      case (ColumnTypeBoolean, ColumnTypeDate(length)) =>
+        // change Date -> String
+        ColumnTypeString(length.max(5)) // 5 = false.toString
       case (ColumnTypeBoolean, ColumnTypeCharacter(length)) =>
         ColumnTypeCharacter(length.max(5)) // 5 = false.toString
       case (ColumnTypeBoolean, ColumnTypeString(length)) =>
@@ -142,6 +152,9 @@ object ColumnType {
       case (ColumnTypeByte(alength), ColumnTypeUUID) =>
         // change UUID -> Character
         ColumnTypeCharacter(alength.max(ColumnTypeUUID.length))
+      case (ColumnTypeByte(alength), ColumnTypeDate(blength)) =>
+        // change Date -> String
+        ColumnTypeString(alength.max(blength))
       case (ColumnTypeByte(alength), ColumnTypeCharacter(blength)) =>
         ColumnTypeCharacter(alength.max(blength))
       case (ColumnTypeByte(alength), ColumnTypeString(blength)) =>
@@ -164,6 +177,9 @@ object ColumnType {
       case (ColumnTypeShort(alength), ColumnTypeUUID) =>
         // change UUID -> Character
         ColumnTypeCharacter(alength.max(ColumnTypeUUID.length))
+      case (ColumnTypeShort(alength), ColumnTypeDate(blength)) =>
+        // change Date -> String
+        ColumnTypeString(alength.max(blength))
       case (ColumnTypeShort(alength), ColumnTypeCharacter(blength)) =>
         ColumnTypeCharacter(alength.max(blength))
       case (ColumnTypeShort(alength), ColumnTypeString(blength)) =>
@@ -185,6 +201,9 @@ object ColumnType {
       case (ColumnTypeInt(alength), ColumnTypeUUID) =>
         // change UUID -> Character
         ColumnTypeCharacter(alength.max(ColumnTypeUUID.length))
+      case (ColumnTypeInt(alength), ColumnTypeDate(blength)) =>
+        // change Date -> String
+        ColumnTypeString(alength.max(blength))
       case (ColumnTypeInt(alength), ColumnTypeCharacter(blength)) =>
         ColumnTypeCharacter(alength.max(blength))
       case (ColumnTypeInt(alength), ColumnTypeString(blength)) =>
@@ -205,6 +224,9 @@ object ColumnType {
       case (ColumnTypeLong(alength), ColumnTypeUUID) =>
         // change UUID -> Character
         ColumnTypeCharacter(alength.max(ColumnTypeUUID.length))
+      case (ColumnTypeLong(alength), ColumnTypeDate(blength)) =>
+        // change Date -> String
+        ColumnTypeString(alength.max(blength))
       case (ColumnTypeLong(alength), ColumnTypeCharacter(blength)) =>
         ColumnTypeCharacter(alength.max(blength))
       case (ColumnTypeLong(alength), ColumnTypeString(blength)) =>
@@ -226,6 +248,9 @@ object ColumnType {
         ColumnTypeCharacter(alength.max(ColumnTypeUUID.length))
       case (ColumnTypeFloat(alength), ColumnTypeCharacter(blength)) =>
         ColumnTypeCharacter(alength.max(blength))
+      case (ColumnTypeFloat(alength), ColumnTypeDate(blength)) =>
+        // change Date -> String
+        ColumnTypeString(alength.max(blength))
       case (ColumnTypeFloat(alength), ColumnTypeString(blength)) =>
         ColumnTypeString(alength.max(blength))
       case (ColumnTypeFloat(_), ColumnTypeUnknown) => ColumnTypeUnknown
@@ -242,6 +267,9 @@ object ColumnType {
       case (ColumnTypeDouble(alength), ColumnTypeUUID) =>
         // change UUID -> Character
         ColumnTypeCharacter(alength.max(ColumnTypeUUID.length))
+      case (ColumnTypeDouble(alength), ColumnTypeDate(blength)) =>
+        // change Date -> String
+        ColumnTypeString(alength.max(blength))
       case (ColumnTypeDouble(alength), ColumnTypeCharacter(blength)) =>
         ColumnTypeCharacter(alength.max(blength))
       case (ColumnTypeDouble(alength), ColumnTypeString(blength)) =>
@@ -249,19 +277,39 @@ object ColumnType {
       case (ColumnTypeDouble(_), ColumnTypeUnknown) => ColumnTypeUnknown
 
       // ColumnTypeUUID
-      case (ColumnTypeUUID, ColumnTypeBoolean)   => merge(b, a)
-      case (ColumnTypeUUID, ColumnTypeByte(_))   => merge(b, a)
-      case (ColumnTypeUUID, ColumnTypeShort(_))  => merge(b, a)
-      case (ColumnTypeUUID, ColumnTypeInt(_))    => merge(b, a)
-      case (ColumnTypeUUID, ColumnTypeLong(_))   => merge(b, a)
-      case (ColumnTypeUUID, ColumnTypeFloat(_))  => merge(b, a)
-      case (ColumnTypeUUID, ColumnTypeDouble(_)) => merge(b, a)
-      case (ColumnTypeUUID, ColumnTypeUUID)      => ColumnTypeUUID
+      case (ColumnTypeUUID, ColumnTypeBoolean)      => merge(b, a)
+      case (ColumnTypeUUID, ColumnTypeByte(_))      => merge(b, a)
+      case (ColumnTypeUUID, ColumnTypeShort(_))     => merge(b, a)
+      case (ColumnTypeUUID, ColumnTypeInt(_))       => merge(b, a)
+      case (ColumnTypeUUID, ColumnTypeLong(_))      => merge(b, a)
+      case (ColumnTypeUUID, ColumnTypeFloat(_))     => merge(b, a)
+      case (ColumnTypeUUID, ColumnTypeDouble(_))    => merge(b, a)
+      case (ColumnTypeUUID, ColumnTypeUUID)         => ColumnTypeUUID
+      case (ColumnTypeUUID, ColumnTypeDate(length)) =>
+        // change Date -> String
+        ColumnTypeString(length.max(ColumnTypeUUID.length))
       case (ColumnTypeUUID, ColumnTypeCharacter(blength)) =>
         ColumnTypeCharacter(ColumnTypeUUID.length.max(blength))
       case (ColumnTypeUUID, ColumnTypeString(blength)) =>
         ColumnTypeString(ColumnTypeUUID.length.max(blength))
       case (ColumnTypeUUID, ColumnTypeUnknown) => ColumnTypeUnknown
+
+      // ColumnTypeDate
+      case (ColumnTypeDate(_), ColumnTypeBoolean)   => merge(b, a)
+      case (ColumnTypeDate(_), ColumnTypeByte(_))   => merge(b, a)
+      case (ColumnTypeDate(_), ColumnTypeShort(_))  => merge(b, a)
+      case (ColumnTypeDate(_), ColumnTypeInt(_))    => merge(b, a)
+      case (ColumnTypeDate(_), ColumnTypeLong(_))   => merge(b, a)
+      case (ColumnTypeDate(_), ColumnTypeFloat(_))  => merge(b, a)
+      case (ColumnTypeDate(_), ColumnTypeDouble(_)) => merge(b, a)
+      case (ColumnTypeDate(_), ColumnTypeUUID)      => merge(b, a)
+      case (ColumnTypeDate(alength), ColumnTypeDate(blength)) =>
+        ColumnTypeDate(alength.max(blength))
+      case (ColumnTypeDate(alength), ColumnTypeCharacter(blength)) =>
+        ColumnTypeCharacter(alength.max(blength))
+      case (ColumnTypeDate(alength), ColumnTypeString(blength)) =>
+        ColumnTypeString(alength.max(blength))
+      case (ColumnTypeDate(_), ColumnTypeUnknown) => ColumnTypeUnknown
 
       // ColumnTypeCharacter
       case (ColumnTypeCharacter(_), ColumnTypeBoolean)   => merge(b, a)
@@ -271,8 +319,8 @@ object ColumnType {
       case (ColumnTypeCharacter(_), ColumnTypeLong(_))   => merge(b, a)
       case (ColumnTypeCharacter(_), ColumnTypeFloat(_))  => merge(b, a)
       case (ColumnTypeCharacter(_), ColumnTypeDouble(_)) => merge(b, a)
-      case (ColumnTypeCharacter(alength), ColumnTypeUUID) =>
-        ColumnTypeCharacter(alength.max(ColumnTypeUUID.length))
+      case (ColumnTypeCharacter(_), ColumnTypeUUID)      => merge(b, a)
+      case (ColumnTypeCharacter(_), ColumnTypeDate(_))   => merge(b, a)
       case (ColumnTypeCharacter(alength), ColumnTypeCharacter(blength)) =>
         ColumnTypeCharacter(alength.max(blength))
       case (ColumnTypeCharacter(alength), ColumnTypeString(blength)) =>
@@ -288,6 +336,7 @@ object ColumnType {
       case (ColumnTypeString(_), ColumnTypeFloat(_))     => merge(b, a)
       case (ColumnTypeString(_), ColumnTypeDouble(_))    => merge(b, a)
       case (ColumnTypeString(_), ColumnTypeUUID)         => merge(b, a)
+      case (ColumnTypeString(_), ColumnTypeDate(_))      => merge(b, a)
       case (ColumnTypeString(_), ColumnTypeCharacter(_)) => merge(b, a)
       case (ColumnTypeString(alength), ColumnTypeString(blength)) =>
         ColumnTypeString(alength.max(blength))
@@ -302,6 +351,7 @@ object ColumnType {
       case (ColumnTypeUnknown, ColumnTypeFloat(_))     => merge(b, a)
       case (ColumnTypeUnknown, ColumnTypeDouble(_))    => merge(b, a)
       case (ColumnTypeUnknown, ColumnTypeUUID)         => merge(b, a)
+      case (ColumnTypeUnknown, ColumnTypeDate(_))      => merge(b, a)
       case (ColumnTypeUnknown, ColumnTypeCharacter(_)) => merge(b, a)
       case (ColumnTypeUnknown, ColumnTypeString(_))    => merge(b, a)
       case (ColumnTypeUnknown, ColumnTypeUnknown)      => ColumnTypeUnknown

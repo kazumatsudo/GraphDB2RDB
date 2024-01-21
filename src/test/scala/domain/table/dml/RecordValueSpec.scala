@@ -3,6 +3,8 @@ package domain.table.dml
 import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.matchers.should.Matchers
 
+import java.sql.Timestamp
+import java.time.Instant
 import java.util.UUID
 
 class RecordValueSpec extends AnyFunSpec with Matchers {
@@ -27,6 +29,14 @@ class RecordValueSpec extends AnyFunSpec with Matchers {
       RecordValue(
         Map(("uuid", uuid))
       ).toSqlSentence shouldBe ("uuid", s"'$uuid'")
+      val dateMin = Instant.MIN
+      RecordValue(
+        Map(("dateMin", dateMin))
+      ).toSqlSentence shouldBe ("dateMin", s"'${Timestamp.from(dateMin)}'")
+      val dateMax = Instant.MAX
+      RecordValue(
+        Map(("dateMax", dateMax))
+      ).toSqlSentence shouldBe ("dateMax", s"'${Timestamp.from(dateMax)}'")
       RecordValue(
         Map(("char", 'a'))
       ).toSqlSentence shouldBe ("char", "'a'")
