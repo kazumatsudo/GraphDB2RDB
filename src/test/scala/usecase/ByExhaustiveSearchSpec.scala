@@ -15,6 +15,8 @@ import org.scalatest.funspec.AsyncFunSpec
 import org.scalatest.matchers.should.Matchers
 import utils.Config
 
+import scala.collection.immutable.HashMap
+
 class ByExhaustiveSearchSpec extends AsyncFunSpec with Matchers {
   private val config = Config.default
 
@@ -30,88 +32,70 @@ class ByExhaustiveSearchSpec extends AsyncFunSpec with Matchers {
               TableName("vertex_person") -> ColumnList(
                 Map(
                   ColumnName("id") -> ColumnTypeInt(ColumnLength(1)),
-                  ColumnName("property_age") -> ColumnTypeInt(
-                    ColumnLength(2)
-                  ),
                   ColumnName("property_name") -> ColumnTypeString(
                     ColumnLength(5)
-                  )
+                  ),
+                  ColumnName("property_age") -> ColumnTypeInt(ColumnLength(2))
                 )
               ),
               TableName("vertex_software") -> ColumnList(
                 Map(
                   ColumnName("id") -> ColumnTypeInt(ColumnLength(1)),
-                  ColumnName("property_lang") -> ColumnTypeString(
-                    ColumnLength(4)
-                  ),
                   ColumnName("property_name") -> ColumnTypeString(
                     ColumnLength(6)
+                  ),
+                  ColumnName("property_lang") -> ColumnTypeString(
+                    ColumnLength(4)
                   )
                 )
               )
             )
           ),
           RecordList(
-            Map(
+            HashMap(
+              RecordKey(
+                (TableName("vertex_software"), RecordId(5))
+              ) -> RecordValue(
+                Map(
+                  "id" -> 5,
+                  "property_name" -> "ripple",
+                  "property_lang" -> "java"
+                )
+              ),
               RecordKey(
                 (TableName("vertex_person"), RecordId(1))
               ) -> RecordValue(
-                Map(
-                  "id" -> 1,
-                  "property_age" -> 29,
-                  "property_name" -> "marko"
-                )
-              ),
-              RecordKey(
-                (TableName("vertex_person"), RecordId(2))
-              ) -> RecordValue(
-                Map(
-                  "id" -> 2,
-                  "property_age" -> 27,
-                  "property_name" -> "vadas"
-                )
-              ),
-              RecordKey(
-                (TableName("vertex_person"), RecordId(4))
-              ) -> RecordValue(
-                Map(
-                  "id" -> 4,
-                  "property_age" -> 32,
-                  "property_name" -> "josh"
-                )
-              ),
-              RecordKey(
-                (TableName("vertex_person"), RecordId(6))
-              ) -> RecordValue(
-                Map(
-                  "id" -> 6,
-                  "property_age" -> 35,
-                  "property_name" -> "peter"
-                )
+                Map("id" -> 1, "property_name" -> "marko", "property_age" -> 29)
               ),
               RecordKey(
                 (TableName("vertex_software"), RecordId(3))
               ) -> RecordValue(
                 Map(
                   "id" -> 3,
-                  "property_lang" -> "java",
-                  "property_name" -> "lop"
+                  "property_name" -> "lop",
+                  "property_lang" -> "java"
                 )
               ),
               RecordKey(
-                (TableName("vertex_software"), RecordId(5))
+                (TableName("vertex_person"), RecordId(2))
               ) -> RecordValue(
-                Map(
-                  "id" -> 5,
-                  "property_lang" -> "java",
-                  "property_name" -> "ripple"
-                )
+                Map("id" -> 2, "property_name" -> "vadas", "property_age" -> 27)
+              ),
+              RecordKey(
+                (TableName("vertex_person"), RecordId(6))
+              ) -> RecordValue(
+                Map("id" -> 6, "property_name" -> "peter", "property_age" -> 35)
+              ),
+              RecordKey(
+                (TableName("vertex_person"), RecordId(4))
+              ) -> RecordValue(
+                Map("id" -> 4, "property_name" -> "josh", "property_age" -> 32)
               )
             )
           ),
           TableList(
             Map(
-              TableName("edge_created") -> ColumnList(
+              TableName("edge_created_from_person_to_software") -> ColumnList(
                 Map(
                   ColumnName("id") -> ColumnTypeInt(ColumnLength(2)),
                   ColumnName("id_in_v") -> ColumnTypeInt(ColumnLength(1)),
@@ -121,7 +105,7 @@ class ByExhaustiveSearchSpec extends AsyncFunSpec with Matchers {
                   )
                 )
               ),
-              TableName("edge_knows") -> ColumnList(
+              TableName("edge_knows_from_person_to_person") -> ColumnList(
                 Map(
                   ColumnName("id") -> ColumnTypeInt(ColumnLength(1)),
                   ColumnName("id_in_v") -> ColumnTypeInt(ColumnLength(1)),
@@ -134,49 +118,12 @@ class ByExhaustiveSearchSpec extends AsyncFunSpec with Matchers {
             )
           ),
           RecordList(
-            Map(
+            HashMap(
               RecordKey(
-                (TableName("edge_knows"), RecordId(7))
-              ) -> RecordValue(
-                Map(
-                  "id" -> 7,
-                  "id_in_v" -> 2,
-                  "id_out_v" -> 1,
-                  "property_weight" -> 0.5
+                (
+                  TableName("edge_created_from_person_to_software"),
+                  RecordId(11)
                 )
-              ),
-              RecordKey(
-                (TableName("edge_knows"), RecordId(8))
-              ) -> RecordValue(
-                Map(
-                  "id" -> 8,
-                  "id_in_v" -> 4,
-                  "id_out_v" -> 1,
-                  "property_weight" -> 1.0
-                )
-              ),
-              RecordKey(
-                (TableName("edge_created"), RecordId(9))
-              ) -> RecordValue(
-                Map(
-                  "id" -> 9,
-                  "id_in_v" -> 3,
-                  "id_out_v" -> 1,
-                  "property_weight" -> 0.4
-                )
-              ),
-              RecordKey(
-                (TableName("edge_created"), RecordId(10))
-              ) -> RecordValue(
-                Map(
-                  "id" -> 10,
-                  "id_in_v" -> 5,
-                  "id_out_v" -> 4,
-                  "property_weight" -> 1.0
-                )
-              ),
-              RecordKey(
-                (TableName("edge_created"), RecordId(11))
               ) -> RecordValue(
                 Map(
                   "id" -> 11,
@@ -186,13 +133,59 @@ class ByExhaustiveSearchSpec extends AsyncFunSpec with Matchers {
                 )
               ),
               RecordKey(
-                (TableName("edge_created"), RecordId(12))
+                (TableName("edge_knows_from_person_to_person"), RecordId(7))
+              ) -> RecordValue(
+                Map(
+                  "id" -> 7,
+                  "id_in_v" -> 2,
+                  "id_out_v" -> 1,
+                  "property_weight" -> 0.5
+                )
+              ),
+              RecordKey(
+                (
+                  TableName("edge_created_from_person_to_software"),
+                  RecordId(10)
+                )
+              ) -> RecordValue(
+                Map(
+                  "id" -> 10,
+                  "id_in_v" -> 5,
+                  "id_out_v" -> 4,
+                  "property_weight" -> 1.0
+                )
+              ),
+              RecordKey(
+                (TableName("edge_created_from_person_to_software"), RecordId(9))
+              ) -> RecordValue(
+                Map(
+                  "id" -> 9,
+                  "id_in_v" -> 3,
+                  "id_out_v" -> 1,
+                  "property_weight" -> 0.4
+                )
+              ),
+              RecordKey(
+                (
+                  TableName("edge_created_from_person_to_software"),
+                  RecordId(12)
+                )
               ) -> RecordValue(
                 Map(
                   "id" -> 12,
                   "id_in_v" -> 3,
                   "id_out_v" -> 6,
                   "property_weight" -> 0.2
+                )
+              ),
+              RecordKey(
+                (TableName("edge_knows_from_person_to_person"), RecordId(8))
+              ) -> RecordValue(
+                Map(
+                  "id" -> 8,
+                  "id_in_v" -> 4,
+                  "id_out_v" -> 1,
+                  "property_weight" -> 1.0
                 )
               )
             )
