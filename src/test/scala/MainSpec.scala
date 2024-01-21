@@ -1,22 +1,24 @@
-import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerFactory
+import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerGraph
+import org.scalatest.Assertion
 import org.scalatest.funspec.AsyncFunSpec
 import org.scalatest.matchers.should.Matchers
 import slick.jdbc.H2Profile.api._
 import slick.jdbc.JdbcBackend.Database
-import usecase.ByExhaustiveSearch
+import usecase.{ByExhaustiveSearch, UsecaseBase, UsingSpecificKeyList}
 import utils.Config
 
+import scala.concurrent.Future
+
 class MainSpec extends AsyncFunSpec with Matchers {
-  private val config = Config.default
 
   describe("enable to execute in") {
-    it("H2") {
-      val graph = TinkerFactory.createModern().traversal()
-      val usecase = ByExhaustiveSearch(graph, config)
+    val config = Config.default
+    val (g, request) =
+      GenerateTestData.generate(TinkerGraph.open().traversal(), 100, 5, 5)
 
+    def assert(database: Database, usecase: UsecaseBase): Future[Assertion] = {
       val result = for {
         usecaseResponse <- usecase.execute(checkUnique = true)
-        database = Database.forConfig("database-h2")
         result <- database.run(
           DBIO.sequence(
             usecaseResponse.verticesDdl.toSqlSentence
@@ -42,6 +44,19 @@ class MainSpec extends AsyncFunSpec with Matchers {
             e
           )
         }
+    }
+
+    describe("H2") {
+      val database = Database.forConfig("database-h2")
+
+      it("ByExhaustiveSearch") {
+        assert(database, ByExhaustiveSearch(g, config))
+      }
+
+
+      it("UsingSpecificKeyList") {
+        assert(database, UsingSpecificKeyList(g, config, request))
+      }
     }
   }
 }

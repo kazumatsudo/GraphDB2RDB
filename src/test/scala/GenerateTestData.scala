@@ -27,7 +27,6 @@ object GenerateTestData extends StrictLogging {
     .property("addressId", UUID.randomUUID())
     .property("buildingNumber", faker.buildingNumber)
     .property("city", faker.city)
-    .property("state", faker.state.name)
     .property("postalCode", faker.stateZip)
     .property("createdAt", faker.currentEraInstant())
     .next()
