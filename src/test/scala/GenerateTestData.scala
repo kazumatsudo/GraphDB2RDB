@@ -10,6 +10,7 @@ import usecase.{
 }
 import utils.{Config, FileUtility, JsonUtility}
 
+import java.util.UUID
 import scala.io.StdIn
 import scala.util.control.NonFatal
 import scala.util.{Random, Using}
@@ -23,11 +24,12 @@ object GenerateTestData extends StrictLogging {
 
   private def generateVertexAddress(g: GraphTraversalSource) = g
     .addV("address")
-    .property("addressId", Random.nextInt(Int.MaxValue))
+    .property("addressId", UUID.randomUUID())
     .property("buildingNumber", faker.buildingNumber)
     .property("city", faker.city)
     .property("state", faker.state.name)
     .property("postalCode", faker.stateZip)
+    .property("createdAt", faker.currentEraInstant())
     .next()
 
   private def generateVertexCompany(g: GraphTraversalSource) = {
@@ -35,7 +37,7 @@ object GenerateTestData extends StrictLogging {
 
     val vertex = g
       .addV("company")
-      .property("companyId", Random.nextInt(Int.MaxValue))
+      .property("companyId", UUID.randomUUID())
       .property("name", faker.companyName)
       .property("phoneNumber", faker.phoneNumber)
 
@@ -43,6 +45,7 @@ object GenerateTestData extends StrictLogging {
       vertex.property("url", faker.companyUrl)
     }
 
+    vertex.property("createdAt", faker.currentEraInstant())
     vertex.next()
   }
 
@@ -55,7 +58,7 @@ object GenerateTestData extends StrictLogging {
 
     val vertex = g
       .addV("person")
-      .property("personId", Random.nextInt(Int.MaxValue))
+      .property("personId", UUID.randomUUID())
       .property("firstName", faker.firstName)
       .property("lastName", lastName)
       .property("age", age)
@@ -66,15 +69,17 @@ object GenerateTestData extends StrictLogging {
         .property("emailAddress", faker.emailAddress)
     }
 
+    vertex.property("createdAt", faker.currentEraInstant())
     vertex.next()
   }
 
   private def generateVertexPokemon(g: GraphTraversalSource) = g
     .addV("pokemon")
-    .property("pokemonId", Random.nextInt(Int.MaxValue))
+    .property("pokemonId", UUID.randomUUID())
     .property("pokemonName", faker.pokemonName)
     .property("pokemonLocation", faker.pokemonLocation)
     .property("pokemonMove", faker.pokemonMove)
+    .property("createdAt", faker.currentEraInstant())
     .next()
 
   private def generateVertexSchool(g: GraphTraversalSource) = {
@@ -82,13 +87,15 @@ object GenerateTestData extends StrictLogging {
 
     val vertex = g
       .addV("school")
-      .property("schoolId", Random.nextInt(Int.MaxValue))
+      .property("schoolId", UUID.randomUUID())
       .property("name", s"${faker.streetName} school")
       .property("phoneNumber", faker.phoneNumber)
 
     if (hasWebsite) {
       vertex.property("url", faker.url)
     }
+
+    vertex.property("createdAt", faker.currentEraInstant())
     vertex.next()
   }
 
@@ -102,7 +109,8 @@ object GenerateTestData extends StrictLogging {
     .addE("belongTo")
     .from(from)
     .to(to)
-    .property("belongToId", Random.nextInt(Int.MaxValue))
+    .property("belongToId", UUID.randomUUID())
+    .property("createdAt", faker.currentEraInstant())
     .next()
 
   private def connectEdgeBreedPokemonTo(
@@ -116,8 +124,9 @@ object GenerateTestData extends StrictLogging {
       .addE("breedPokemon")
       .from(from)
       .to(to)
-      .property("breedPokemonId", Random.nextInt(Int.MaxValue))
+      .property("breedPokemonId", UUID.randomUUID())
       .property("caught", faker.pokemonLocation())
+      .property("createdAt", faker.currentEraInstant())
 
     if (wantPokemonToLearn) {
       edge
@@ -135,7 +144,7 @@ object GenerateTestData extends StrictLogging {
     .addE("parent")
     .from(from)
     .to(to)
-    .property("parentId", Random.nextInt(Int.MaxValue))
+    .property("parentId", UUID.randomUUID())
     .next()
 
   private def connectEdgeLive(
@@ -146,7 +155,7 @@ object GenerateTestData extends StrictLogging {
     .addE("live")
     .from(from)
     .to(to)
-    .property("edgeId", Random.nextInt(Int.MaxValue))
+    .property("edgeId", UUID.randomUUID())
     .next()
 
   private def connectEdgeLocation(
@@ -157,7 +166,7 @@ object GenerateTestData extends StrictLogging {
     .addE("location")
     .from(from)
     .to(to)
-    .property("locationId", Random.nextInt(Int.MaxValue))
+    .property("locationId", UUID.randomUUID())
     .next()
 
   /** @param args
@@ -189,9 +198,9 @@ object GenerateTestData extends StrictLogging {
     Using(
       traversal().withRemote(grapdbConnection)
     ) { g =>
-      val personCount = 1000
-      val companyCount = 10
-      val schoolCount = 10
+      val personCount = 100
+      val companyCount = 5
+      val schoolCount = 5
 
       logger.info("[ 1/ 7] start : generate person Vertices")
 
@@ -296,7 +305,7 @@ object GenerateTestData extends StrictLogging {
             Seq(
               UsingSpecificKeyListRequestKey(
                 "personId",
-                verticesPerson.map(_.value[Int]("personId"))
+                verticesPerson.map(_.value[UUID]("personId"))
               )
             )
           ),
@@ -305,7 +314,7 @@ object GenerateTestData extends StrictLogging {
             Seq(
               UsingSpecificKeyListRequestKey(
                 "companyId",
-                verticesCompany.map(_.value[Int]("companyId"))
+                verticesCompany.map(_.value[UUID]("companyId"))
               )
             )
           ),
@@ -314,7 +323,7 @@ object GenerateTestData extends StrictLogging {
             Seq(
               UsingSpecificKeyListRequestKey(
                 "schoolId",
-                verticesSchool.map(_.value[Int]("schoolId"))
+                verticesSchool.map(_.value[UUID]("schoolId"))
               )
             )
           )
