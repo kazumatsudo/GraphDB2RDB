@@ -27,7 +27,7 @@ generate RDB DDL/DML from GraphDB (Tinkerpop).
            - id_out_v (= vertex_xxx.id)
            - all property keys
     3. [DML] INSERT INTO "vertex_xxx"
-        - xxx = edge label
+        - xxx = vertex label
     4. [DML] INSERT INTO "edge_xxx"
         - xxx = edge label
 
