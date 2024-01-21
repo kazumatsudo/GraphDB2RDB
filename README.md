@@ -102,7 +102,11 @@ You can define following settings as you like.
 
 The settings you can be changed are summarized in [application.conf](./src/main/resources/application.conf).
 
-## Design (for developer)
+## Code of Conduct
+
+- [CODE_OF_CONDUCT](CODE_OF_CONDUCT.md)
+
+### Design (for developer)
 
 The design (ex. structure, each diagrams, ...) is summarised in [wiki](https://github.com/kazumatsudo/GraphDB2RDB/wiki).  
 this document contains how to contribute to this repository.
