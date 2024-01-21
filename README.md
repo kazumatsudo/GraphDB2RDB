@@ -14,23 +14,22 @@ generate RDB (MySQL) DDL and INSERT sentence from GraphDB (Tinkerpop).
 ## Features
 
 - this script generate 4 SQL files.
-    1. [DDL] CREATE TABLE "vertex"
-        - analyze all vertices and define columns
+    1. [DDL] CREATE TABLE "vertex_xxx"
+        - xxx = vertex label
         - the columns are as follows.
             - id
-            - all propertyKeys
-            - label
-    2. [DDL] CREATE TABLE "edge"
-        - analyze all edges and define columns
+            - all property keys
+    2. [DDL] CREATE TABLE "edge_xxx"
+        - xxx = edge label
         - the columns are as follows.
-           - in_v_id (= vertex.id)
-           - out_v_id (= vertex.id)
-           - all propertyKeys
-           - label
-    3. [DML] INSERT INTO "vertex"
-        - analyze all vertices and generate
-    4. [DML] INSERT INTO "edge"
-        - analyze all edges and define columns
+           - id  
+           - id_in_v (= vertex_xxx.id)
+           - id_out_v (= vertex_xxx.id)
+           - all property keys
+    3. [DML] INSERT INTO "vertex_xxx"
+        - xxx = edge label
+    4. [DML] INSERT INTO "edge_xxx"
+        - xxx = edge label
 
 ## Prerequisites
 
