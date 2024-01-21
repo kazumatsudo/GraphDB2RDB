@@ -18,7 +18,8 @@ import scala.util.{Random, Using}
 object GenerateTestData extends StrictLogging {
 
   private val config = Config.default
-  private val faker = Faker.default
+  // TODO: use Faker.all
+  private val faker = Faker.ja
 
   /* generate vertices */
 
@@ -27,6 +28,7 @@ object GenerateTestData extends StrictLogging {
     .property("addressId", UUID.randomUUID())
     .property("buildingNumber", faker.buildingNumber)
     .property("city", faker.city)
+    .property("state", faker.state.name)
     .property("postalCode", faker.stateZip)
     .property("createdAt", faker.currentEraInstant())
     .next()
@@ -331,6 +333,7 @@ object GenerateTestData extends StrictLogging {
             sys.exit(1)
           case invalidInput =>
             logger.warn(s"invalid Input: $invalidInput")
+            input = ""
         }
       }
     }

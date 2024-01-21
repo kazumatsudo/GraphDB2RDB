@@ -53,7 +53,6 @@ class MainSpec extends AsyncFunSpec with Matchers {
         assert(database, ByExhaustiveSearch(g, config))
       }
 
-
       it("UsingSpecificKeyList") {
         assert(database, UsingSpecificKeyList(g, config, request))
       }
