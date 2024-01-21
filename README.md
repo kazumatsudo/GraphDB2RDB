@@ -51,12 +51,14 @@ generate RDB DDL/DML from GraphDB (Tinkerpop).
     docker compose up -d
     ```
 2. select analysis method  
-    choose analysis method to search Vertex/Edge algorithm.  
-        - "by_exhaustive_search" (default)   
-        - "using_specific_key_list"  
+    choose analysis method to search Vertex/Edge algorithm.
+
+    - "by_exhaustive_search" (default)   
+    - "using_specific_key_list"  
+
     please see following passage if you want to change method. 
     ```shell
-    % ANALYSIS_METHOD="by_exhaustive_search"
+    % ANALYSIS_METHOD=by_exhaustive_search
     ``` 
 3. execute the script by sbt
     ```shell
