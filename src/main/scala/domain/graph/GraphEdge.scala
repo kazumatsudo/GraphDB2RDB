@@ -10,8 +10,14 @@ import scala.jdk.CollectionConverters.SetHasAsScala
 
 case class GraphEdge(private val value: Edge, private val config: Config) {
 
+  private val inVertex = value.inVertex()
+  private val inVertexId = inVertex.id()
+  private val inVertexLabel = inVertex.label()
+  private val outVertex = value.outVertex()
+  private val outVertexId = outVertex.id()
+  private val outVertexLabel = outVertex.label()
   private val tableName = TableName(
-    s"${config.tableName.edge}_${value.label()}"
+    s"${config.tableName.edge}_${value.label()}_from_${outVertexLabel}_to_$inVertexLabel"
   )
   private val columnNamePrefixProperty = config.columnName.prefixProperty
 
@@ -30,17 +36,9 @@ case class GraphEdge(private val value: Edge, private val config: Config) {
     TableList {
       val idColumn = Map(ColumnName(columnNameEdgeId) -> ColumnType.apply(id))
       val inVColumn =
-        Map(
-          ColumnName(columnNameEdgeInVId) -> ColumnType.apply(
-            value.inVertex().id()
-          )
-        )
+        Map(ColumnName(columnNameEdgeInVId) -> ColumnType.apply(inVertexId))
       val outVColumn =
-        Map(
-          ColumnName(columnNameEdgeOutVId) -> ColumnType.apply(
-            value.outVertex().id()
-          )
-        )
+        Map(ColumnName(columnNameEdgeOutVId) -> ColumnType.apply(outVertexId))
 
       // TODO: pull request for gremlin-scala
       val propertyColumn = value
@@ -70,11 +68,10 @@ case class GraphEdge(private val value: Edge, private val config: Config) {
       }
       .toMap
 
-    val recordValue = Map(columnNameEdgeId -> value.id()) ++ Map(
-      columnNameEdgeInVId -> value.inVertex().id()
-    ) ++ Map(
-      columnNameEdgeOutVId -> value.outVertex().id()
-    ) ++ propertyColumnList
+    val recordValue = Map(columnNameEdgeId -> value.id()) ++
+      Map(columnNameEdgeInVId -> inVertexId) ++
+      Map(columnNameEdgeOutVId -> outVertexId) ++
+      propertyColumnList
 
     RecordList(
       Map(RecordKey(tableName, RecordId(id)) -> RecordValue(recordValue))

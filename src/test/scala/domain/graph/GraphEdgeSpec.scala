@@ -28,7 +28,7 @@ class GraphEdgeSpec extends AsyncFunSpec with Matchers {
       edge.map {
         _.head.toDdl shouldBe TableList(
           Map(
-            TableName("edge_knows") -> ColumnList(
+            TableName("edge_knows_from_person_to_person") -> ColumnList(
               Map(
                 ColumnName("id") -> ColumnTypeInt(ColumnLength(1)),
                 ColumnName("id_in_v") -> ColumnTypeInt(ColumnLength(1)),
@@ -53,7 +53,9 @@ class GraphEdgeSpec extends AsyncFunSpec with Matchers {
       edge.map {
         _.head.toDml shouldBe RecordList(
           Map(
-            RecordKey((TableName("edge_knows"), RecordId(7))) -> RecordValue(
+            RecordKey(
+              (TableName("edge_knows_from_person_to_person"), RecordId(7))
+            ) -> RecordValue(
               Map(
                 "id" -> 7,
                 "id_in_v" -> 2,
@@ -75,7 +77,12 @@ class GraphEdgeSpec extends AsyncFunSpec with Matchers {
       val graphEdge = GraphEdge(edge, config)
       graphEdge.toDml shouldBe RecordList(
         Map(
-          RecordKey((TableName("edge_testEdge"), RecordId(14))) -> RecordValue(
+          RecordKey(
+            (
+              TableName("edge_testEdge_from_testVertex1_to_testVertex2"),
+              RecordId(14)
+            )
+          ) -> RecordValue(
             Map("id" -> 14, "id_in_v" -> 13, "id_out_v" -> 0)
           )
         )

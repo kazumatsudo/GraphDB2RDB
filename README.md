@@ -14,22 +14,18 @@ generate RDB DDL/DML from GraphDB (Tinkerpop).
 ## Features
 
 - this script generate 4 SQL files.
-    1. [DDL] CREATE TABLE "vertex_xxx"
-        - xxx = vertex label
+    1. [DDL] CREATE TABLE "vertex_${vertex label}"
         - the columns are as follows.
             - id
-            - all property keys
-    2. [DDL] CREATE TABLE "edge_xxx"
-        - xxx = edge label
+            - property_${all property keys}
+    2. [DDL] CREATE TABLE "edge_${edge label}_from_${out vertex label}_to_${in vertex label}"
         - the columns are as follows.
            - id  
-           - id_in_v (= vertex_xxx.id)
-           - id_out_v (= vertex_xxx.id)
-           - all property keys
-    3. [DML] INSERT INTO "vertex_xxx"
-        - xxx = vertex label
-    4. [DML] INSERT INTO "edge_xxx"
-        - xxx = edge label
+           - id_in_v (= vertex_{vertex label}.id)
+           - id_out_v (= vertex_{vertex label}.id)
+           - property_${all property keys}
+    3. [DML] INSERT INTO "vertex_${vertex label}"
+    4. [DML] INSERT INTO "edge_${edge label}_from_${out vertex label}_to_${in vertex label}"
 
 ## Prerequisites
 

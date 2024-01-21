@@ -39,10 +39,10 @@ class UsingSpecificKeyListSpec extends AsyncFunSpec with Matchers {
               TableName("vertex_person") -> ColumnList(
                 Map(
                   ColumnName("id") -> ColumnTypeInt(ColumnLength(1)),
-                  ColumnName("property_age") -> ColumnTypeInt(ColumnLength(2)),
                   ColumnName("property_name") -> ColumnTypeString(
                     ColumnLength(5)
-                  )
+                  ),
+                  ColumnName("property_age") -> ColumnTypeInt(ColumnLength(2))
                 )
               )
             )
@@ -52,13 +52,13 @@ class UsingSpecificKeyListSpec extends AsyncFunSpec with Matchers {
               RecordKey(
                 (TableName("vertex_person"), RecordId(1))
               ) -> RecordValue(
-                Map("id" -> 1, "property_age" -> 29, "property_name" -> "marko")
+                Map("id" -> 1, "property_name" -> "marko", "property_age" -> 29)
               )
             )
           ),
           TableList(
             Map(
-              TableName("edge_created") -> ColumnList(
+              TableName("edge_knows_from_person_to_person") -> ColumnList(
                 Map(
                   ColumnName("id") -> ColumnTypeInt(ColumnLength(1)),
                   ColumnName("id_in_v") -> ColumnTypeInt(ColumnLength(1)),
@@ -68,7 +68,7 @@ class UsingSpecificKeyListSpec extends AsyncFunSpec with Matchers {
                   )
                 )
               ),
-              TableName("edge_knows") -> ColumnList(
+              TableName("edge_created_from_person_to_software") -> ColumnList(
                 Map(
                   ColumnName("id") -> ColumnTypeInt(ColumnLength(1)),
                   ColumnName("id_in_v") -> ColumnTypeInt(ColumnLength(1)),
@@ -82,15 +82,9 @@ class UsingSpecificKeyListSpec extends AsyncFunSpec with Matchers {
           ),
           RecordList(
             Map(
-              RecordKey((TableName("edge_knows"), RecordId(7))) -> RecordValue(
-                Map(
-                  "id" -> 7,
-                  "id_in_v" -> 2,
-                  "id_out_v" -> 1,
-                  "property_weight" -> 0.5
-                )
-              ),
-              RecordKey((TableName("edge_knows"), RecordId(8))) -> RecordValue(
+              RecordKey(
+                (TableName("edge_knows_from_person_to_person"), RecordId(8))
+              ) -> RecordValue(
                 Map(
                   "id" -> 8,
                   "id_in_v" -> 4,
@@ -99,7 +93,17 @@ class UsingSpecificKeyListSpec extends AsyncFunSpec with Matchers {
                 )
               ),
               RecordKey(
-                (TableName("edge_created"), RecordId(9))
+                (TableName("edge_knows_from_person_to_person"), RecordId(7))
+              ) -> RecordValue(
+                Map(
+                  "id" -> 7,
+                  "id_in_v" -> 2,
+                  "id_out_v" -> 1,
+                  "property_weight" -> 0.5
+                )
+              ),
+              RecordKey(
+                (TableName("edge_created_from_person_to_software"), RecordId(9))
               ) -> RecordValue(
                 Map(
                   "id" -> 9,
