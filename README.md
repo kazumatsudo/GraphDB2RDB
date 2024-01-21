@@ -70,43 +70,29 @@ generate RDB DDL/DML from GraphDB (Tinkerpop).
     - sql/insert_edge.sql
     - sql/insert_vertex.sql
 
-### How to change analysis method
+### Analysis method
 
-#### by_exhaustive_search
+|               |by_exhaustive_search| using_specific_key_list                                      |
+|---------------|-|--------------------------------------------------------------|
+| summary       |analyze all Vertices and Edges.| analyze specific vertices searched by keys                   |
+| pros          |no advance preparation required| faster than by_exhaustive_search (enable to search by index) |
+| cons          |inefficient (execute full search all vertices and edges count times)| required to prepare search condition                         |
 
-##### overview
+#### how to choose
 
-analyze all Vertices and Edges.
-
-- pros
-    - no advance preparation required 
-- cons
-    - inefficient (execute full search all vertices and edges count times)
-
-##### how to choose
+##### by_exhaustive_search
 
 no advance preparation required because it's selected by default.
 
-#### using_specific_key_list
-
-##### overview
-
-analyze specific vertices searched by keys
-
-- pros
-    - faster than [[ByExhaustiveSearch]] (enable to search by index)
-- cons
-    - required to prepare search condition
-
-##### how to choose
+##### using_specific_key_list
 
 1. set environment variable "ANALYSIS_METHOD" to "using_specific_key_list"
     ```shell
-    % ANALYSIS_METHOD="using_specific_key_list"
+    % ANALYSIS_METHOD=using_specific_key_list
     ``` 
 2. set target vertex label, property key, and its values in [using_key_list_file.json](https://github.com/kazumatsudo/GraphDB2RDB/blob/e163bdcfb7a50d5275eecfb722ac172214dd8a98/src/main/resources/using_key_list_file.json)
     - json schema: [using_key_list_file_schema.json](https://github.com/kazumatsudo/GraphDB2RDB/blob/e163bdcfb7a50d5275eecfb722ac172214dd8a98/src/main/resources/using_key_list_file_schema.json)
-    
+
 ## Settings
 
 You can define following settings as you like.
