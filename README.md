@@ -58,7 +58,7 @@ generate RDB DDL/DML from GraphDB (Tinkerpop).
 
     please see following passage if you want to change method. 
     ```shell
-    % ANALYSIS_METHOD=by_exhaustive_search
+    % export ANALYSIS_METHOD=by_exhaustive_search
     ``` 
 3. execute the script by sbt
     ```shell
@@ -88,7 +88,7 @@ no advance preparation required because it's selected by default.
 
 1. set environment variable "ANALYSIS_METHOD" to "using_specific_key_list"
     ```shell
-    % ANALYSIS_METHOD=using_specific_key_list
+    % export ANALYSIS_METHOD=using_specific_key_list
     ``` 
 2. set target vertex label, property key, and its values in [using_key_list_file.json](https://github.com/kazumatsudo/GraphDB2RDB/blob/e163bdcfb7a50d5275eecfb722ac172214dd8a98/src/main/resources/using_key_list_file.json)
     - json schema: [using_key_list_file_schema.json](https://github.com/kazumatsudo/GraphDB2RDB/blob/e163bdcfb7a50d5275eecfb722ac172214dd8a98/src/main/resources/using_key_list_file_schema.json)
