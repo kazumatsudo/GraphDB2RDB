@@ -29,6 +29,7 @@ object GenerateTestData extends StrictLogging {
     .property("city", faker.city)
     .property("state", faker.state.name)
     .property("postalCode", faker.stateZip)
+    .property("createdAt", faker.currentEraInstant())
     .next()
 
   private def generateVertexCompany(g: GraphTraversalSource) = {
@@ -44,6 +45,7 @@ object GenerateTestData extends StrictLogging {
       vertex.property("url", faker.companyUrl)
     }
 
+    vertex.property("createdAt", faker.currentEraInstant())
     vertex.next()
   }
 
@@ -67,6 +69,7 @@ object GenerateTestData extends StrictLogging {
         .property("emailAddress", faker.emailAddress)
     }
 
+    vertex.property("createdAt", faker.currentEraInstant())
     vertex.next()
   }
 
@@ -76,6 +79,7 @@ object GenerateTestData extends StrictLogging {
     .property("pokemonName", faker.pokemonName)
     .property("pokemonLocation", faker.pokemonLocation)
     .property("pokemonMove", faker.pokemonMove)
+    .property("createdAt", faker.currentEraInstant())
     .next()
 
   private def generateVertexSchool(g: GraphTraversalSource) = {
@@ -90,6 +94,8 @@ object GenerateTestData extends StrictLogging {
     if (hasWebsite) {
       vertex.property("url", faker.url)
     }
+
+    vertex.property("createdAt", faker.currentEraInstant())
     vertex.next()
   }
 
@@ -104,6 +110,7 @@ object GenerateTestData extends StrictLogging {
     .from(from)
     .to(to)
     .property("belongToId", UUID.randomUUID())
+    .property("createdAt", faker.currentEraInstant())
     .next()
 
   private def connectEdgeBreedPokemonTo(
@@ -119,6 +126,7 @@ object GenerateTestData extends StrictLogging {
       .to(to)
       .property("breedPokemonId", UUID.randomUUID())
       .property("caught", faker.pokemonLocation())
+      .property("createdAt", faker.currentEraInstant())
 
     if (wantPokemonToLearn) {
       edge
