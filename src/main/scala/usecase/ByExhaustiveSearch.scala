@@ -34,30 +34,22 @@ final case class ByExhaustiveSearch(
       // 1. generate vertex SQL
       (vertexTableList, vertexRecordList) <- for {
         count <- vertexQuery.countAll
-        vertices <- Future
-          .sequence {
-            (0 to count.toInt).view.map { start =>
-              vertexQuery
-                .getList(start, 1)
-                .map(_.map(vertex => (vertex.toDdl, vertex.toDml)))
-            }
-          }
-          .map(_.map(foldLeft(_, checkUnique)))
-      } yield foldLeft(vertices, checkUnique)
+        vertices <- Future.sequence {
+          (0 to count.toInt).view.map { start => vertexQuery.getList(start, 1) }
+        }
+        verticesSql = vertices.flatMap(
+          _.map(vertex => (vertex.toDdl, vertex.toDml))
+        )
+      } yield foldLeft(verticesSql, checkUnique)
 
       // 2. generate edge SQL
       (edgeTableList, edgeRecordList) <- for {
         count <- edgeQuery.countAll
-        edges <- Future
-          .sequence {
-            (0 to count.toInt).view.map { start =>
-              edgeQuery
-                .getList(start, 1)
-                .map(_.map(edge => (edge.toDdl, edge.toDml)))
-            }
-          }
-          .map(_.map(foldLeft(_, checkUnique)))
-      } yield foldLeft(edges, checkUnique)
+        edges <- Future.sequence {
+          (0 to count.toInt).view.map { start => edgeQuery.getList(start, 1) }
+        }
+        edgesSql = edges.map(_.map(edge => (edge.toDdl, edge.toDml)))
+      } yield foldLeft(edgesSql.flatten, checkUnique)
     } yield UsecaseResponse(
       vertexTableList,
       vertexRecordList,

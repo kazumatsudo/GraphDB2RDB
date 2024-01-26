@@ -46,61 +46,38 @@ final case class UsingSpecificKeyList(
 
     Future
       .sequence {
-        {
-          for {
-            label <- value.value.view
-            keyValue <- label.value.view
-            value <- keyValue.value.view
-          } yield for {
-            vertices <- vertexQuery.getListByPropertyKey(
-              label.label,
-              keyValue.key,
-              value
-            )
-            inEdgesSql <- Future.sequence {
-              vertices.map { vertex =>
-                edgeQuery
-                  .getInEdgeList(vertex)
-                  .map(edgeList =>
-                    foldLeft(
-                      edgeList.map(edge => (edge.toDdl, edge.toDml)),
-                      checkUnique
-                    )
-                  )
-              }
-            }
-            outEdgesSql <- Future.sequence {
-              vertices.map { vertex =>
-                edgeQuery
-                  .getOutEdgeList(vertex)
-                  .map(edgeList =>
-                    foldLeft(
-                      edgeList.map(edge => (edge.toDdl, edge.toDml)),
-                      checkUnique
-                    )
-                  )
-              }
-            }
-          } yield {
-            val verticesSql = {
-              foldLeft(
-                vertices.map(vertex => (vertex.toDdl, vertex.toDml)),
-                checkUnique
-              )
-            }
-            val edgesSql =
-              foldLeft(inEdgesSql ++ outEdgesSql, checkUnique)
-            (verticesSql, edgesSql)
+        for {
+          label <- value.value.view
+          keyValue <- label.value.view
+          value <- keyValue.value.view
+        } yield for {
+          vertices <- vertexQuery.getListByPropertyKey(
+            label.label,
+            keyValue.key,
+            value
+          )
+          inEdges <- Future.sequence {
+            vertices.map { vertex => edgeQuery.getInEdgeList(vertex) }
           }
-        }
+          outEdges <- Future.sequence {
+            vertices.map { vertex => edgeQuery.getOutEdgeList(vertex) }
+          }
+        } yield (vertices, inEdges, outEdges)
       }
-      .map { seq =>
-        val (verticesSql, edgesSql) = seq.unzip
+      .map { result =>
+        val (vertices, inEdges, outEdges) = result.unzip3
+        val edges = (inEdges ++ outEdges).flatten
 
         val (vertexTableList, vertexRecordList) =
-          foldLeft(verticesSql.view, checkUnique)
+          foldLeft(
+            vertices.flatten.map(vertex => (vertex.toDdl, vertex.toDml)),
+            checkUnique
+          )
         val (edgeTableList, edgeRecordList) =
-          foldLeft(edgesSql.view, checkUnique)
+          foldLeft(
+            edges.flatten.map(edge => (edge.toDdl, edge.toDml)),
+            checkUnique
+          )
 
         UsecaseResponse(
           vertexTableList,
