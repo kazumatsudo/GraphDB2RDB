@@ -65,25 +65,16 @@ final case class UsingSpecificKeyList(
         } yield (vertices, inEdges, outEdges)
       }
       .map { result =>
-        val (vertices, inEdges, outEdges) = result.unzip3
-        val edges = (inEdges ++ outEdges).flatten
+        val (verticesResult, inEdgesResult, outEdgesResult) = result.unzip3
 
-        val (vertexTableList, vertexRecordList) =
-          foldLeft(
-            vertices.flatten.map(vertex => (vertex.toDdl, vertex.toDml)),
-            checkUnique
-          )
-        val (edgeTableList, edgeRecordList) =
-          foldLeft(
-            edges.flatten.map(edge => (edge.toDdl, edge.toDml)),
-            checkUnique
-          )
+        val vertices = verticesResult.flatten
+        val edges = (inEdgesResult ++ outEdgesResult).flatten.flatten
 
         UsecaseResponse(
-          vertexTableList,
-          vertexRecordList,
-          edgeTableList,
-          edgeRecordList
+          fromVertexToDdl(vertices),
+          fromVertexToDml(vertices, checkUnique),
+          fromEdgeToDdl(edges),
+          fromEdgeToDml(edges, checkUnique)
         )
       }
   }
