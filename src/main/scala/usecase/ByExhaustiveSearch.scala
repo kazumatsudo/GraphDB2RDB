@@ -39,8 +39,8 @@ final case class ByExhaustiveSearch(
         }
         vertices = verticesResult.flatten
       } yield (
-        fromVertexToDdl(vertices),
-        fromVertexToDml(vertices, checkUnique)
+        toDdl(vertices),
+        toDml(vertices, checkUnique)
       )
 
       // 2. generate edge SQL
@@ -50,7 +50,7 @@ final case class ByExhaustiveSearch(
           (0 to count.toInt).view.map { start => edgeQuery.getList(start, 1) }
         }
         edges = edgesResult.flatten
-      } yield (fromEdgeToDdl(edges), fromEdgeToDml(edges, checkUnique))
+      } yield (toDdl(edges), toDml(edges, checkUnique))
     } yield UsecaseResponse(
       vertexTableList,
       vertexRecordList,

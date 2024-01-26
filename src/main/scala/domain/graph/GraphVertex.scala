@@ -6,7 +6,8 @@ import domain.table.dml.{RecordId, RecordKey, RecordList, RecordValue}
 import gremlin.scala._
 import utils.Config
 
-case class GraphVertex(private val value: Vertex, private val config: Config) {
+case class GraphVertex(private val value: Vertex, private val config: Config)
+    extends GraphElement {
 
   private val tableName = TableName(
     s"${config.tableName.vertex}_${value.label()}"
@@ -21,7 +22,7 @@ case class GraphVertex(private val value: Vertex, private val config: Config) {
     * @return
     *   Database Table Information
     */
-  def toDdl: TableList =
+  override def toDdl: TableList =
     TableList {
       val idColumn =
         Map(ColumnName(columnNameVertexId) -> ColumnType.apply(value.id()))
@@ -31,7 +32,7 @@ case class GraphVertex(private val value: Vertex, private val config: Config) {
       Map(tableName -> ColumnList(idColumn ++ propertyColumn))
     }
 
-  def toDml: RecordList = {
+  override def toDml: RecordList = {
     val propertyColumnList = value.valueMap.map { case (columnName, value) =>
       (s"$columnNamePrefixProperty$columnName", value)
     }

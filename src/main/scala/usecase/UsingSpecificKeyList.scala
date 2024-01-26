@@ -71,10 +71,10 @@ final case class UsingSpecificKeyList(
         val edges = (inEdgesResult ++ outEdgesResult).flatten.flatten
 
         UsecaseResponse(
-          fromVertexToDdl(vertices),
-          fromVertexToDml(vertices, checkUnique),
-          fromEdgeToDdl(edges),
-          fromEdgeToDml(edges, checkUnique)
+          toDdl(vertices),
+          toDml(vertices, checkUnique),
+          toDdl(edges),
+          toDml(edges, checkUnique)
         )
       }
   }

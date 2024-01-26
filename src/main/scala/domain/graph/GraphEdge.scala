@@ -8,7 +8,8 @@ import utils.Config
 
 import scala.jdk.CollectionConverters.SetHasAsScala
 
-case class GraphEdge(private val value: Edge, private val config: Config) {
+case class GraphEdge(private val value: Edge, private val config: Config)
+    extends GraphElement {
 
   private val inVertex = value.inVertex()
   private val inVertexId = inVertex.id()
@@ -32,7 +33,7 @@ case class GraphEdge(private val value: Edge, private val config: Config) {
     * @return
     *   Database Table Information
     */
-  def toDdl: TableList =
+  override def toDdl: TableList =
     TableList {
       val idColumn = Map(ColumnName(columnNameEdgeId) -> ColumnType.apply(id))
       val inVColumn =
@@ -58,7 +59,7 @@ case class GraphEdge(private val value: Edge, private val config: Config) {
       )
     }
 
-  def toDml: RecordList = {
+  override def toDml: RecordList = {
     // TODO: pull request for gremlin-scala
     val propertyColumnList = value
       .keys()

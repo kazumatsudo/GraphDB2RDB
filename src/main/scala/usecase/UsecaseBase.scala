@@ -1,7 +1,7 @@
 package usecase
 
 import com.typesafe.scalalogging.StrictLogging
-import domain.graph.{GraphEdge, GraphVertex}
+import domain.graph.GraphElement
 import domain.table.ddl.TableList
 import domain.table.dml.RecordList
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource
@@ -22,26 +22,13 @@ trait UsecaseBase extends StrictLogging {
   protected val g: GraphTraversalSource
   protected val config: Config
 
-  protected def fromEdgeToDdl(value: View[GraphEdge]): TableList =
+  protected def toDdl[T <: GraphElement](value: View[T]): TableList =
     value.foldLeft(TableList(Map.empty)) { case (accumulator, currentValue) =>
       accumulator.merge(currentValue.toDdl)
     }
 
-  protected def fromEdgeToDml(
-      value: View[GraphEdge],
-      checkUnique: Boolean
-  ): RecordList =
-    value.foldLeft(RecordList(Map.empty)) { case (accumulator, currentValue) =>
-      accumulator.merge(currentValue.toDml, checkUnique)
-    }
-
-  protected def fromVertexToDdl(value: View[GraphVertex]): TableList =
-    value.foldLeft(TableList(Map.empty)) { case (accumulator, currentValue) =>
-      accumulator.merge(currentValue.toDdl)
-    }
-
-  protected def fromVertexToDml(
-      value: View[GraphVertex],
+  protected def toDml[T <: GraphElement](
+      value: View[T],
       checkUnique: Boolean
   ): RecordList =
     value.foldLeft(RecordList(Map.empty)) { case (accumulator, currentValue) =>
