@@ -19,4 +19,10 @@ class ColumnLengthSpec extends AnyFunSpec with Matchers {
       ColumnLength(1).max(ColumnLength(2)) shouldBe ColumnLength(2)
     }
   }
+
+  describe("toSqlSentence") {
+    it("return the value for SQL") {
+      ColumnLength(1).toSqlSentence shouldBe "1"
+    }
+  }
 }
