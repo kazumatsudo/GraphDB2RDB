@@ -21,32 +21,24 @@ class TableListSpec extends AsyncFunSpec with Matchers {
         result = vertex
           .map(_.toDdl)
           .reduce[TableList] { case (accumulator, currentValue) =>
-            accumulator.merge(currentValue)
+            accumulator.merge(currentValue, checkUnique = false)
           }
       } yield result shouldBe TableList(
         Map(
-          TableName("vertex_person") -> (
-            ColumnList(
-              Map(
-                ColumnName("id") -> ColumnTypeInt(ColumnLength(1)),
-                ColumnName("property_age") -> ColumnTypeInt(ColumnLength(2)),
-                ColumnName("property_name") -> ColumnTypeString(ColumnLength(5))
-              )
-            ),
-            TableAttribute(Seq.empty)
-          ),
-          TableName("vertex_software") -> (
-            ColumnList(
-              Map(
-                ColumnName("id") -> ColumnTypeInt(ColumnLength(1)),
-                ColumnName("property_lang") -> ColumnTypeString(
-                  ColumnLength(4)
-                ),
-                ColumnName("property_name") -> ColumnTypeString(ColumnLength(6))
-              )
-            ),
-            TableAttribute(Seq.empty)
-          )
+          TableName("vertex_person") -> (ColumnList(
+            Map(
+              ColumnName("id") -> ColumnTypeInt(ColumnLength(1)),
+              ColumnName("property_name") -> ColumnTypeString(ColumnLength(5)),
+              ColumnName("property_age") -> ColumnTypeInt(ColumnLength(2))
+            )
+          ), TableAttribute(ForeignKey(Map()))),
+          TableName("vertex_software") -> (ColumnList(
+            Map(
+              ColumnName("id") -> ColumnTypeInt(ColumnLength(1)),
+              ColumnName("property_name") -> ColumnTypeString(ColumnLength(6)),
+              ColumnName("property_lang") -> ColumnTypeString(ColumnLength(4))
+            )
+          ), TableAttribute(ForeignKey(Map())))
         )
       )
     }
@@ -64,34 +56,24 @@ class TableListSpec extends AsyncFunSpec with Matchers {
         result = vertex
           .map(_.toDdl)
           .reduce[TableList] { case (accumulator, currentValue) =>
-            accumulator.merge(currentValue)
+            accumulator.merge(currentValue, checkUnique = false)
           }
       } yield result shouldBe TableList(
         Map(
-          TableName("vertex_person") -> (
-            ColumnList(
-              Map(
-                ColumnName("id") -> ColumnTypeInt(ColumnLength(1)),
-                ColumnName("property_name") -> ColumnTypeString(
-                  ColumnLength(5)
-                ),
-                ColumnName("property_age") -> ColumnTypeInt(ColumnLength(2))
-              )
-            ),
-            TableAttribute(Seq.empty)
-          ),
-          TableName("vertex_software") -> (
-            ColumnList(
-              Map(
-                ColumnName("id") -> ColumnTypeInt(ColumnLength(1)),
-                ColumnName("property_name") -> ColumnTypeString(
-                  ColumnLength(6)
-                ),
-                ColumnName("property_lang") -> ColumnTypeString(ColumnLength(4))
-              )
-            ),
-            TableAttribute(Seq.empty)
-          )
+          TableName("vertex_person") -> (ColumnList(
+            Map(
+              ColumnName("id") -> ColumnTypeInt(ColumnLength(1)),
+              ColumnName("property_name") -> ColumnTypeString(ColumnLength(5)),
+              ColumnName("property_age") -> ColumnTypeInt(ColumnLength(2))
+            )
+          ), TableAttribute(ForeignKey(Map()))),
+          TableName("vertex_software") -> (ColumnList(
+            Map(
+              ColumnName("id") -> ColumnTypeInt(ColumnLength(1)),
+              ColumnName("property_name") -> ColumnTypeString(ColumnLength(6)),
+              ColumnName("property_lang") -> ColumnTypeString(ColumnLength(4))
+            )
+          ), TableAttribute(ForeignKey(Map())))
         )
       )
     }

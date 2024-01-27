@@ -58,17 +58,13 @@ case class GraphEdge(private val value: Edge, private val config: Config)
             idColumn ++ inVColumn ++ outVColumn ++ propertyColumn
           ),
           TableAttribute(
-            Seq(
-              ForeignKey(
-                ColumnName(columnNameEdgeInVId),
-                (
+            ForeignKey(
+              Map(
+                ColumnName(columnNameEdgeInVId) -> (
                   TableName(s"${config.tableName.vertex}_${inVertexLabel}"),
                   ColumnName(config.columnName.vertexId)
-                )
-              ),
-              ForeignKey(
-                ColumnName(columnNameEdgeOutVId),
-                (
+                ),
+                ColumnName(columnNameEdgeOutVId) -> (
                   TableName(s"${config.tableName.vertex}_${outVertexLabel}"),
                   ColumnName(config.columnName.vertexId)
                 )

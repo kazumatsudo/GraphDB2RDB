@@ -38,14 +38,14 @@ class GraphEdgeSpec extends AsyncFunSpec with Matchers {
                 )
               )
             ), TableAttribute(
-              List(
-                ForeignKey(
-                  ColumnName("id_in_v"),
-                  (TableName("vertex_person"), ColumnName("id"))
-                ),
-                ForeignKey(
-                  ColumnName("id_out_v"),
-                  (TableName("vertex_person"), ColumnName("id"))
+              ForeignKey(
+                Map(
+                  ColumnName("id_in_v") -> (TableName(
+                    "vertex_person"
+                  ), ColumnName("id")),
+                  ColumnName("id_out_v") -> (TableName(
+                    "vertex_person"
+                  ), ColumnName("id"))
                 )
               )
             ))

@@ -37,7 +37,7 @@ final case class ByExhaustiveSearch(
         (0 to count.toInt).view.map(vertexQuery.getList(_, 1))
       }
       vertices = verticesResult.flatten
-      vertexTableList <- toDdl(vertices)
+      vertexTableList <- toDdl(vertices, checkUnique)
       vertexRecordList <- toDml(vertices, checkUnique)
 
       // 2. generate edge SQL
@@ -46,7 +46,7 @@ final case class ByExhaustiveSearch(
         (0 to count.toInt).view.map(edgeQuery.getList(_, 1))
       }
       edges = edgesResult.flatten
-      edgeTableList <- toDdl(edges)
+      edgeTableList <- toDdl(edges, checkUnique)
       edgeRecordList <- toDml(edges, checkUnique)
     } yield UsecaseResponse(
       vertexTableList,

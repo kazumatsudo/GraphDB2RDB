@@ -23,10 +23,11 @@ trait UsecaseBase extends StrictLogging {
   protected val config: Config
 
   protected def toDdl[T <: GraphElement](
-      value: View[T]
+      value: View[T],
+      checkUnique: Boolean
   )(implicit ec: ExecutionContext): Future[TableList] = Future {
     value.foldLeft(TableList(Map.empty)) { case (accumulator, currentValue) =>
-      accumulator.merge(currentValue.toDdl)
+      accumulator.merge(currentValue.toDdl, checkUnique)
     }
   }
 

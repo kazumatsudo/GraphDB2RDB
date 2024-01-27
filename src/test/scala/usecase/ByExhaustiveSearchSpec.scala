@@ -37,7 +37,7 @@ class ByExhaustiveSearchSpec extends AsyncFunSpec with Matchers {
                   ),
                   ColumnName("property_age") -> ColumnTypeInt(ColumnLength(2))
                 )
-              ), TableAttribute(List())),
+              ), TableAttribute(ForeignKey(Map()))),
               TableName("vertex_software") -> (ColumnList(
                 Map(
                   ColumnName("id") -> ColumnTypeInt(ColumnLength(1)),
@@ -48,7 +48,7 @@ class ByExhaustiveSearchSpec extends AsyncFunSpec with Matchers {
                     ColumnLength(4)
                   )
                 )
-              ), TableAttribute(List()))
+              ), TableAttribute(ForeignKey(Map())))
             )
           ),
           RecordList(
@@ -105,14 +105,14 @@ class ByExhaustiveSearchSpec extends AsyncFunSpec with Matchers {
                   )
                 )
               ), TableAttribute(
-                List(
-                  ForeignKey(
-                    ColumnName("id_in_v"),
-                    (TableName("vertex_software"), ColumnName("id"))
-                  ),
-                  ForeignKey(
-                    ColumnName("id_out_v"),
-                    (TableName("vertex_person"), ColumnName("id"))
+                ForeignKey(
+                  Map(
+                    ColumnName("id_in_v") -> (TableName(
+                      "vertex_software"
+                    ), ColumnName("id")),
+                    ColumnName("id_out_v") -> (TableName(
+                      "vertex_person"
+                    ), ColumnName("id"))
                   )
                 )
               )),
@@ -126,14 +126,14 @@ class ByExhaustiveSearchSpec extends AsyncFunSpec with Matchers {
                   )
                 )
               ), TableAttribute(
-                List(
-                  ForeignKey(
-                    ColumnName("id_in_v"),
-                    (TableName("vertex_person"), ColumnName("id"))
-                  ),
-                  ForeignKey(
-                    ColumnName("id_out_v"),
-                    (TableName("vertex_person"), ColumnName("id"))
+                ForeignKey(
+                  Map(
+                    ColumnName("id_in_v") -> (TableName(
+                      "vertex_person"
+                    ), ColumnName("id")),
+                    ColumnName("id_out_v") -> (TableName(
+                      "vertex_person"
+                    ), ColumnName("id"))
                   )
                 )
               ))

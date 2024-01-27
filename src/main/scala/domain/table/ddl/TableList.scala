@@ -12,10 +12,12 @@ case class TableList(
     *
     * @param target
     *   target tableList
+    * @param checkUnique
+    *   whether the ForeignKey is unique.
     * @return
     *   merged table list
     */
-  def merge(target: TableList): TableList =
+  def merge(target: TableList, checkUnique: Boolean): TableList =
     TableList {
       value.foldLeft(target.value) { (accumulator, currentValue) =>
         val (tableName, (columnList, tableAttribute)) = currentValue
@@ -27,7 +29,7 @@ case class TableList(
             .map { case (accumulatorColumnList, accumulatorTableAttribute) =>
               (
                 accumulatorColumnList.merge(columnList),
-                accumulatorTableAttribute
+                accumulatorTableAttribute.merge(tableAttribute, checkUnique)
               )
             }
             .getOrElse((columnList, tableAttribute))

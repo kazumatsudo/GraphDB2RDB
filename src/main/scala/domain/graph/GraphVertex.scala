@@ -1,7 +1,7 @@
 package domain.graph
 
 import domain.table.ddl.column.{ColumnList, ColumnName, ColumnType}
-import domain.table.ddl.{TableAttribute, TableList, TableName}
+import domain.table.ddl.{ForeignKey, TableAttribute, TableList, TableName}
 import domain.table.dml.{RecordId, RecordKey, RecordList, RecordValue}
 import gremlin.scala._
 import utils.Config
@@ -31,7 +31,9 @@ case class GraphVertex(private val value: Vertex, private val config: Config)
       }
       Map(
         tableName -> (
-          ColumnList(idColumn ++ propertyColumn), TableAttribute(Seq.empty)
+          ColumnList(idColumn ++ propertyColumn), TableAttribute(
+            ForeignKey(Map.empty)
+          )
         )
       )
     }
