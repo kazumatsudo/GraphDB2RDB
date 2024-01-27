@@ -1,7 +1,7 @@
 package domain.table.ddl
 
 import domain.table.ddl.column._
-import domain.table.ddl.key.{ForeignKey, PrimaryKey}
+import domain.table.ddl.attribute.{ForeignKey, UniqueIndex, PrimaryKey}
 import infrastructure.VertexQuery
 import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerFactory
 import org.scalatest.funspec.AsyncFunSpec
@@ -34,7 +34,8 @@ class TableListSpec extends AsyncFunSpec with Matchers {
             )
           ), TableAttribute(
             PrimaryKey(Set(ColumnName("id"))),
-            ForeignKey(Map())
+            ForeignKey(Map()),
+            UniqueIndex(Map())
           )),
           TableName("vertex_software") -> (ColumnList(
             Map(
@@ -44,7 +45,8 @@ class TableListSpec extends AsyncFunSpec with Matchers {
             )
           ), TableAttribute(
             PrimaryKey(Set(ColumnName("id"))),
-            ForeignKey(Map())
+            ForeignKey(Map()),
+            UniqueIndex(Map())
           ))
         )
       )
@@ -75,7 +77,8 @@ class TableListSpec extends AsyncFunSpec with Matchers {
             )
           ), TableAttribute(
             PrimaryKey(Set(ColumnName("id"))),
-            ForeignKey(Map())
+            ForeignKey(Map()),
+            UniqueIndex(Map())
           )),
           TableName("vertex_software") -> (ColumnList(
             Map(
@@ -85,7 +88,8 @@ class TableListSpec extends AsyncFunSpec with Matchers {
             )
           ), TableAttribute(
             PrimaryKey(Set(ColumnName("id"))),
-            ForeignKey(Map())
+            ForeignKey(Map()),
+            UniqueIndex(Map())
           ))
         )
       )

@@ -7,7 +7,7 @@ import domain.table.ddl.column.{
   ColumnTypeDouble,
   ColumnTypeInt
 }
-import domain.table.ddl.key.{ForeignKey, PrimaryKey}
+import domain.table.ddl.attribute.{ForeignKey, UniqueIndex, IndexName, PrimaryKey}
 import domain.table.ddl.{TableAttribute, TableList, TableName}
 import domain.table.dml.{RecordId, RecordKey, RecordList, RecordValue}
 import infrastructure.EdgeQuery
@@ -48,6 +48,14 @@ class GraphEdgeSpec extends AsyncFunSpec with Matchers {
                   ColumnName("id_out_v") -> (TableName(
                     "vertex_person"
                   ), ColumnName("id"))
+                )
+              ),
+              UniqueIndex(
+                Map(
+                  IndexName("index_id_in_v_id_out_v") -> Set(
+                    ColumnName("id_in_v"),
+                    ColumnName("id_out_v")
+                  )
                 )
               )
             ))

@@ -8,7 +8,7 @@ import domain.table.ddl.column.{
   ColumnTypeInt,
   ColumnTypeString
 }
-import domain.table.ddl.key.{ForeignKey, PrimaryKey}
+import domain.table.ddl.attribute.{ForeignKey, UniqueIndex, IndexName, PrimaryKey}
 import domain.table.ddl.{TableAttribute, TableList, TableName}
 import domain.table.dml.{RecordId, RecordKey, RecordList, RecordValue}
 import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerFactory
@@ -40,7 +40,8 @@ class ByExhaustiveSearchSpec extends AsyncFunSpec with Matchers {
                 )
               ), TableAttribute(
                 PrimaryKey(Set(ColumnName("id"))),
-                ForeignKey(Map())
+                ForeignKey(Map()),
+                UniqueIndex(Map())
               )),
               TableName("vertex_software") -> (ColumnList(
                 Map(
@@ -54,7 +55,8 @@ class ByExhaustiveSearchSpec extends AsyncFunSpec with Matchers {
                 )
               ), TableAttribute(
                 PrimaryKey(Set(ColumnName("id"))),
-                ForeignKey(Map())
+                ForeignKey(Map()),
+                UniqueIndex(Map())
               ))
             )
           ),
@@ -122,6 +124,14 @@ class ByExhaustiveSearchSpec extends AsyncFunSpec with Matchers {
                       "vertex_person"
                     ), ColumnName("id"))
                   )
+                ),
+                UniqueIndex(
+                  Map(
+                    IndexName("index_id_in_v_id_out_v") -> Set(
+                      ColumnName("id_in_v"),
+                      ColumnName("id_out_v")
+                    )
+                  )
                 )
               )),
               TableName("edge_knows_from_person_to_person") -> (ColumnList(
@@ -143,6 +153,14 @@ class ByExhaustiveSearchSpec extends AsyncFunSpec with Matchers {
                     ColumnName("id_out_v") -> (TableName(
                       "vertex_person"
                     ), ColumnName("id"))
+                  )
+                ),
+                UniqueIndex(
+                  Map(
+                    IndexName("index_id_in_v_id_out_v") -> Set(
+                      ColumnName("id_in_v"),
+                      ColumnName("id_out_v")
+                    )
                   )
                 )
               ))

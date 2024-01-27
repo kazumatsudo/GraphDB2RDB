@@ -7,7 +7,7 @@ import domain.table.ddl.column.{
   ColumnTypeInt,
   ColumnTypeString
 }
-import domain.table.ddl.key.{ForeignKey, PrimaryKey}
+import domain.table.ddl.attribute.{ForeignKey, UniqueIndex, PrimaryKey}
 import domain.table.ddl.{TableAttribute, TableList, TableName}
 import domain.table.dml.{RecordId, RecordKey, RecordList, RecordValue}
 import infrastructure.VertexQuery
@@ -38,7 +38,8 @@ class GraphVertexSpec extends AsyncFunSpec with Matchers {
               )
             ), TableAttribute(
               PrimaryKey(Set(ColumnName("id"))),
-              ForeignKey(Map())
+              ForeignKey(Map()),
+              UniqueIndex(Map())
             ))
           )
         )

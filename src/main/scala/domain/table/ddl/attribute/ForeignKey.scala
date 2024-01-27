@@ -1,4 +1,4 @@
-package domain.table.ddl.key
+package domain.table.ddl.attribute
 
 import domain.table.ddl.TableName
 import domain.table.ddl.column.ColumnName
