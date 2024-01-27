@@ -673,8 +673,8 @@ class ColumnTypeSpec extends AnyFunSpec with Matchers {
       ColumnType.apply(Instant.MIN).toSqlSentence shouldBe "DATETIME"
       ColumnType.apply(Instant.MAX).toSqlSentence shouldBe "DATETIME"
       ColumnType.apply('a').toSqlSentence shouldBe "CHAR(1)"
-      ColumnType.apply("a" * 16383).toSqlSentence shouldBe "VARCHAR(16383)"
-      ColumnType.apply("a" * 16384).toSqlSentence shouldBe "TEXT"
+      ColumnType.apply("a" * 65535).toSqlSentence shouldBe "VARCHAR(65535)"
+      ColumnType.apply("a" * 65536).toSqlSentence shouldBe "MEDIUMTEXT"
 
       val arrayList1 = new util.ArrayList[String]()
       arrayList1.add("a")

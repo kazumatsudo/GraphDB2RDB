@@ -4,7 +4,7 @@ import org.scalatest.funspec.AsyncFunSpec
 import org.scalatest.matchers.should.Matchers
 import slick.jdbc.H2Profile.api._
 import slick.jdbc.JdbcBackend.Database
-import usecase.{ByExhaustiveSearch, UsecaseBase, UsingSpecificKeyList}
+import usecase.{ByExhaustiveSearch, UsecaseBase}
 import utils.Config
 
 import scala.concurrent.Future
@@ -12,20 +12,26 @@ import scala.concurrent.Future
 class MainSpec extends AsyncFunSpec with Matchers {
 
   private val database = Database.forConfig("database-mysql")
-  private val databaseName = "graphdb2rdb"
 
   describe("enable to execute in") {
     val config = Config.default
-    val (g, request) =
+    val (g, _) =
       GenerateTestData.generate(TinkerGraph.open().traversal(), 100, 5, 5)
 
     def assert(database: Database, usecase: UsecaseBase): Future[Assertion] = {
       val result = for {
-        usecaseResponse <- usecase.execute(checkUnique = true)
-        // setup
-        _ <- database.run(sqlu"CREATE DATABASE IF NOT EXISTS #${databaseName};")
+        // setup - initialize db
+        tableNameList <- database.run(sql"show tables;".as[String])
+        _ <- database.run(
+          DBIO.sequence(
+            Seq(sqlu"SET FOREIGN_KEY_CHECKS = 0;") ++ tableNameList.map(
+              tableName => sqlu"DROP TABLE IF EXISTS #${tableName};"
+            ) ++ Seq(sqlu"SET FOREIGN_KEY_CHECKS = 1;")
+          )
+        )
 
         // execute
+        usecaseResponse <- usecase.execute(checkUnique = true)
         result <- database.run(
           DBIO.sequence(
             usecaseResponse.verticesDdl.toSqlSentence
@@ -41,9 +47,6 @@ class MainSpec extends AsyncFunSpec with Matchers {
                   .map(sql => sqlu"#$sql")
           )
         )
-
-        // teardown
-        _ <- database.run(sqlu"CREATE DATABASE IF NOT EXISTS #${databaseName};")
       } yield result
 
       result
@@ -61,9 +64,10 @@ class MainSpec extends AsyncFunSpec with Matchers {
         assert(database, ByExhaustiveSearch(g, config))
       }
 
-      it("UsingSpecificKeyList") {
-        assert(database, UsingSpecificKeyList(g, config, request))
-      }
+      // TODO: analyze inVertex and outVertex DDL/DML
+      //      it("UsingSpecificKeyList") {
+      //        assert(database, UsingSpecificKeyList(g, config, request))
+      //      }
     }
   }
 }

@@ -2,9 +2,9 @@ package domain.table.ddl.column
 
 case class ColumnLength(private val value: Int) {
 
-  private val mysqlColumnMaxLenght = 16383
+  private val thresholdText = math.pow(2, 16) - 1 // 65,535
 
-  def isTooBig: Boolean = value > mysqlColumnMaxLenght
+  def isTooLong: Boolean = value > thresholdText
 
   def max(target: ColumnLength): ColumnLength = max(target.value)
 

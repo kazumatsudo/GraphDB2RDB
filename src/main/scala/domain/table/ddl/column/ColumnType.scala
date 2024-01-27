@@ -56,8 +56,8 @@ case class ColumnTypeCharacter(private val length: ColumnLength)
 
 case class ColumnTypeString(private val length: ColumnLength)
     extends ColumnType {
-  override def toSqlSentence: String = if (length.isTooBig) {
-    s"TEXT"
+  override def toSqlSentence: String = if (length.isTooLong) {
+    s"MEDIUMTEXT"
   } else {
     s"VARCHAR(${length.toSqlSentence})"
   }
