@@ -10,6 +10,8 @@ sealed trait ColumnType {
 }
 
 case object ColumnTypeBoolean extends ColumnType {
+  val length: ColumnLength = ColumnLength(5) // false
+
   override def toSqlSentence: String = "BOOLEAN"
 }
 
@@ -56,7 +58,11 @@ case class ColumnTypeCharacter(private val length: ColumnLength)
 
 case class ColumnTypeString(private val length: ColumnLength)
     extends ColumnType {
-  override def toSqlSentence: String = s"VARCHAR(${length.toSqlSentence})"
+  override def toSqlSentence: String = if (length.needToUseMediumText) {
+    s"MEDIUMTEXT"
+  } else {
+    s"VARCHAR(${length.toSqlSentence})"
+  }
 }
 
 case object ColumnTypeUnknown extends ColumnType {
@@ -115,27 +121,27 @@ object ColumnType {
       // ColumnTypeBoolean
       case (ColumnTypeBoolean, ColumnTypeBoolean) => ColumnTypeBoolean
       case (ColumnTypeBoolean, ColumnTypeByte(length)) =>
-        ColumnTypeByte(length.max(5)) // 5 = false.toString
+        ColumnTypeByte(length.max(ColumnTypeBoolean.length))
       case (ColumnTypeBoolean, ColumnTypeShort(length)) =>
-        ColumnTypeShort(length.max(5)) // 5 = false.toString
+        ColumnTypeShort(length.max(ColumnTypeBoolean.length))
       case (ColumnTypeBoolean, ColumnTypeInt(length)) =>
-        ColumnTypeInt(length.max(5)) // 5 = false.toString
+        ColumnTypeInt(length.max(ColumnTypeBoolean.length))
       case (ColumnTypeBoolean, ColumnTypeLong(length)) =>
-        ColumnTypeLong(length.max(5)) // 5 = false.toString
+        ColumnTypeLong(length.max(ColumnTypeBoolean.length))
       case (ColumnTypeBoolean, ColumnTypeFloat(length)) =>
-        ColumnTypeFloat(length.max(5)) // 5 = false.toString
+        ColumnTypeFloat(length.max(ColumnTypeBoolean.length))
       case (ColumnTypeBoolean, ColumnTypeDouble(length)) =>
-        ColumnTypeDouble(length.max(5)) // 5 = false.toString
+        ColumnTypeDouble(length.max(ColumnTypeBoolean.length))
       case (ColumnTypeBoolean, ColumnTypeUUID) =>
         // change UUID -> Character
         ColumnTypeCharacter(ColumnTypeUUID.length)
       case (ColumnTypeBoolean, ColumnTypeDate(length)) =>
         // change Date -> String
-        ColumnTypeString(length.max(5)) // 5 = false.toString
+        ColumnTypeString(length.max(ColumnTypeBoolean.length))
       case (ColumnTypeBoolean, ColumnTypeCharacter(length)) =>
-        ColumnTypeCharacter(length.max(5)) // 5 = false.toString
+        ColumnTypeCharacter(length.max(ColumnTypeBoolean.length))
       case (ColumnTypeBoolean, ColumnTypeString(length)) =>
-        ColumnTypeString(length.max(5)) // 5 = false.toString
+        ColumnTypeString(length.max(ColumnTypeBoolean.length))
       case (ColumnTypeBoolean, ColumnTypeUnknown) => ColumnTypeUnknown
 
       // ColumnTypeByte
