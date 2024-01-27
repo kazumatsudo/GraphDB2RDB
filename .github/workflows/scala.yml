@@ -19,6 +19,16 @@ jobs:
 
     runs-on: ubuntu-latest
 
+    # target databases
+    services:
+      mysql:
+        image: mysql:8.3.0-oraclelinux8
+        env:
+          MYSQL_DATABASE: graphdb2rdb
+          MYSQL_ROOT_PASSWORD: root
+        ports:
+          - 3306:3306
+
     steps:
     # setup
     - uses: actions/checkout@v4
