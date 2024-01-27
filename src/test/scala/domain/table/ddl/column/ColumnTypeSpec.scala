@@ -673,7 +673,9 @@ class ColumnTypeSpec extends AnyFunSpec with Matchers {
       ColumnType.apply(Instant.MIN).toSqlSentence shouldBe "DATETIME"
       ColumnType.apply(Instant.MAX).toSqlSentence shouldBe "DATETIME"
       ColumnType.apply('a').toSqlSentence shouldBe "CHAR(1)"
-      ColumnType.apply("a").toSqlSentence shouldBe "VARCHAR(1)"
+      ColumnType.apply("a" * 16383).toSqlSentence shouldBe "VARCHAR(16383)"
+      ColumnType.apply("a" * 16384).toSqlSentence shouldBe "TEXT"
+
       val arrayList1 = new util.ArrayList[String]()
       arrayList1.add("a")
       ColumnType.apply(arrayList1).toSqlSentence shouldBe "VARCHAR(1)"
@@ -681,6 +683,7 @@ class ColumnTypeSpec extends AnyFunSpec with Matchers {
       arrayList2.add("a")
       arrayList2.add("a")
       ColumnType.apply(arrayList2).toSqlSentence shouldBe "TEXT"
+
       ColumnType.apply(Seq.empty).toSqlSentence shouldBe "TEXT"
     }
   }
