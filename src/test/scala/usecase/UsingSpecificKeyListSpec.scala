@@ -8,7 +8,12 @@ import domain.table.ddl.column.{
   ColumnTypeInt,
   ColumnTypeString
 }
-import domain.table.ddl.attribute.{ForeignKey, UniqueIndex, IndexName, PrimaryKey}
+import domain.table.ddl.attribute.{
+  ForeignKey,
+  UniqueIndex,
+  IndexName,
+  PrimaryKey
+}
 import domain.table.ddl.{TableAttribute, TableList, TableName}
 import domain.table.dml.{RecordId, RecordKey, RecordList, RecordValue}
 import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerFactory
