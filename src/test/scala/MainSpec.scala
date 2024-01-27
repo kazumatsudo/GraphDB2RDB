@@ -1,5 +1,5 @@
 import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerGraph
-import org.scalatest.Assertion
+import org.scalatest.{Assertion, BeforeAndAfterEach}
 import org.scalatest.funspec.AsyncFunSpec
 import org.scalatest.matchers.should.Matchers
 import slick.jdbc.H2Profile.api._
@@ -9,7 +9,12 @@ import utils.Config
 
 import scala.concurrent.Future
 
-class MainSpec extends AsyncFunSpec with Matchers {
+class MainSpec extends AsyncFunSpec with Matchers with BeforeAndAfterEach {
+
+  private val database = Database.forConfig("database-h2")
+  override def afterEach(): Unit = {
+    database.run(sqlu"DROP ALL OBJECTS")
+  }
 
   describe("enable to execute in") {
     val config = Config.default
@@ -47,8 +52,6 @@ class MainSpec extends AsyncFunSpec with Matchers {
     }
 
     describe("H2") {
-      val database = Database.forConfig("database-h2")
-
       it("ByExhaustiveSearch") {
         assert(database, ByExhaustiveSearch(g, config))
       }
