@@ -662,18 +662,46 @@ class ColumnTypeSpec extends AnyFunSpec with Matchers {
 
   describe("toSqlSentence") {
     it("success") {
+      // Boolean
       ColumnType.apply(false).toSqlSentence shouldBe "BOOLEAN"
+
+      // Byte
       ColumnType.apply(1.toByte).toSqlSentence shouldBe "TINYINT"
+
+      // Short
       ColumnType.apply(1.toShort).toSqlSentence shouldBe "SMALLINT"
+
+      // Int
       ColumnType.apply(1).toSqlSentence shouldBe "INT"
+
+      // Long
       ColumnType.apply(1.toLong).toSqlSentence shouldBe "INT"
+
+      // Float
       ColumnType.apply(1.1.toFloat).toSqlSentence shouldBe "FLOAT"
+
+      // Double
       ColumnType.apply(1.1).toSqlSentence shouldBe "DOUBLE"
+
+      // UUID
       ColumnType.apply(util.UUID.randomUUID()).toSqlSentence shouldBe "CHAR(36)"
+
+      // Date
       ColumnType.apply(Instant.MIN).toSqlSentence shouldBe "DATETIME"
       ColumnType.apply(Instant.MAX).toSqlSentence shouldBe "DATETIME"
+
+      // Char
       ColumnType.apply('a').toSqlSentence shouldBe "CHAR(1)"
-      ColumnType.apply("a").toSqlSentence shouldBe "VARCHAR(1)"
+
+      // String
+      ColumnType
+        .apply("a" * (math.pow(2, 16).toInt - 1))
+        .toSqlSentence shouldBe "VARCHAR(65535)"
+      ColumnType
+        .apply("a" * math.pow(2, 16).toInt)
+        .toSqlSentence shouldBe "MEDIUMTEXT"
+
+      // util.ArrayList
       val arrayList1 = new util.ArrayList[String]()
       arrayList1.add("a")
       ColumnType.apply(arrayList1).toSqlSentence shouldBe "VARCHAR(1)"
@@ -681,6 +709,8 @@ class ColumnTypeSpec extends AnyFunSpec with Matchers {
       arrayList2.add("a")
       arrayList2.add("a")
       ColumnType.apply(arrayList2).toSqlSentence shouldBe "TEXT"
+
+      // the others
       ColumnType.apply(Seq.empty).toSqlSentence shouldBe "TEXT"
     }
   }
