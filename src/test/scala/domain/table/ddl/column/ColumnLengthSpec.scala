@@ -13,4 +13,10 @@ class ColumnLengthSpec extends AnyFunSpec with Matchers {
       ColumnLength(math.pow(2, 16).toInt - 1).needToUseMediumText shouldBe false
     }
   }
+
+  describe("max") {
+    it("return the larger number of length") {
+      ColumnLength(1).max(ColumnLength(2)) shouldBe ColumnLength(2)
+    }
+  }
 }
