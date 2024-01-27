@@ -5,7 +5,7 @@ import org.janusgraph.graphdb.relations.RelationIdentifier
 
 import java.sql.Timestamp
 import java.time.Instant
-import java.util.UUID
+import java.util
 
 final case class RecordValue(private val value: Map[String, Any])
     extends AnyVal {
@@ -51,27 +51,34 @@ object RecordValue extends StrictLogging {
       callbackLong: Long => T,
       callbackFloat: Float => T,
       callbackDouble: Double => T,
-      callbackUuid: UUID => T,
+      callbackUuid: util.UUID => T,
       callbackDate: Instant => T,
       callbackChar: Char => T,
       callbackString: String => T,
       callbackRelationIdentifier: RelationIdentifier => T,
       callbackUnknown: Any => T
-  ): T = value match {
-    case valueBoolean: Boolean       => callbackBoolean(valueBoolean)
-    case valueByte: Byte             => callbackByte(valueByte)
-    case valueShort: Short           => callbackShort(valueShort)
-    case valueInt: Int               => callbackInt(valueInt)
-    case valueLong: Long             => callbackLong(valueLong)
-    case valueFloat: Float           => callbackFloat(valueFloat)
-    case valueDouble: Double         => callbackDouble(valueDouble)
-    case valueUuid: UUID             => callbackUuid(valueUuid)
-    case valueDate: Instant          => callbackDate(valueDate)
-    case valueChar: Char             => callbackChar(valueChar)
-    case valueString: String         => callbackString(valueString)
-    case valueRI: RelationIdentifier => callbackRelationIdentifier(valueRI)
-    case valueUnknown =>
-      logger.info(s"valueUnknown: $valueUnknown")
-      callbackUnknown(valueUnknown)
+  ): T = {
+    val target = value match {
+      case array: util.ArrayList[_] if array.size == 1 => array.get(0)
+      case _                                           => value
+    }
+
+    target match {
+      case valueBoolean: Boolean       => callbackBoolean(valueBoolean)
+      case valueByte: Byte             => callbackByte(valueByte)
+      case valueShort: Short           => callbackShort(valueShort)
+      case valueInt: Int               => callbackInt(valueInt)
+      case valueLong: Long             => callbackLong(valueLong)
+      case valueFloat: Float           => callbackFloat(valueFloat)
+      case valueDouble: Double         => callbackDouble(valueDouble)
+      case valueUuid: util.UUID        => callbackUuid(valueUuid)
+      case valueDate: Instant          => callbackDate(valueDate)
+      case valueChar: Char             => callbackChar(valueChar)
+      case valueString: String         => callbackString(valueString)
+      case valueRI: RelationIdentifier => callbackRelationIdentifier(valueRI)
+      case valueUnknown =>
+        logger.info(s"valueUnknown: $valueUnknown")
+        callbackUnknown(valueUnknown)
+    }
   }
 }

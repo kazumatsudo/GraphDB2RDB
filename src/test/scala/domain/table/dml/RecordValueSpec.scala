@@ -5,7 +5,7 @@ import org.scalatest.matchers.should.Matchers
 
 import java.sql.Timestamp
 import java.time.Instant
-import java.util.UUID
+import java.util
 
 class RecordValueSpec extends AnyFunSpec with Matchers {
   describe("toSqlSentence") {
@@ -25,7 +25,7 @@ class RecordValueSpec extends AnyFunSpec with Matchers {
       RecordValue(
         Map(("double", 1.toDouble))
       ).toSqlSentence shouldBe ("double", "1.0")
-      val uuid = UUID.randomUUID()
+      val uuid = util.UUID.randomUUID()
       RecordValue(
         Map(("uuid", uuid))
       ).toSqlSentence shouldBe ("uuid", s"'$uuid'")
@@ -43,6 +43,19 @@ class RecordValueSpec extends AnyFunSpec with Matchers {
       RecordValue(
         Map(("string", 1.toString))
       ).toSqlSentence shouldBe ("string", "'1'")
+
+      val arrayList1 = new util.ArrayList[String]()
+      arrayList1.add("a")
+      RecordValue(
+        Map(("arrayList1", arrayList1))
+      ).toSqlSentence shouldBe ("arrayList1", "'a'")
+
+      val arrayList2 = new util.ArrayList[String]()
+      arrayList2.add("a")
+      arrayList2.add("a")
+      RecordValue(
+        Map(("arrayList2", arrayList2))
+      ).toSqlSentence shouldBe ("arrayList2", "'[a, a]'")
       RecordValue(
         Map(("unknown", Seq(1)))
       ).toSqlSentence shouldBe ("unknown", "'List(1)'")

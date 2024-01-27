@@ -4,7 +4,7 @@ import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.matchers.should.Matchers
 
 import java.time.Instant
-import java.util.UUID
+import java.util
 
 class ColumnTypeSpec extends AnyFunSpec with Matchers {
   describe("apply") {
@@ -16,11 +16,20 @@ class ColumnTypeSpec extends AnyFunSpec with Matchers {
       ColumnType.apply(1.toLong) shouldBe ColumnTypeLong(ColumnLength(1))
       ColumnType.apply(1.1.toFloat) shouldBe ColumnTypeFloat(ColumnLength(3))
       ColumnType.apply(1.1) shouldBe ColumnTypeDouble(ColumnLength(3))
-      ColumnType.apply(UUID.randomUUID()) shouldBe ColumnTypeUUID
+      ColumnType.apply(util.UUID.randomUUID()) shouldBe ColumnTypeUUID
       ColumnType.apply(Instant.MAX) shouldBe ColumnTypeDate(ColumnLength(37))
       ColumnType.apply(Instant.MIN) shouldBe ColumnTypeDate(ColumnLength(27))
       ColumnType.apply('a') shouldBe ColumnTypeCharacter(ColumnLength(1))
       ColumnType.apply("string") shouldBe ColumnTypeString(ColumnLength(6))
+
+      val arrayList1 = new util.ArrayList[String]()
+      arrayList1.add("a")
+      ColumnType.apply(arrayList1) shouldBe ColumnTypeString(ColumnLength(1))
+
+      val arrayList2 = new util.ArrayList[String]()
+      arrayList2.add("a")
+      arrayList2.add("a")
+      ColumnType.apply(arrayList2) shouldBe ColumnTypeUnknown
       ColumnType.apply(Seq.empty) shouldBe ColumnTypeUnknown
     }
   }
@@ -660,10 +669,18 @@ class ColumnTypeSpec extends AnyFunSpec with Matchers {
       ColumnType.apply(1.toLong).toSqlSentence shouldBe "INT"
       ColumnType.apply(1.1.toFloat).toSqlSentence shouldBe "FLOAT"
       ColumnType.apply(1.1).toSqlSentence shouldBe "DOUBLE"
-      ColumnType.apply(UUID.randomUUID()).toSqlSentence shouldBe "CHAR(36)"
+      ColumnType.apply(util.UUID.randomUUID()).toSqlSentence shouldBe "CHAR(36)"
       ColumnType.apply(Instant.MIN).toSqlSentence shouldBe "DATETIME"
       ColumnType.apply(Instant.MAX).toSqlSentence shouldBe "DATETIME"
       ColumnType.apply('a').toSqlSentence shouldBe "CHAR(1)"
+      ColumnType.apply("a").toSqlSentence shouldBe "VARCHAR(1)"
+      val arrayList1 = new util.ArrayList[String]()
+      arrayList1.add("a")
+      ColumnType.apply(arrayList1).toSqlSentence shouldBe "VARCHAR(1)"
+      val arrayList2 = new util.ArrayList[String]()
+      arrayList2.add("a")
+      arrayList2.add("a")
+      ColumnType.apply(arrayList2).toSqlSentence shouldBe "TEXT"
       ColumnType.apply(Seq.empty).toSqlSentence shouldBe "TEXT"
     }
   }
