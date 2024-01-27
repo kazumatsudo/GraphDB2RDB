@@ -1,7 +1,7 @@
 package domain.graph
 
 import domain.table.ddl.column.{ColumnList, ColumnName, ColumnType}
-import domain.table.ddl.{TableList, TableName}
+import domain.table.ddl.{ForeignKey, TableAttribute, TableList, TableName}
 import domain.table.dml.{RecordId, RecordKey, RecordList, RecordValue}
 import gremlin.scala.Edge
 import utils.Config
@@ -53,8 +53,28 @@ case class GraphEdge(private val value: Edge, private val config: Config)
         .toMap
 
       Map(
-        tableName -> ColumnList(
-          idColumn ++ inVColumn ++ outVColumn ++ propertyColumn
+        tableName -> (
+          ColumnList(
+            idColumn ++ inVColumn ++ outVColumn ++ propertyColumn
+          ),
+          TableAttribute(
+            Seq(
+              ForeignKey(
+                ColumnName(columnNameEdgeInVId),
+                (
+                  TableName(s"${config.tableName.vertex}_${inVertexLabel}"),
+                  ColumnName(config.columnName.vertexId)
+                )
+              ),
+              ForeignKey(
+                ColumnName(columnNameEdgeOutVId),
+                (
+                  TableName(s"${config.tableName.vertex}_${outVertexLabel}"),
+                  ColumnName(config.columnName.vertexId)
+                )
+              )
+            )
+          )
         )
       )
     }

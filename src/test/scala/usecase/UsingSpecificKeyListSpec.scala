@@ -8,7 +8,7 @@ import domain.table.ddl.column.{
   ColumnTypeInt,
   ColumnTypeString
 }
-import domain.table.ddl.{TableList, TableName}
+import domain.table.ddl.{ForeignKey, TableAttribute, TableList, TableName}
 import domain.table.dml.{RecordId, RecordKey, RecordList, RecordValue}
 import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerFactory
 import org.scalatest.funspec.AsyncFunSpec
@@ -36,7 +36,7 @@ class UsingSpecificKeyListSpec extends AsyncFunSpec with Matchers {
         _ shouldBe UsecaseResponse(
           TableList(
             Map(
-              TableName("vertex_person") -> ColumnList(
+              TableName("vertex_person") -> (ColumnList(
                 Map(
                   ColumnName("id") -> ColumnTypeInt(ColumnLength(1)),
                   ColumnName("property_name") -> ColumnTypeString(
@@ -44,7 +44,7 @@ class UsingSpecificKeyListSpec extends AsyncFunSpec with Matchers {
                   ),
                   ColumnName("property_age") -> ColumnTypeInt(ColumnLength(2))
                 )
-              )
+              ), TableAttribute(List()))
             )
           ),
           RecordList(
@@ -58,7 +58,7 @@ class UsingSpecificKeyListSpec extends AsyncFunSpec with Matchers {
           ),
           TableList(
             Map(
-              TableName("edge_knows_from_person_to_person") -> ColumnList(
+              TableName("edge_knows_from_person_to_person") -> (ColumnList(
                 Map(
                   ColumnName("id") -> ColumnTypeInt(ColumnLength(1)),
                   ColumnName("id_in_v") -> ColumnTypeInt(ColumnLength(1)),
@@ -67,8 +67,19 @@ class UsingSpecificKeyListSpec extends AsyncFunSpec with Matchers {
                     ColumnLength(3)
                   )
                 )
-              ),
-              TableName("edge_created_from_person_to_software") -> ColumnList(
+              ), TableAttribute(
+                List(
+                  ForeignKey(
+                    ColumnName("id_in_v"),
+                    (TableName("vertex_person"), ColumnName("id"))
+                  ),
+                  ForeignKey(
+                    ColumnName("id_out_v"),
+                    (TableName("vertex_person"), ColumnName("id"))
+                  )
+                )
+              )),
+              TableName("edge_created_from_person_to_software") -> (ColumnList(
                 Map(
                   ColumnName("id") -> ColumnTypeInt(ColumnLength(1)),
                   ColumnName("id_in_v") -> ColumnTypeInt(ColumnLength(1)),
@@ -77,7 +88,18 @@ class UsingSpecificKeyListSpec extends AsyncFunSpec with Matchers {
                     ColumnLength(3)
                   )
                 )
-              )
+              ), TableAttribute(
+                List(
+                  ForeignKey(
+                    ColumnName("id_in_v"),
+                    (TableName("vertex_software"), ColumnName("id"))
+                  ),
+                  ForeignKey(
+                    ColumnName("id_out_v"),
+                    (TableName("vertex_person"), ColumnName("id"))
+                  )
+                )
+              ))
             )
           ),
           RecordList(
