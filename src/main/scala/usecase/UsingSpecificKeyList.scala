@@ -57,24 +57,28 @@ final case class UsingSpecificKeyList(
             value
           )
           inEdges <- Future.sequence {
-            vertices.map { vertex => edgeQuery.getInEdgeList(vertex) }
+            vertices.map(edgeQuery.getInEdgeList(_))
           }
           outEdges <- Future.sequence {
-            vertices.map { vertex => edgeQuery.getOutEdgeList(vertex) }
+            vertices.map(edgeQuery.getOutEdgeList(_))
           }
         } yield (vertices, inEdges, outEdges)
       }
-      .map { result =>
+      .flatMap { result =>
         val (verticesResult, inEdgesResult, outEdgesResult) = result.unzip3
-
         val vertices = verticesResult.flatten
         val edges = (inEdgesResult ++ outEdgesResult).flatten.flatten
 
-        UsecaseResponse(
-          toDdl(vertices),
-          toDml(vertices, checkUnique),
-          toDdl(edges),
-          toDml(edges, checkUnique)
+        for {
+          vertexTableList <- toDdl(vertices)
+          vertexRecordList <- toDml(vertices, checkUnique)
+          edgeTableList <- toDdl(edges)
+          edgeRecordList <- toDml(edges, checkUnique)
+        } yield UsecaseResponse(
+          vertexTableList,
+          vertexRecordList,
+          edgeTableList,
+          edgeRecordList
         )
       }
   }

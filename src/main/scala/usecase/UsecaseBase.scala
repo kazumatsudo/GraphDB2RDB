@@ -22,18 +22,22 @@ trait UsecaseBase extends StrictLogging {
   protected val g: GraphTraversalSource
   protected val config: Config
 
-  protected def toDdl[T <: GraphElement](value: View[T]): TableList =
+  protected def toDdl[T <: GraphElement](
+      value: View[T]
+  )(implicit ec: ExecutionContext): Future[TableList] = Future {
     value.foldLeft(TableList(Map.empty)) { case (accumulator, currentValue) =>
       accumulator.merge(currentValue.toDdl)
     }
+  }
 
   protected def toDml[T <: GraphElement](
       value: View[T],
       checkUnique: Boolean
-  ): RecordList =
+  )(implicit ec: ExecutionContext): Future[RecordList] = Future {
     value.foldLeft(RecordList(Map.empty)) { case (accumulator, currentValue) =>
       accumulator.merge(currentValue.toDml, checkUnique)
     }
+  }
 
   def execute(checkUnique: Boolean)(implicit
       ec: ExecutionContext
