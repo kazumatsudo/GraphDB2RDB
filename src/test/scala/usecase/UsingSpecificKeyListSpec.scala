@@ -1,5 +1,6 @@
 package usecase
 
+import domain.table.ddl.attribute.PrimaryKey
 import domain.table.ddl.column.{
   ColumnLength,
   ColumnList,
@@ -8,7 +9,7 @@ import domain.table.ddl.column.{
   ColumnTypeInt,
   ColumnTypeString
 }
-import domain.table.ddl.{TableList, TableName}
+import domain.table.ddl.{TableAttributes, TableList, TableName}
 import domain.table.dml.{RecordId, RecordKey, RecordList, RecordValue}
 import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerFactory
 import org.scalatest.funspec.AsyncFunSpec
@@ -36,7 +37,7 @@ class UsingSpecificKeyListSpec extends AsyncFunSpec with Matchers {
         _ shouldBe UsecaseResponse(
           TableList(
             Map(
-              TableName("vertex_person") -> ColumnList(
+              TableName("vertex_person") -> (ColumnList(
                 Map(
                   ColumnName("id") -> ColumnTypeInt(ColumnLength(1)),
                   ColumnName("property_name") -> ColumnTypeString(
@@ -44,7 +45,7 @@ class UsingSpecificKeyListSpec extends AsyncFunSpec with Matchers {
                   ),
                   ColumnName("property_age") -> ColumnTypeInt(ColumnLength(2))
                 )
-              )
+              ), TableAttributes(PrimaryKey(Set(ColumnName("id")))))
             )
           ),
           RecordList(
@@ -58,7 +59,7 @@ class UsingSpecificKeyListSpec extends AsyncFunSpec with Matchers {
           ),
           TableList(
             Map(
-              TableName("edge_knows_from_person_to_person") -> ColumnList(
+              TableName("edge_knows_from_person_to_person") -> (ColumnList(
                 Map(
                   ColumnName("id") -> ColumnTypeInt(ColumnLength(1)),
                   ColumnName("id_in_v") -> ColumnTypeInt(ColumnLength(1)),
@@ -67,8 +68,8 @@ class UsingSpecificKeyListSpec extends AsyncFunSpec with Matchers {
                     ColumnLength(3)
                   )
                 )
-              ),
-              TableName("edge_created_from_person_to_software") -> ColumnList(
+              ), TableAttributes(PrimaryKey(Set(ColumnName("id"))))),
+              TableName("edge_created_from_person_to_software") -> (ColumnList(
                 Map(
                   ColumnName("id") -> ColumnTypeInt(ColumnLength(1)),
                   ColumnName("id_in_v") -> ColumnTypeInt(ColumnLength(1)),
@@ -77,7 +78,7 @@ class UsingSpecificKeyListSpec extends AsyncFunSpec with Matchers {
                     ColumnLength(3)
                   )
                 )
-              )
+              ), TableAttributes(PrimaryKey(Set(ColumnName("id")))))
             )
           ),
           RecordList(

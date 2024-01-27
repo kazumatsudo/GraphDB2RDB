@@ -25,11 +25,10 @@ case class ColumnList(private val value: Map[ColumnName, ColumnType])
       }
     }
 
-  def toSqlSentence: String =
+  def toSqlSentenceSeq: Seq[String] =
     value.toSeq
       .sortBy { case (columnName, _) => columnName.toSqlSentence }
       .map { case (columnName, columnType) =>
         s"${columnName.toSqlSentence} ${columnType.toSqlSentence}"
       }
-      .mkString(", ")
 }

@@ -1,5 +1,6 @@
 package domain.table.ddl
 
+import domain.table.ddl.attribute.PrimaryKey
 import domain.table.ddl.column._
 import infrastructure.VertexQuery
 import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerFactory
@@ -25,20 +26,20 @@ class TableListSpec extends AsyncFunSpec with Matchers {
           }
       } yield result shouldBe TableList(
         Map(
-          TableName("vertex_person") -> ColumnList(
+          TableName("vertex_person") -> (ColumnList(
             Map(
               ColumnName("id") -> ColumnTypeInt(ColumnLength(1)),
-              ColumnName("property_age") -> ColumnTypeInt(ColumnLength(2)),
-              ColumnName("property_name") -> ColumnTypeString(ColumnLength(5))
+              ColumnName("property_name") -> ColumnTypeString(ColumnLength(5)),
+              ColumnName("property_age") -> ColumnTypeInt(ColumnLength(2))
             )
-          ),
-          TableName("vertex_software") -> ColumnList(
+          ), TableAttributes(PrimaryKey(Set(ColumnName("id"))))),
+          TableName("vertex_software") -> (ColumnList(
             Map(
               ColumnName("id") -> ColumnTypeInt(ColumnLength(1)),
-              ColumnName("property_lang") -> ColumnTypeString(ColumnLength(4)),
-              ColumnName("property_name") -> ColumnTypeString(ColumnLength(6))
+              ColumnName("property_name") -> ColumnTypeString(ColumnLength(6)),
+              ColumnName("property_lang") -> ColumnTypeString(ColumnLength(4))
             )
-          )
+          ), TableAttributes(PrimaryKey(Set(ColumnName("id")))))
         )
       )
     }
@@ -60,20 +61,20 @@ class TableListSpec extends AsyncFunSpec with Matchers {
           }
       } yield result shouldBe TableList(
         Map(
-          TableName("vertex_person") -> ColumnList(
+          TableName("vertex_person") -> (ColumnList(
             Map(
               ColumnName("id") -> ColumnTypeInt(ColumnLength(1)),
               ColumnName("property_name") -> ColumnTypeString(ColumnLength(5)),
               ColumnName("property_age") -> ColumnTypeInt(ColumnLength(2))
             )
-          ),
-          TableName("vertex_software") -> ColumnList(
+          ), TableAttributes(PrimaryKey(Set(ColumnName("id"))))),
+          TableName("vertex_software") -> (ColumnList(
             Map(
               ColumnName("id") -> ColumnTypeInt(ColumnLength(1)),
               ColumnName("property_name") -> ColumnTypeString(ColumnLength(6)),
               ColumnName("property_lang") -> ColumnTypeString(ColumnLength(4))
             )
-          )
+          ), TableAttributes(PrimaryKey(Set(ColumnName("id")))))
         )
       )
     }
