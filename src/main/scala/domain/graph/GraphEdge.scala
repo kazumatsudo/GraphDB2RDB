@@ -1,7 +1,12 @@
 package domain.graph
 
 import domain.table.ddl.column.{ColumnList, ColumnName, ColumnType}
-import domain.table.ddl.attribute.{ForeignKey, UniqueIndex, IndexName, PrimaryKey}
+import domain.table.ddl.attribute.{
+  ForeignKey,
+  UniqueIndex,
+  IndexName,
+  PrimaryKey
+}
 import domain.table.ddl.{TableAttribute, TableList, TableName}
 import domain.table.dml.{RecordId, RecordKey, RecordList, RecordValue}
 import gremlin.scala.Edge

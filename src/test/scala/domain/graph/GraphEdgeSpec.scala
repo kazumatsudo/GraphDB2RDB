@@ -7,7 +7,12 @@ import domain.table.ddl.column.{
   ColumnTypeDouble,
   ColumnTypeInt
 }
-import domain.table.ddl.attribute.{ForeignKey, UniqueIndex, IndexName, PrimaryKey}
+import domain.table.ddl.attribute.{
+  ForeignKey,
+  UniqueIndex,
+  IndexName,
+  PrimaryKey
+}
 import domain.table.ddl.{TableAttribute, TableList, TableName}
 import domain.table.dml.{RecordId, RecordKey, RecordList, RecordValue}
 import infrastructure.EdgeQuery
