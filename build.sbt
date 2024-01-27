@@ -9,7 +9,6 @@ wartremoverErrors ++= Warts.allBut(
   Wart.Any,
   Wart.AnyVal,
   Wart.AutoUnboxing,
-  Wart.AsInstanceOf,
   Wart.FinalCaseClass,
   Wart.ImplicitParameter,
   Wart.IterableOps,

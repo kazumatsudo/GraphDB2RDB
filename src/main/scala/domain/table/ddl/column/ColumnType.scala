@@ -1,9 +1,6 @@
 package domain.table.ddl.column
 
-import org.janusgraph.graphdb.relations.RelationIdentifier
-
-import java.time.Instant
-import java.util.UUID
+import domain.table.dml.RecordValue
 import scala.annotation.tailrec
 
 /** referenced by https://docs.janusgraph.org/schema/#property-key-data-type
@@ -68,33 +65,39 @@ case object ColumnTypeUnknown extends ColumnType {
 
 object ColumnType {
 
-  @tailrec
-  def apply(value: Any): ColumnType = value match {
-    case _: Boolean => ColumnTypeBoolean
-    case valueByte: Byte =>
-      ColumnTypeByte(ColumnLength(valueByte.toString.length))
-    case valueShort: Short =>
-      ColumnTypeShort(ColumnLength(valueShort.toString.length))
-    case valueInt: Int => ColumnTypeInt(ColumnLength(valueInt.toString.length))
-    case valueLong: Long =>
-      ColumnTypeLong(ColumnLength(valueLong.toString.length))
-    case valueFloat: Float =>
-      ColumnTypeFloat(
-        ColumnLength(valueFloat.toString.replaceAll("0*$", "").length)
-      )
-    case valueDouble: Double =>
-      ColumnTypeDouble(
-        ColumnLength(valueDouble.toString.replaceAll("0*$", "").length)
-      )
-    case _: UUID => ColumnTypeUUID
-    case valueDate: Instant =>
-      ColumnTypeDate(ColumnLength(valueDate.toString.length))
-    case _: Char => ColumnTypeCharacter(ColumnLength(1))
-    case valueString: String =>
-      ColumnTypeString(ColumnLength(valueString.length))
-    case valueRelationIdentifier: RelationIdentifier =>
-      apply(valueRelationIdentifier.toString)
-    case _ => ColumnTypeUnknown // TODO: classify the type in detail
+  def apply(value: Any): ColumnType = {
+    RecordValue.to(
+      value = value,
+      callbackBoolean = _ => ColumnTypeBoolean,
+      callbackByte =
+        valueByte => ColumnTypeByte(ColumnLength(valueByte.toString.length)),
+      callbackShort =
+        valueShort => ColumnTypeShort(ColumnLength(valueShort.toString.length)),
+      callbackInt =
+        valueInt => ColumnTypeInt(ColumnLength(valueInt.toString.length)),
+      callbackLong =
+        valueLong => ColumnTypeLong(ColumnLength(valueLong.toString.length)),
+      callbackFloat = valueFloat =>
+        ColumnTypeFloat(
+          ColumnLength(valueFloat.toString.replaceAll("0*$", "").length)
+        ),
+      callbackDouble = valueDouble =>
+        ColumnTypeDouble(
+          ColumnLength(valueDouble.toString.replaceAll("0*$", "").length)
+        ),
+      callbackUuid = _ => ColumnTypeUUID,
+      callbackDate =
+        valueDate => ColumnTypeDate(ColumnLength(valueDate.toString.length)),
+      callbackChar = _ => ColumnTypeCharacter(ColumnLength(1)),
+      callbackString =
+        valueString => ColumnTypeString(ColumnLength(valueString.length)),
+      callbackRelationIdentifier = valueRelationIdentifier => {
+        // execute RelationIdentifier as String
+        val valueString = valueRelationIdentifier.toString
+        ColumnTypeString(ColumnLength(valueString.length))
+      },
+      callbackUnknown = _ => ColumnTypeUnknown
+    )
   }
 
   /** merges the attributes (type, length...) in two columns into one
