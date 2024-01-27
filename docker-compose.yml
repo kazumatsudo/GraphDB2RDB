@@ -4,6 +4,8 @@ services:
   janusgraph:
     image: janusgraph/janusgraph:1.1.0-20240105-102008.1270818
     container_name: janusgraph
+    environment:
+      gremlinserver.maxContentLength: 16777216 # 2^24
     ports:
       - "8182:8182"
   mysql:
