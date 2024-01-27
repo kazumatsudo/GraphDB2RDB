@@ -1,6 +1,7 @@
 package usecase
 
 import com.typesafe.scalalogging.StrictLogging
+import domain.graph.GraphElement
 import domain.table.ddl.TableList
 import domain.table.dml.RecordList
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource
@@ -21,19 +22,20 @@ trait UsecaseBase extends StrictLogging {
   protected val g: GraphTraversalSource
   protected val config: Config
 
-  protected def foldLeft(
-      value: View[(TableList, RecordList)],
+  protected def toDdl[T <: GraphElement](
+      value: View[T]
+  )(implicit ec: ExecutionContext): Future[TableList] = Future {
+    value.foldLeft(TableList(Map.empty)) { case (accumulator, currentValue) =>
+      accumulator.merge(currentValue.toDdl)
+    }
+  }
+
+  protected def toDml[T <: GraphElement](
+      value: View[T],
       checkUnique: Boolean
-  ): (TableList, RecordList) = {
-    value.foldLeft((TableList(Map.empty), RecordList(Map.empty))) {
-      case (
-            (ddlAccumlator, dmlAccumlator),
-            (ddlCurrentValue, dmlCurrentValue)
-          ) =>
-        (
-          ddlAccumlator.merge(ddlCurrentValue),
-          dmlAccumlator.merge(dmlCurrentValue, checkUnique)
-        )
+  )(implicit ec: ExecutionContext): Future[RecordList] = Future {
+    value.foldLeft(RecordList(Map.empty)) { case (accumulator, currentValue) =>
+      accumulator.merge(currentValue.toDml, checkUnique)
     }
   }
 
