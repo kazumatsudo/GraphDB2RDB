@@ -12,7 +12,7 @@ services:
     image: mysql:8.3.0-oraclelinux8
     container_name: mysql
     environment:
+      MYSQL_DATABASE: graphdb2rdb
       MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: root
     ports:
       - "3306:3306"

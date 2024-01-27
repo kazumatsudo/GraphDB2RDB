@@ -53,7 +53,7 @@ libraryDependencies ++= Seq(
 
 // test
 libraryDependencies ++= Seq(
-  "com.h2database" % "h2" % "2.2.224" % Test,
+  "com.mysql" % "mysql-connector-j" % "8.0.33" % Test,
   "com.typesafe.slick" %% "slick" % "3.4.1" % Test,
   "com.typesafe.slick" %% "slick-hikaricp" % "3.4.1" % Test,
   "io.github.etspaceman" %% "scalacheck-faker" % "8.0.2" % Test,

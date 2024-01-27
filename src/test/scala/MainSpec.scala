@@ -1,5 +1,5 @@
 import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerGraph
-import org.scalatest.{Assertion, BeforeAndAfterEach}
+import org.scalatest.Assertion
 import org.scalatest.funspec.AsyncFunSpec
 import org.scalatest.matchers.should.Matchers
 import slick.jdbc.H2Profile.api._
@@ -9,12 +9,10 @@ import utils.Config
 
 import scala.concurrent.Future
 
-class MainSpec extends AsyncFunSpec with Matchers with BeforeAndAfterEach {
+class MainSpec extends AsyncFunSpec with Matchers {
 
-  private val database = Database.forConfig("database-h2")
-  override def afterEach(): Unit = {
-    database.run(sqlu"DROP ALL OBJECTS")
-  }
+  private val database = Database.forConfig("database-mysql")
+  private val databaseName = "graphdb2rdb"
 
   describe("enable to execute in") {
     val config = Config.default
@@ -24,6 +22,10 @@ class MainSpec extends AsyncFunSpec with Matchers with BeforeAndAfterEach {
     def assert(database: Database, usecase: UsecaseBase): Future[Assertion] = {
       val result = for {
         usecaseResponse <- usecase.execute(checkUnique = true)
+        // setup
+        _ <- database.run(sqlu"CREATE DATABASE IF NOT EXISTS #${databaseName};")
+
+        // execute
         result <- database.run(
           DBIO.sequence(
             usecaseResponse.verticesDdl.toSqlSentence
@@ -39,6 +41,9 @@ class MainSpec extends AsyncFunSpec with Matchers with BeforeAndAfterEach {
                   .map(sql => sqlu"#$sql")
           )
         )
+
+        // teardown
+        _ <- database.run(sqlu"CREATE DATABASE IF NOT EXISTS #${databaseName};")
       } yield result
 
       result
@@ -51,7 +56,7 @@ class MainSpec extends AsyncFunSpec with Matchers with BeforeAndAfterEach {
         }
     }
 
-    describe("H2") {
+    describe("MySQL") {
       it("ByExhaustiveSearch") {
         assert(database, ByExhaustiveSearch(g, config))
       }
