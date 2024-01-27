@@ -1,7 +1,8 @@
 package domain.graph
 
 import domain.table.ddl.column.{ColumnList, ColumnName, ColumnType}
-import domain.table.ddl.{ForeignKey, TableAttribute, TableList, TableName}
+import domain.table.ddl.key.{ForeignKey, PrimaryKey}
+import domain.table.ddl.{TableAttribute, TableList, TableName}
 import domain.table.dml.{RecordId, RecordKey, RecordList, RecordValue}
 import gremlin.scala.Edge
 import utils.Config
@@ -58,6 +59,7 @@ case class GraphEdge(private val value: Edge, private val config: Config)
             idColumn ++ inVColumn ++ outVColumn ++ propertyColumn
           ),
           TableAttribute(
+            PrimaryKey(Set(ColumnName(columnNameEdgeId))),
             ForeignKey(
               Map(
                 ColumnName(columnNameEdgeInVId) -> (

@@ -7,7 +7,8 @@ import domain.table.ddl.column.{
   ColumnTypeDouble,
   ColumnTypeInt
 }
-import domain.table.ddl.{ForeignKey, TableAttribute, TableList, TableName}
+import domain.table.ddl.key.{ForeignKey, PrimaryKey}
+import domain.table.ddl.{TableAttribute, TableList, TableName}
 import domain.table.dml.{RecordId, RecordKey, RecordList, RecordValue}
 import infrastructure.EdgeQuery
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__.V
@@ -38,6 +39,7 @@ class GraphEdgeSpec extends AsyncFunSpec with Matchers {
                 )
               )
             ), TableAttribute(
+              PrimaryKey(Set(ColumnName("id"))),
               ForeignKey(
                 Map(
                   ColumnName("id_in_v") -> (TableName(

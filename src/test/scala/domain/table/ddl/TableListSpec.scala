@@ -1,6 +1,7 @@
 package domain.table.ddl
 
 import domain.table.ddl.column._
+import domain.table.ddl.key.{ForeignKey, PrimaryKey}
 import infrastructure.VertexQuery
 import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerFactory
 import org.scalatest.funspec.AsyncFunSpec
@@ -31,14 +32,20 @@ class TableListSpec extends AsyncFunSpec with Matchers {
               ColumnName("property_name") -> ColumnTypeString(ColumnLength(5)),
               ColumnName("property_age") -> ColumnTypeInt(ColumnLength(2))
             )
-          ), TableAttribute(ForeignKey(Map()))),
+          ), TableAttribute(
+            PrimaryKey(Set(ColumnName("id"))),
+            ForeignKey(Map())
+          )),
           TableName("vertex_software") -> (ColumnList(
             Map(
               ColumnName("id") -> ColumnTypeInt(ColumnLength(1)),
               ColumnName("property_name") -> ColumnTypeString(ColumnLength(6)),
               ColumnName("property_lang") -> ColumnTypeString(ColumnLength(4))
             )
-          ), TableAttribute(ForeignKey(Map())))
+          ), TableAttribute(
+            PrimaryKey(Set(ColumnName("id"))),
+            ForeignKey(Map())
+          ))
         )
       )
     }
@@ -66,14 +73,20 @@ class TableListSpec extends AsyncFunSpec with Matchers {
               ColumnName("property_name") -> ColumnTypeString(ColumnLength(5)),
               ColumnName("property_age") -> ColumnTypeInt(ColumnLength(2))
             )
-          ), TableAttribute(ForeignKey(Map()))),
+          ), TableAttribute(
+            PrimaryKey(Set(ColumnName("id"))),
+            ForeignKey(Map())
+          )),
           TableName("vertex_software") -> (ColumnList(
             Map(
               ColumnName("id") -> ColumnTypeInt(ColumnLength(1)),
               ColumnName("property_name") -> ColumnTypeString(ColumnLength(6)),
               ColumnName("property_lang") -> ColumnTypeString(ColumnLength(4))
             )
-          ), TableAttribute(ForeignKey(Map())))
+          ), TableAttribute(
+            PrimaryKey(Set(ColumnName("id"))),
+            ForeignKey(Map())
+          ))
         )
       )
     }

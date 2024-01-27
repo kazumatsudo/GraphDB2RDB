@@ -1,6 +1,11 @@
 package domain.table.ddl
 
-final case class TableAttribute(private val foreignKey: ForeignKey) {
+import domain.table.ddl.key.{ForeignKey, PrimaryKey}
+
+final case class TableAttribute(
+    private val primaryKey: PrimaryKey,
+    private val foreignKey: ForeignKey
+) {
 
   /** merges TableAttribute in two table attributes into one
     *
@@ -12,7 +17,12 @@ final case class TableAttribute(private val foreignKey: ForeignKey) {
     *   merged TableAttribute
     */
   def merge(target: TableAttribute, checkUnique: Boolean): TableAttribute =
-    TableAttribute(foreignKey.merge(target.foreignKey, checkUnique))
+    TableAttribute(
+      primaryKey.merge(target.primaryKey),
+      foreignKey.merge(target.foreignKey, checkUnique)
+    )
 
-  def toSqlSentence: Seq[String] = foreignKey.toSqlSentence
+  def toSqlSentence: Seq[String] = {
+    primaryKey.toSqlSentence +: foreignKey.toSqlSentence
+  }
 }

@@ -7,7 +7,8 @@ import domain.table.ddl.column.{
   ColumnTypeInt,
   ColumnTypeString
 }
-import domain.table.ddl.{ForeignKey, TableAttribute, TableList, TableName}
+import domain.table.ddl.key.{ForeignKey, PrimaryKey}
+import domain.table.ddl.{TableAttribute, TableList, TableName}
 import domain.table.dml.{RecordId, RecordKey, RecordList, RecordValue}
 import infrastructure.VertexQuery
 import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerFactory
@@ -35,7 +36,10 @@ class GraphVertexSpec extends AsyncFunSpec with Matchers {
                 ),
                 ColumnName("property_age") -> ColumnTypeInt(ColumnLength(2))
               )
-            ), TableAttribute(ForeignKey(Map())))
+            ), TableAttribute(
+              PrimaryKey(Set(ColumnName("id"))),
+              ForeignKey(Map())
+            ))
           )
         )
       }

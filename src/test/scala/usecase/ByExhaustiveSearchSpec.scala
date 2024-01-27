@@ -8,7 +8,8 @@ import domain.table.ddl.column.{
   ColumnTypeInt,
   ColumnTypeString
 }
-import domain.table.ddl.{ForeignKey, TableAttribute, TableList, TableName}
+import domain.table.ddl.key.{ForeignKey, PrimaryKey}
+import domain.table.ddl.{TableAttribute, TableList, TableName}
 import domain.table.dml.{RecordId, RecordKey, RecordList, RecordValue}
 import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerFactory
 import org.scalatest.funspec.AsyncFunSpec
@@ -37,7 +38,10 @@ class ByExhaustiveSearchSpec extends AsyncFunSpec with Matchers {
                   ),
                   ColumnName("property_age") -> ColumnTypeInt(ColumnLength(2))
                 )
-              ), TableAttribute(ForeignKey(Map()))),
+              ), TableAttribute(
+                PrimaryKey(Set(ColumnName("id"))),
+                ForeignKey(Map())
+              )),
               TableName("vertex_software") -> (ColumnList(
                 Map(
                   ColumnName("id") -> ColumnTypeInt(ColumnLength(1)),
@@ -48,7 +52,10 @@ class ByExhaustiveSearchSpec extends AsyncFunSpec with Matchers {
                     ColumnLength(4)
                   )
                 )
-              ), TableAttribute(ForeignKey(Map())))
+              ), TableAttribute(
+                PrimaryKey(Set(ColumnName("id"))),
+                ForeignKey(Map())
+              ))
             )
           ),
           RecordList(
@@ -105,6 +112,7 @@ class ByExhaustiveSearchSpec extends AsyncFunSpec with Matchers {
                   )
                 )
               ), TableAttribute(
+                PrimaryKey(Set(ColumnName("id"))),
                 ForeignKey(
                   Map(
                     ColumnName("id_in_v") -> (TableName(
@@ -126,6 +134,7 @@ class ByExhaustiveSearchSpec extends AsyncFunSpec with Matchers {
                   )
                 )
               ), TableAttribute(
+                PrimaryKey(Set(ColumnName("id"))),
                 ForeignKey(
                   Map(
                     ColumnName("id_in_v") -> (TableName(

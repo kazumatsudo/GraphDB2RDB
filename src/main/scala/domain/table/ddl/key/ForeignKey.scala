@@ -1,5 +1,6 @@
-package domain.table.ddl
+package domain.table.ddl.key
 
+import domain.table.ddl.TableName
 import domain.table.ddl.column.ColumnName
 
 final case class ForeignKey(
