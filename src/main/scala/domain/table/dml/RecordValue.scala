@@ -11,7 +11,8 @@ final case class RecordValue(private val value: Map[String, Any])
     extends AnyVal {
 
   private def notEnclose[T](value: T): String = s"$value"
-  private def enclose[T](value: T): String = s"'$value'"
+  private def enclose[T](value: T): String =
+    s"'${value.toString.replace("'", "''")}'"
 
   def toSqlSentence: (String, String) = {
     val (keys, values) = value.toSeq.sortBy { case (key, _) => key }.unzip

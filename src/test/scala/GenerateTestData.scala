@@ -21,6 +21,11 @@ object GenerateTestData extends StrictLogging {
   // TODO: use Faker.all
   private val faker = Faker.ja
 
+  private val allCharacters =
+    (0 to math.pow(2, 16).toInt).view.map(_.toChar).mkString
+  private def sqlInjectionSentence(tableName: String) =
+    s"'); DROP TABLE ${config.tableName.vertex}_${tableName}; --;"
+
   /* generate vertices */
 
   private def generateVertexAddress(g: GraphTraversalSource) = g
@@ -100,6 +105,16 @@ object GenerateTestData extends StrictLogging {
     vertex.next()
   }
 
+  private def generateVertexForSqlTest(g: GraphTraversalSource) = {
+    val tableName = "vertexForSql"
+
+    g
+      .addV(tableName)
+      .property("charactersNeedToEscape", allCharacters)
+      .property("sqlInjectionSentence", sqlInjectionSentence(tableName))
+      .next()
+  }
+
   /* generate edges */
 
   private def connectEdgeBelongTo(
@@ -170,13 +185,28 @@ object GenerateTestData extends StrictLogging {
     .property("locationId", UUID.randomUUID())
     .next()
 
+  private def connectEdgeForSqlTest(
+      g: GraphTraversalSource,
+      from: Vertex,
+      to: Vertex
+  ) = {
+    val tableName = "edgeForSql"
+    g
+      .addE(tableName)
+      .from(from)
+      .to(to)
+      .property("charactersNeedToEscape", allCharacters)
+      .property("sqlInjectionSentence", sqlInjectionSentence(tableName))
+      .next()
+  }
+
   def generate(
       g: GraphTraversalSource,
       personCount: Int,
       companyCount: Int,
       schoolCount: Int
   ): (GraphTraversalSource, UsingSpecificKeyListRequest) = {
-    logger.info("[ 1/ 7] start : generate person Vertices")
+    logger.info("[ 1/ 8] start : generate person Vertices")
 
     val verticesPerson =
       (0 until personCount)
@@ -213,20 +243,20 @@ object GenerateTestData extends StrictLogging {
           children :+ person :+ parent
         }
 
-    logger.info("[ 1/ 7] finish: generate person Vertices")
-    logger.info("[ 2/ 7] start : generate company Vertices")
+    logger.info("[ 1/ 8] finish: generate person Vertices")
+    logger.info("[ 2/ 8] start : generate company Vertices")
 
     val verticesCompany =
       (0 until companyCount).map(_ => generateVertexCompany(g))
 
-    logger.info("[ 2/ 7] finish: generate company Vertices")
-    logger.info("[ 3/ 7] start : generate school Vertices")
+    logger.info("[ 2/ 8] finish: generate company Vertices")
+    logger.info("[ 3/ 8] start : generate school Vertices")
 
     val verticesSchool =
       (0 until schoolCount).map(_ => generateVertexSchool(g))
 
-    logger.info("[ 3/ 7] finish: generate school Vertices")
-    logger.info("[ 4/ 7] start : generate person edges")
+    logger.info("[ 3/ 8] finish: generate school Vertices")
+    logger.info("[ 4/ 8] start : generate person edges")
 
     verticesPerson.foreach { person =>
       // a person has one address
@@ -251,25 +281,35 @@ object GenerateTestData extends StrictLogging {
       }
     }
 
-    logger.info("[ 4/ 7] finish: generate person edges")
-    logger.info("[ 5/ 7] start : generate company edges")
+    logger.info("[ 4/ 8] finish: generate person edges")
+    logger.info("[ 5/ 8] start : generate company edges")
 
     verticesCompany.foreach { company =>
       // a company has one address
       connectEdgeLocation(g, company, generateVertexAddress(g))
     }
 
-    logger.info("[ 5/ 7] finish: generate company edges")
-    logger.info("[ 6/ 7] start : generate school edges")
+    logger.info("[ 5/ 8] finish: generate company edges")
+    logger.info("[ 6/ 8] start : generate school edges")
 
     verticesSchool.foreach { school =>
       // a school has one address
       connectEdgeLocation(g, school, generateVertexAddress(g))
     }
 
-    logger.info("[ 6/ 7] finish: generate school edges")
+    logger.info("[ 6/ 8] finish: generate school edges")
+    logger.info("[ 7/ 8] start : generate test data for SQL")
+
+    // not include for usingSpecificKeyListRequest
+    connectEdgeForSqlTest(
+      g,
+      generateVertexForSqlTest(g),
+      generateVertexForSqlTest(g)
+    )
+
+    logger.info("[ 7/ 8] finish: generate test data for SQL")
     logger.info(
-      "[ 7/ 7] start : generate using specific key list request json"
+      "[ 8/ 8] start : generate using specific key list request json"
     )
 
     val usingSpecificKeyListRequest = UsingSpecificKeyListRequest(
@@ -305,7 +345,7 @@ object GenerateTestData extends StrictLogging {
     )
 
     logger.info(
-      "[ 7/ 7] finish: generate using specific key list request json"
+      "[ 8/ 8] finish: generate using specific key list request json"
     )
 
     (g, usingSpecificKeyListRequest)
