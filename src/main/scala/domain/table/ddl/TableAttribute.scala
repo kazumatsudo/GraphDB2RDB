@@ -13,4 +13,6 @@ final case class TableAttribute(private val foreignKey: ForeignKey) {
     */
   def merge(target: TableAttribute, checkUnique: Boolean): TableAttribute =
     TableAttribute(foreignKey.merge(target.foreignKey, checkUnique))
+
+  def toSqlSentence: Seq[String] = foreignKey.toSqlSentence
 }

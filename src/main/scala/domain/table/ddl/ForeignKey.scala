@@ -34,4 +34,10 @@ final case class ForeignKey(
       value ++ target.value
     }
   }
+
+  def toSqlSentence: Seq[String] = value.toSeq
+    .sortBy { case (columnName, _) => columnName.toSqlSentence }
+    .map { case (columnName, (referenceTableName, referenceColumnName)) =>
+      s"FOREIGN KEY (${columnName.toSqlSentence}) REFERENCES ${referenceTableName.toSqlSentence}(${referenceColumnName.toSqlSentence})"
+    }
 }

@@ -38,8 +38,9 @@ case class TableList(
     }
 
   def toSqlSentence: View[String] = value.map {
-    case (tableName, (columnList, _)) =>
-      s"CREATE TABLE IF NOT EXISTS ${tableName.toSqlSentence} (${columnList.toSqlSentence});"
+    case (tableName, (columnList, tableAttribute)) =>
+      s"CREATE TABLE IF NOT EXISTS ${tableName.toSqlSentence} (${(columnList.toSqlSentence ++ tableAttribute.toSqlSentence)
+          .mkString(", ")});"
   }.view
 
 }
