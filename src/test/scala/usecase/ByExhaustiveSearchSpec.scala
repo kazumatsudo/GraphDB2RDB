@@ -1,5 +1,6 @@
 package usecase
 
+import domain.table.ddl.attribute.PrimaryKey
 import domain.table.ddl.column.{
   ColumnLength,
   ColumnList,
@@ -8,7 +9,7 @@ import domain.table.ddl.column.{
   ColumnTypeInt,
   ColumnTypeString
 }
-import domain.table.ddl.{TableList, TableName}
+import domain.table.ddl.{TableAttributes, TableList, TableName}
 import domain.table.dml.{RecordId, RecordKey, RecordList, RecordValue}
 import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerFactory
 import org.scalatest.funspec.AsyncFunSpec
@@ -29,7 +30,7 @@ class ByExhaustiveSearchSpec extends AsyncFunSpec with Matchers {
         _ shouldBe UsecaseResponse(
           TableList(
             Map(
-              TableName("vertex_person") -> ColumnList(
+              TableName("vertex_person") -> (ColumnList(
                 Map(
                   ColumnName("id") -> ColumnTypeInt(ColumnLength(1)),
                   ColumnName("property_name") -> ColumnTypeString(
@@ -37,8 +38,8 @@ class ByExhaustiveSearchSpec extends AsyncFunSpec with Matchers {
                   ),
                   ColumnName("property_age") -> ColumnTypeInt(ColumnLength(2))
                 )
-              ),
-              TableName("vertex_software") -> ColumnList(
+              ), TableAttributes(PrimaryKey(Set(ColumnName("id"))))),
+              TableName("vertex_software") -> (ColumnList(
                 Map(
                   ColumnName("id") -> ColumnTypeInt(ColumnLength(1)),
                   ColumnName("property_name") -> ColumnTypeString(
@@ -48,7 +49,7 @@ class ByExhaustiveSearchSpec extends AsyncFunSpec with Matchers {
                     ColumnLength(4)
                   )
                 )
-              )
+              ), TableAttributes(PrimaryKey(Set(ColumnName("id")))))
             )
           ),
           RecordList(
@@ -95,7 +96,7 @@ class ByExhaustiveSearchSpec extends AsyncFunSpec with Matchers {
           ),
           TableList(
             Map(
-              TableName("edge_created_from_person_to_software") -> ColumnList(
+              TableName("edge_created_from_person_to_software") -> (ColumnList(
                 Map(
                   ColumnName("id") -> ColumnTypeInt(ColumnLength(2)),
                   ColumnName("id_in_v") -> ColumnTypeInt(ColumnLength(1)),
@@ -104,8 +105,8 @@ class ByExhaustiveSearchSpec extends AsyncFunSpec with Matchers {
                     ColumnLength(3)
                   )
                 )
-              ),
-              TableName("edge_knows_from_person_to_person") -> ColumnList(
+              ), TableAttributes(PrimaryKey(Set(ColumnName("id"))))),
+              TableName("edge_knows_from_person_to_person") -> (ColumnList(
                 Map(
                   ColumnName("id") -> ColumnTypeInt(ColumnLength(1)),
                   ColumnName("id_in_v") -> ColumnTypeInt(ColumnLength(1)),
@@ -114,7 +115,7 @@ class ByExhaustiveSearchSpec extends AsyncFunSpec with Matchers {
                     ColumnLength(3)
                   )
                 )
-              )
+              ), TableAttributes(PrimaryKey(Set(ColumnName("id")))))
             )
           ),
           RecordList(

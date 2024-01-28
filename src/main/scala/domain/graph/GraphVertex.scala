@@ -1,7 +1,8 @@
 package domain.graph
 
+import domain.table.ddl.attribute.PrimaryKey
 import domain.table.ddl.column.{ColumnList, ColumnName, ColumnType}
-import domain.table.ddl.{TableList, TableName}
+import domain.table.ddl.{TableAttributes, TableList, TableName}
 import domain.table.dml.{RecordId, RecordKey, RecordList, RecordValue}
 import gremlin.scala._
 import utils.Config
@@ -29,7 +30,10 @@ case class GraphVertex(private val value: Vertex, private val config: Config)
       val propertyColumn = value.valueMap.map { case (key, value) =>
         ColumnName(s"$columnNamePrefixProperty$key") -> ColumnType.apply(value)
       }
-      Map(tableName -> ColumnList(idColumn ++ propertyColumn))
+      Map(
+        tableName -> (ColumnList(idColumn ++ propertyColumn),
+        TableAttributes(PrimaryKey(Set(ColumnName(columnNameVertexId)))))
+      )
     }
 
   override def toDml: RecordList = {

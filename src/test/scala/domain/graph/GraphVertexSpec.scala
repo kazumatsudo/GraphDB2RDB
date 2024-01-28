@@ -1,5 +1,6 @@
 package domain.graph
 
+import domain.table.ddl.attribute.PrimaryKey
 import domain.table.ddl.column.{
   ColumnLength,
   ColumnList,
@@ -7,7 +8,7 @@ import domain.table.ddl.column.{
   ColumnTypeInt,
   ColumnTypeString
 }
-import domain.table.ddl.{TableList, TableName}
+import domain.table.ddl.{TableAttributes, TableList, TableName}
 import domain.table.dml.{RecordId, RecordKey, RecordList, RecordValue}
 import infrastructure.VertexQuery
 import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerFactory
@@ -27,13 +28,15 @@ class GraphVertexSpec extends AsyncFunSpec with Matchers {
       vertex.map {
         _.head.toDdl shouldBe TableList(
           Map(
-            TableName("vertex_person") -> ColumnList(
+            TableName("vertex_person") -> (ColumnList(
               Map(
                 ColumnName("id") -> ColumnTypeInt(ColumnLength(1)),
-                ColumnName("property_age") -> ColumnTypeInt(ColumnLength(2)),
-                ColumnName("property_name") -> ColumnTypeString(ColumnLength(5))
+                ColumnName("property_name") -> ColumnTypeString(
+                  ColumnLength(5)
+                ),
+                ColumnName("property_age") -> ColumnTypeInt(ColumnLength(2))
               )
-            )
+            ), TableAttributes(PrimaryKey(Set(ColumnName("id")))))
           )
         )
       }

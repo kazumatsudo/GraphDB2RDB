@@ -1,5 +1,6 @@
 package domain.graph
 
+import domain.table.ddl.attribute.PrimaryKey
 import domain.table.ddl.column.{
   ColumnLength,
   ColumnList,
@@ -7,7 +8,7 @@ import domain.table.ddl.column.{
   ColumnTypeDouble,
   ColumnTypeInt
 }
-import domain.table.ddl.{TableList, TableName}
+import domain.table.ddl.{TableAttributes, TableList, TableName}
 import domain.table.dml.{RecordId, RecordKey, RecordList, RecordValue}
 import infrastructure.EdgeQuery
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__.V
@@ -28,7 +29,7 @@ class GraphEdgeSpec extends AsyncFunSpec with Matchers {
       edge.map {
         _.head.toDdl shouldBe TableList(
           Map(
-            TableName("edge_knows_from_person_to_person") -> ColumnList(
+            TableName("edge_knows_from_person_to_person") -> (ColumnList(
               Map(
                 ColumnName("id") -> ColumnTypeInt(ColumnLength(1)),
                 ColumnName("id_in_v") -> ColumnTypeInt(ColumnLength(1)),
@@ -37,7 +38,7 @@ class GraphEdgeSpec extends AsyncFunSpec with Matchers {
                   ColumnLength(3)
                 )
               )
-            )
+            ), TableAttributes(PrimaryKey(Set(ColumnName("id")))))
           )
         )
       }
