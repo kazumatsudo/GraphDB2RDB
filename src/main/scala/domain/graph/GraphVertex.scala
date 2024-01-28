@@ -1,6 +1,6 @@
 package domain.graph
 
-import domain.table.ddl.attribute.{PrimaryKey, UniqueIndex}
+import domain.table.ddl.attribute.{ForeignKey, PrimaryKey, UniqueIndex}
 import domain.table.ddl.column.{ColumnList, ColumnName, ColumnType}
 import domain.table.ddl.{TableAttributes, TableList, TableName}
 import domain.table.dml.{RecordId, RecordKey, RecordList, RecordValue}
@@ -34,6 +34,7 @@ case class GraphVertex(private val value: Vertex, private val config: Config)
         tableName -> (ColumnList(idColumn ++ propertyColumn),
         TableAttributes(
           PrimaryKey(Set(ColumnName(columnNameVertexId))),
+          ForeignKey(Map.empty),
           UniqueIndex(Map.empty)
         ))
       )
