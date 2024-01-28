@@ -11,7 +11,7 @@ class TableNameSpec extends AsyncFunSpec with Matchers {
     }
 
     it(
-      "if the length is (63 - 7) or more, return the truncated one after (63 - 7) + 1 truncated"
+      "if the length is (63 - 7) or more, return the name truncated to (63 - 7) characters"
     ) {
       val tableName = "a" * (63 - 7) + 1
       TableName(tableName).toSqlSentence shouldBe tableName.substring(0, 63 - 7)
