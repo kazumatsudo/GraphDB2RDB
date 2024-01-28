@@ -1,5 +1,6 @@
 package domain.table.ddl.column
 
+import org.janusgraph.graphdb.relations.RelationIdentifier
 import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.matchers.should.Matchers
 
@@ -9,19 +10,41 @@ import java.util
 class ColumnTypeSpec extends AnyFunSpec with Matchers {
   describe("apply") {
     it("success") {
+      // Boolean
       ColumnType.apply(false) shouldBe ColumnTypeBoolean
+
+      // Byte
       ColumnType.apply(1.toByte) shouldBe ColumnTypeByte(ColumnLength(1))
+
+      // Short
       ColumnType.apply(1.toShort) shouldBe ColumnTypeShort(ColumnLength(1))
+
+      // Int
       ColumnType.apply(1) shouldBe ColumnTypeInt(ColumnLength(1))
+
+      // Long
       ColumnType.apply(1.toLong) shouldBe ColumnTypeLong(ColumnLength(1))
+
+      // Float
       ColumnType.apply(1.1.toFloat) shouldBe ColumnTypeFloat(ColumnLength(3))
+
+      // Double
       ColumnType.apply(1.1) shouldBe ColumnTypeDouble(ColumnLength(3))
+
+      // util.UUID
       ColumnType.apply(util.UUID.randomUUID()) shouldBe ColumnTypeUUID
+
+      // Date
       ColumnType.apply(Instant.MAX) shouldBe ColumnTypeDate(ColumnLength(37))
       ColumnType.apply(Instant.MIN) shouldBe ColumnTypeDate(ColumnLength(27))
+
+      // Char
       ColumnType.apply('a') shouldBe ColumnTypeCharacter(ColumnLength(1))
+
+      // String
       ColumnType.apply("string") shouldBe ColumnTypeString(ColumnLength(6))
 
+      // util.ArrayList
       val arrayList1 = new util.ArrayList[String]()
       arrayList1.add("a")
       ColumnType.apply(arrayList1) shouldBe ColumnTypeString(ColumnLength(1))
@@ -30,6 +53,15 @@ class ColumnTypeSpec extends AnyFunSpec with Matchers {
       arrayList2.add("a")
       arrayList2.add("a")
       ColumnType.apply(arrayList2) shouldBe ColumnTypeUnknown
+
+      // RelationalIdentifier
+      val relationIdentifier =
+        new RelationIdentifier(new Object(), 1, 1, new Object())
+      ColumnType.apply(relationIdentifier) shouldBe ColumnTypeString(
+        ColumnLength(57)
+      )
+
+      // the other
       ColumnType.apply(Seq.empty) shouldBe ColumnTypeUnknown
     }
   }
@@ -709,6 +741,11 @@ class ColumnTypeSpec extends AnyFunSpec with Matchers {
       arrayList2.add("a")
       arrayList2.add("a")
       ColumnType.apply(arrayList2).toSqlSentence shouldBe "TEXT"
+
+      // RelationalIdentifier
+      val relationIdentifier =
+        new RelationIdentifier(new Object(), 1, 1, new Object())
+      ColumnType.apply(relationIdentifier).toSqlSentence shouldBe "VARCHAR(57)"
 
       // the others
       ColumnType.apply(Seq.empty).toSqlSentence shouldBe "TEXT"
