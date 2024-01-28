@@ -1,14 +1,7 @@
 package usecase
 
-import domain.table.ddl.attribute.{PrimaryKey, UniqueIndex, UniqueIndexName}
-import domain.table.ddl.column.{
-  ColumnLength,
-  ColumnList,
-  ColumnName,
-  ColumnTypeDouble,
-  ColumnTypeInt,
-  ColumnTypeString
-}
+import domain.table.ddl.attribute.{ForeignKey, PrimaryKey, UniqueIndex, UniqueIndexName}
+import domain.table.ddl.column.{ColumnLength, ColumnList, ColumnName, ColumnTypeDouble, ColumnTypeInt, ColumnTypeString}
 import domain.table.ddl.{TableAttributes, TableList, TableName}
 import domain.table.dml.{RecordId, RecordKey, RecordList, RecordValue}
 import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerFactory
@@ -47,6 +40,7 @@ class UsingSpecificKeyListSpec extends AsyncFunSpec with Matchers {
                 )
               ), TableAttributes(
                 PrimaryKey(Set(ColumnName("id"))),
+                ForeignKey(Map()),
                 UniqueIndex(Map())
               ))
             )
@@ -73,6 +67,16 @@ class UsingSpecificKeyListSpec extends AsyncFunSpec with Matchers {
                 )
               ), TableAttributes(
                 PrimaryKey(Set(ColumnName("id"))),
+                ForeignKey(
+                  Map(
+                    ColumnName("id_in_v") -> (TableName(
+                      "vertex_person"
+                    ), ColumnName("id")),
+                    ColumnName("id_out_v") -> (TableName(
+                      "vertex_person"
+                    ), ColumnName("id"))
+                  )
+                ),
                 UniqueIndex(
                   Map(
                     UniqueIndexName("index_id_in_v_id_out_v") -> Set(
@@ -93,6 +97,16 @@ class UsingSpecificKeyListSpec extends AsyncFunSpec with Matchers {
                 )
               ), TableAttributes(
                 PrimaryKey(Set(ColumnName("id"))),
+                ForeignKey(
+                  Map(
+                    ColumnName("id_in_v") -> (TableName(
+                      "vertex_software"
+                    ), ColumnName("id")),
+                    ColumnName("id_out_v") -> (TableName(
+                      "vertex_person"
+                    ), ColumnName("id"))
+                  )
+                ),
                 UniqueIndex(
                   Map(
                     UniqueIndexName("index_id_in_v_id_out_v") -> Set(
