@@ -1,7 +1,19 @@
 package usecase
 
-import domain.table.ddl.attribute.{ForeignKey, PrimaryKey, UniqueIndex, UniqueIndexName}
-import domain.table.ddl.column.{ColumnLength, ColumnList, ColumnName, ColumnTypeDouble, ColumnTypeInt, ColumnTypeString}
+import domain.table.ddl.attribute.{
+  ForeignKey,
+  PrimaryKey,
+  UniqueIndex,
+  UniqueIndexName
+}
+import domain.table.ddl.column.{
+  ColumnLength,
+  ColumnList,
+  ColumnName,
+  ColumnTypeDouble,
+  ColumnTypeInt,
+  ColumnTypeString
+}
 import domain.table.ddl.{TableAttributes, TableList, TableName}
 import domain.table.dml.{RecordId, RecordKey, RecordList, RecordValue}
 import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerFactory
