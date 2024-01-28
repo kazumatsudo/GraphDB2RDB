@@ -1,6 +1,6 @@
 package usecase
 
-import domain.table.ddl.attribute.PrimaryKey
+import domain.table.ddl.attribute.{PrimaryKey, UniqueIndex, UniqueIndexName}
 import domain.table.ddl.column.{
   ColumnLength,
   ColumnList,
@@ -45,7 +45,10 @@ class UsingSpecificKeyListSpec extends AsyncFunSpec with Matchers {
                   ),
                   ColumnName("property_age") -> ColumnTypeInt(ColumnLength(2))
                 )
-              ), TableAttributes(PrimaryKey(Set(ColumnName("id")))))
+              ), TableAttributes(
+                PrimaryKey(Set(ColumnName("id"))),
+                UniqueIndex(Map())
+              ))
             )
           ),
           RecordList(
@@ -68,7 +71,17 @@ class UsingSpecificKeyListSpec extends AsyncFunSpec with Matchers {
                     ColumnLength(3)
                   )
                 )
-              ), TableAttributes(PrimaryKey(Set(ColumnName("id"))))),
+              ), TableAttributes(
+                PrimaryKey(Set(ColumnName("id"))),
+                UniqueIndex(
+                  Map(
+                    UniqueIndexName("index_id_in_v_id_out_v") -> Set(
+                      ColumnName("id_in_v"),
+                      ColumnName("id_out_v")
+                    )
+                  )
+                )
+              )),
               TableName("edge_created_from_person_to_software") -> (ColumnList(
                 Map(
                   ColumnName("id") -> ColumnTypeInt(ColumnLength(1)),
@@ -78,7 +91,17 @@ class UsingSpecificKeyListSpec extends AsyncFunSpec with Matchers {
                     ColumnLength(3)
                   )
                 )
-              ), TableAttributes(PrimaryKey(Set(ColumnName("id")))))
+              ), TableAttributes(
+                PrimaryKey(Set(ColumnName("id"))),
+                UniqueIndex(
+                  Map(
+                    UniqueIndexName("index_id_in_v_id_out_v") -> Set(
+                      ColumnName("id_in_v"),
+                      ColumnName("id_out_v")
+                    )
+                  )
+                )
+              ))
             )
           ),
           RecordList(
