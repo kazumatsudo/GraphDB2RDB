@@ -1,6 +1,6 @@
 package domain.graph
 
-import domain.table.ddl.attribute.PrimaryKey
+import domain.table.ddl.attribute.{PrimaryKey, UniqueIndex, UniqueIndexName}
 import domain.table.ddl.column.{ColumnList, ColumnName, ColumnType}
 import domain.table.ddl.{TableAttributes, TableList, TableName}
 import domain.table.dml.{RecordId, RecordKey, RecordList, RecordValue}
@@ -58,7 +58,19 @@ case class GraphEdge(private val value: Edge, private val config: Config)
           ColumnList(
             idColumn ++ inVColumn ++ outVColumn ++ propertyColumn
           ),
-          TableAttributes(PrimaryKey(Set(ColumnName(columnNameEdgeId))))
+          TableAttributes(
+            PrimaryKey(Set(ColumnName(columnNameEdgeId))),
+            UniqueIndex(
+              Map(
+                UniqueIndexName(
+                  s"index_${columnNameEdgeInVId}_${columnNameEdgeOutVId}"
+                ) -> Set(
+                  ColumnName(columnNameEdgeInVId),
+                  ColumnName(columnNameEdgeOutVId)
+                )
+              )
+            )
+          )
         )
       )
     }

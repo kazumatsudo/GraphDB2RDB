@@ -1,6 +1,6 @@
 package domain.graph
 
-import domain.table.ddl.attribute.PrimaryKey
+import domain.table.ddl.attribute.{PrimaryKey, UniqueIndex, UniqueIndexName}
 import domain.table.ddl.column.{
   ColumnLength,
   ColumnList,
@@ -38,7 +38,17 @@ class GraphEdgeSpec extends AsyncFunSpec with Matchers {
                   ColumnLength(3)
                 )
               )
-            ), TableAttributes(PrimaryKey(Set(ColumnName("id")))))
+            ), TableAttributes(
+              PrimaryKey(Set(ColumnName("id"))),
+              UniqueIndex(
+                Map(
+                  UniqueIndexName("index_id_in_v_id_out_v") -> Set(
+                    ColumnName("id_in_v"),
+                    ColumnName("id_out_v")
+                  )
+                )
+              )
+            ))
           )
         )
       }

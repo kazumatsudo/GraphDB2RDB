@@ -70,9 +70,9 @@ final case class UsingSpecificKeyList(
         val edges = (inEdgesResult ++ outEdgesResult).flatten.flatten
 
         for {
-          vertexTableList <- toDdl(vertices)
+          vertexTableList <- toDdl(vertices, checkUnique)
           vertexRecordList <- toDml(vertices, checkUnique)
-          edgeTableList <- toDdl(edges)
+          edgeTableList <- toDdl(edges, checkUnique)
           edgeRecordList <- toDml(edges, checkUnique)
         } yield UsecaseResponse(
           vertexTableList,

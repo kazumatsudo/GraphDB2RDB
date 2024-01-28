@@ -1,6 +1,6 @@
 package domain.table.ddl
 
-import domain.table.ddl.attribute.PrimaryKey
+import domain.table.ddl.attribute.{PrimaryKey, UniqueIndex}
 import domain.table.ddl.column._
 import infrastructure.VertexQuery
 import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerFactory
@@ -22,7 +22,7 @@ class TableListSpec extends AsyncFunSpec with Matchers {
         result = vertex
           .map(_.toDdl)
           .reduce[TableList] { case (accumulator, currentValue) =>
-            accumulator.merge(currentValue)
+            accumulator.merge(currentValue, checkUnique = false)
           }
       } yield result shouldBe TableList(
         Map(
@@ -32,14 +32,20 @@ class TableListSpec extends AsyncFunSpec with Matchers {
               ColumnName("property_name") -> ColumnTypeString(ColumnLength(5)),
               ColumnName("property_age") -> ColumnTypeInt(ColumnLength(2))
             )
-          ), TableAttributes(PrimaryKey(Set(ColumnName("id"))))),
+          ), TableAttributes(
+            PrimaryKey(Set(ColumnName("id"))),
+            UniqueIndex(Map())
+          )),
           TableName("vertex_software") -> (ColumnList(
             Map(
               ColumnName("id") -> ColumnTypeInt(ColumnLength(1)),
               ColumnName("property_name") -> ColumnTypeString(ColumnLength(6)),
               ColumnName("property_lang") -> ColumnTypeString(ColumnLength(4))
             )
-          ), TableAttributes(PrimaryKey(Set(ColumnName("id")))))
+          ), TableAttributes(
+            PrimaryKey(Set(ColumnName("id"))),
+            UniqueIndex(Map())
+          ))
         )
       )
     }
@@ -57,7 +63,7 @@ class TableListSpec extends AsyncFunSpec with Matchers {
         result = vertex
           .map(_.toDdl)
           .reduce[TableList] { case (accumulator, currentValue) =>
-            accumulator.merge(currentValue)
+            accumulator.merge(currentValue, checkUnique = false)
           }
       } yield result shouldBe TableList(
         Map(
@@ -67,14 +73,20 @@ class TableListSpec extends AsyncFunSpec with Matchers {
               ColumnName("property_name") -> ColumnTypeString(ColumnLength(5)),
               ColumnName("property_age") -> ColumnTypeInt(ColumnLength(2))
             )
-          ), TableAttributes(PrimaryKey(Set(ColumnName("id"))))),
+          ), TableAttributes(
+            PrimaryKey(Set(ColumnName("id"))),
+            UniqueIndex(Map())
+          )),
           TableName("vertex_software") -> (ColumnList(
             Map(
               ColumnName("id") -> ColumnTypeInt(ColumnLength(1)),
               ColumnName("property_name") -> ColumnTypeString(ColumnLength(6)),
               ColumnName("property_lang") -> ColumnTypeString(ColumnLength(4))
             )
-          ), TableAttributes(PrimaryKey(Set(ColumnName("id")))))
+          ), TableAttributes(
+            PrimaryKey(Set(ColumnName("id"))),
+            UniqueIndex(Map())
+          ))
         )
       )
     }

@@ -1,6 +1,6 @@
 package domain.graph
 
-import domain.table.ddl.attribute.PrimaryKey
+import domain.table.ddl.attribute.{PrimaryKey, UniqueIndex}
 import domain.table.ddl.column.{
   ColumnLength,
   ColumnList,
@@ -36,7 +36,10 @@ class GraphVertexSpec extends AsyncFunSpec with Matchers {
                 ),
                 ColumnName("property_age") -> ColumnTypeInt(ColumnLength(2))
               )
-            ), TableAttributes(PrimaryKey(Set(ColumnName("id")))))
+            ), TableAttributes(
+              PrimaryKey(Set(ColumnName("id"))),
+              UniqueIndex(Map())
+            ))
           )
         )
       }
