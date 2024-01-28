@@ -1,5 +1,7 @@
 package domain.table.ddl.column
 
+import scala.collection.View
+
 case class ColumnList(private val value: Map[ColumnName, ColumnType])
     extends AnyVal {
 
@@ -25,10 +27,11 @@ case class ColumnList(private val value: Map[ColumnName, ColumnType])
       }
     }
 
-  def toSqlSentenceSeq: Seq[String] =
+  def toSqlSentenceView: View[String] =
     value.toSeq
       .sortBy { case (columnName, _) => columnName.toSqlSentence }
       .map { case (columnName, columnType) =>
         s"${columnName.toSqlSentence} ${columnType.toSqlSentence}"
       }
+      .view
 }

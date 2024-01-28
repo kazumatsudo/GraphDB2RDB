@@ -62,13 +62,13 @@ class UniqueIndexSpec extends AnyFunSpec with Matchers {
     }
   }
 
-  describe("toSqlSentenceSeq") {
+  describe("toSqlSentenceView") {
     it("success") {
       val uniqueIndexName = UniqueIndexName("index")
       val columnNameSet = Set(ColumnName("column1"), ColumnName("column2"))
       val uniqueIndex = UniqueIndex(Map(uniqueIndexName -> columnNameSet))
 
-      uniqueIndex.toSqlSentenceSeq shouldBe List(
+      uniqueIndex.toSqlSentenceView.toSeq shouldBe List(
         "UNIQUE INDEX (column1, column2)"
       )
     }

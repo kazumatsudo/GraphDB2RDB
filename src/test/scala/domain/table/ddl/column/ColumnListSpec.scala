@@ -46,9 +46,9 @@ class ColumnListSpec extends AnyFunSpec with Matchers {
     }
   }
 
-  describe("toSqlSentenceSeq") {
+  describe("toSqlSentenceView") {
     it("success") {
-      columnList1.merge(columnList2).toSqlSentenceSeq shouldBe List(
+      columnList1.merge(columnList2).toSqlSentenceView.toSeq shouldBe List(
         "address VARCHAR(255)",
         "created_at TEXT",
         "id INT",

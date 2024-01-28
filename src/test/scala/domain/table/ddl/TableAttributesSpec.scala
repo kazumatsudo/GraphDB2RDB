@@ -34,7 +34,7 @@ class TableAttributesSpec extends AnyFunSpec with Matchers {
     }
   }
 
-  describe("toSqlSentenceSeq") {
+  describe("toSqlSentenceView") {
     it("success") {
       val primaryKey = PrimaryKey(Set(ColumnName("test1")))
       val uniqueIndex = UniqueIndex(
@@ -42,7 +42,7 @@ class TableAttributesSpec extends AnyFunSpec with Matchers {
       )
       val tableAttributes = TableAttributes(primaryKey, uniqueIndex)
 
-      tableAttributes.toSqlSentenceSeq shouldBe List(
+      tableAttributes.toSqlSentenceView.toSeq shouldBe List(
         "PRIMARY KEY (test1)",
         "UNIQUE INDEX (test2)"
       )

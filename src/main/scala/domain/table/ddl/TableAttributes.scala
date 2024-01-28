@@ -2,6 +2,8 @@ package domain.table.ddl
 
 import domain.table.ddl.attribute.{PrimaryKey, UniqueIndex}
 
+import scala.collection.View
+
 final case class TableAttributes(
     private val primaryKey: PrimaryKey,
     private val uniqueIndex: UniqueIndex
@@ -22,6 +24,6 @@ final case class TableAttributes(
       uniqueIndex.merge(target.uniqueIndex, checkUnique)
     )
 
-  def toSqlSentenceSeq: Seq[String] =
-    primaryKey.toSqlSentence +: uniqueIndex.toSqlSentenceSeq
+  def toSqlSentenceView: View[String] =
+    Seq(primaryKey.toSqlSentence).view ++ uniqueIndex.toSqlSentenceView
 }

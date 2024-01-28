@@ -2,6 +2,8 @@ package domain.table.ddl.attribute
 
 import domain.table.ddl.column.ColumnName
 
+import scala.collection.View
+
 final case class UniqueIndex(
     private val value: Map[UniqueIndexName, Set[ColumnName]]
 ) extends AnyVal {
@@ -36,9 +38,10 @@ final case class UniqueIndex(
       }
     }
 
-  def toSqlSentenceSeq: Seq[String] = value.toSeq
+  def toSqlSentenceView: View[String] = value.toSeq
     .sortBy { case (columnName, _) => columnName.toSqlSentence }
     .map { case (_, columnList) =>
       s"UNIQUE INDEX (${columnList.map(_.toSqlSentence).mkString(", ")})"
     }
+    .view
 }
