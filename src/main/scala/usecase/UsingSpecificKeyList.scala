@@ -51,27 +51,42 @@ final case class UsingSpecificKeyList(
 
     def getGraphByVertex(
         graphVertex: GraphVertex
-    )(implicit ec: ExecutionContext): Future[Unit] = for {
-      inEdges <- edgeQuery.getInEdgeList(graphVertex)
-      needToTraverseInEdges = inEdges.filterNot(edgesSet.contains)
-      outVertices <- Future.sequence {
-        needToTraverseInEdges.map { edge => vertexQuery.getOutVertexList(edge) }
-      }
+    )(implicit ec: ExecutionContext): Future[Unit] = {
+      verticesSet += graphVertex
 
-      outEdges <- edgeQuery.getOutEdgeList(graphVertex)
-      needToTraverseOutEdges = outEdges.filterNot(edgesSet.contains)
-      inVertices <- Future.sequence {
-        needToTraverseOutEdges.map { edge => vertexQuery.getInVertexList(edge) }
-      }
+      for {
+        // inEdges
+        inEdges <- edgeQuery.getInEdgeList(graphVertex)
+        needToTraverseInEdges = inEdges.filterNot(edgesSet.contains)
+        _ = edgesSet ++= needToTraverseInEdges
 
-      needToTraverseVertices = (outVertices ++ inVertices).flatten
-        .filterNot(verticesSet.contains)
-    } yield {
-      verticesSet ++= needToTraverseVertices
-      edgesSet ++= needToTraverseInEdges
-      edgesSet ++= needToTraverseOutEdges
+        // outVertices
+        outVertices <- Future.sequence {
+          needToTraverseInEdges.map { vertexQuery.getOutVertexList }
+        }
+        needToTraverseOutVertices = outVertices.flatten
+          .filterNot(verticesSet.contains)
+        _ = verticesSet ++= needToTraverseOutVertices
 
-      Future.sequence { needToTraverseVertices.map(getGraphByVertex) }
+        // traverse outVertices
+        _ <- Future.sequence { needToTraverseOutVertices.map(getGraphByVertex) }
+
+        // outEdges
+        outEdges <- edgeQuery.getOutEdgeList(graphVertex)
+        needToTraverseOutEdges = outEdges.filterNot(edgesSet.contains)
+        _ = edgesSet ++= needToTraverseOutEdges
+
+        // inVertices
+        inVertices <- Future.sequence {
+          needToTraverseOutEdges.map { vertexQuery.getInVertexList }
+        }
+        needToTraverseInVertices = inVertices.flatten
+          .filterNot(verticesSet.contains)
+        _ = verticesSet ++= needToTraverseInVertices
+
+        // traverse inVertices
+        _ <- Future.sequence { needToTraverseInVertices.map(getGraphByVertex) }
+      } yield ()
     }
 
     Future
@@ -86,7 +101,8 @@ final case class UsingSpecificKeyList(
             keyValue.key,
             value
           )
-        } yield Future.sequence { vertices.map(getGraphByVertex) }
+          _ <- Future.sequence { vertices.map(getGraphByVertex) }
+        } yield ()
       }
       .flatMap { _ =>
         val vertices = verticesSet.view
