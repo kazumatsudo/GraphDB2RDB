@@ -46,47 +46,66 @@ final case class UsingSpecificKeyList(
     val vertexQuery = VertexQuery(g, config)
     val edgeQuery = EdgeQuery(g, config)
 
-    val verticesSet: mutable.Set[GraphVertex] = mutable.Set.empty
-    val edgesSet: mutable.Set[GraphEdge] = mutable.Set.empty
-
     def getGraphByVertex(
-        graphVertex: GraphVertex
-    )(implicit ec: ExecutionContext): Future[Unit] = {
-      verticesSet += graphVertex
+        graphVertex: GraphVertex,
+        verticesSet: Set[GraphVertex],
+        edgesSet: Set[GraphEdge]
+    )(implicit
+        ec: ExecutionContext
+    ): Future[(Set[GraphVertex], Set[GraphEdge])] = for {
+      // inEdges
+      inEdges <- edgeQuery.getInEdgeList(graphVertex)
+      needToTraverseInEdges = inEdges.filterNot(edgesSet.contains)
 
-      for {
-        // inEdges
-        inEdges <- edgeQuery.getInEdgeList(graphVertex)
-        needToTraverseInEdges = inEdges.filterNot(edgesSet.contains)
-        _ = edgesSet ++= needToTraverseInEdges
+      // outEdges
+      outEdges <- edgeQuery.getOutEdgeList(graphVertex)
+      needToTraverseOutEdges = outEdges.filterNot(edgesSet.contains)
 
-        // outVertices
-        outVertices <- Future.sequence {
-          needToTraverseInEdges.map { vertexQuery.getOutVertexList }
-        }
-        needToTraverseOutVertices = outVertices.flatten
-          .filterNot(verticesSet.contains)
-        _ = verticesSet ++= needToTraverseOutVertices
+      // add edges
+      addedEdges = edgesSet ++ needToTraverseInEdges ++ needToTraverseOutEdges
 
-        // traverse outVertices
-        _ <- Future.sequence { needToTraverseOutVertices.map(getGraphByVertex) }
+      // outVertices
+      outVertices <- Future.sequence {
+        needToTraverseInEdges.map { vertexQuery.getOutVertexList }
+      }
+      needToTraverseOutVertices = outVertices.flatten
+        .filterNot(verticesSet.contains)
 
-        // outEdges
-        outEdges <- edgeQuery.getOutEdgeList(graphVertex)
-        needToTraverseOutEdges = outEdges.filterNot(edgesSet.contains)
-        _ = edgesSet ++= needToTraverseOutEdges
+      // inVertices
+      inVertices <- Future.sequence {
+        needToTraverseOutEdges.map { vertexQuery.getInVertexList }
+      }
+      needToTraverseInVertices = inVertices.flatten
+        .filterNot(verticesSet.contains)
 
-        // inVertices
-        inVertices <- Future.sequence {
-          needToTraverseOutEdges.map { vertexQuery.getInVertexList }
-        }
-        needToTraverseInVertices = inVertices.flatten
-          .filterNot(verticesSet.contains)
-        _ = verticesSet ++= needToTraverseInVertices
+      // add vertices
+      addedVertices = verticesSet ++ outVertices.flatten ++ inVertices.flatten
 
-        // traverse inVertices
-        _ <- Future.sequence { needToTraverseInVertices.map(getGraphByVertex) }
-      } yield ()
+      // traverse outVertices
+      outVerticesResult <- Future.sequence {
+        needToTraverseOutVertices.map(
+          getGraphByVertex(_, addedVertices, addedEdges)
+        )
+      }
+      (outVerticesResultVertex, outVerticesResultEdges) =
+        outVerticesResult.unzip
+
+      // traverse inVertices
+      inVerticesResult <- Future.sequence {
+        needToTraverseInVertices.map(
+          getGraphByVertex(
+            _,
+            addedVertices ++ outVerticesResultVertex.flatten,
+            addedEdges ++ outVerticesResultEdges.flatten
+          )
+        )
+      }
+      (inVerticesResultVertex, inVerticesResultEdges) = inVerticesResult.unzip
+    } yield {
+      (
+        addedVertices ++ inVerticesResultVertex.flatten,
+        addedEdges ++ inVerticesResultEdges.flatten
+      )
     }
 
     Future
@@ -101,12 +120,15 @@ final case class UsingSpecificKeyList(
             keyValue.key,
             value
           )
-          _ <- Future.sequence { vertices.map(getGraphByVertex) }
-        } yield ()
+          result <- Future.sequence {
+            vertices.map(getGraphByVertex(_, Set.empty, Set.empty))
+          }
+        } yield result
       }
-      .flatMap { _ =>
-        val vertices = verticesSet.view
-        val edges = edgesSet.view
+      .flatMap { result =>
+        val (verticesSet, edgesSet) = result.flatten.unzip
+        val vertices = verticesSet.flatten
+        val edges = edgesSet.flatten
 
         for {
           vertexTableList <- toDdl(vertices, checkUnique)
