@@ -3,7 +3,7 @@ import org.scalatest.funspec.AsyncFunSpec
 import org.scalatest.matchers.should.Matchers
 import slick.jdbc.H2Profile.api._
 import slick.jdbc.JdbcBackend.Database
-import usecase.{ByExhaustiveSearch, UsecaseBase}
+import usecase.{ByExhaustiveSearch, UsecaseBase, UsingSpecificKeyList}
 import utils.Config
 
 class MainSpec extends AsyncFunSpec with Matchers {
@@ -71,7 +71,7 @@ class MainSpec extends AsyncFunSpec with Matchers {
 
   describe("enable to execute in") {
     val config = Config.default
-    val (g, _) =
+    val (g, request) =
       GenerateTestData.generate(TinkerGraph.open().traversal(), 100, 5, 5)
 
     describe("H2") {
@@ -80,13 +80,13 @@ class MainSpec extends AsyncFunSpec with Matchers {
       }
 
       // TODO: https://github.com/kazumatsudo/GraphDB2RDB/issues/73
-//      it("UsingSpecificKeyList") {
-//        assert(
-//          DatabaseTypeH2,
-//          databaseH2,
-//          UsingSpecificKeyList(g, config, request)
-//        )
-//      }
+      it("UsingSpecificKeyList") {
+        assert(
+          DatabaseTypeH2,
+          databaseH2,
+          UsingSpecificKeyList(g, config, request)
+        )
+      }
     }
 
     describe("MySQL") {
@@ -95,13 +95,13 @@ class MainSpec extends AsyncFunSpec with Matchers {
       }
 
       // TODO: https://github.com/kazumatsudo/GraphDB2RDB/issues/73
-//      it("UsingSpecificKeyList") {
-//        assert(
-//          DatabaseTypeMysql,
-//          databaseMysql,
-//          UsingSpecificKeyList(g, config, request)
-//        )
-//      }
+      it("UsingSpecificKeyList") {
+        assert(
+          DatabaseTypeMysql,
+          databaseMysql,
+          UsingSpecificKeyList(g, config, request)
+        )
+      }
     }
   }
 }

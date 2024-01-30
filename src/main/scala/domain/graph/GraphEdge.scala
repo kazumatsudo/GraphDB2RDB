@@ -32,7 +32,7 @@ case class GraphEdge(private val value: Edge, private val config: Config)
   private val columnNameEdgeInVId = config.columnName.edgeInVId
   private val columnNameEdgeOutVId = config.columnName.edgeOutVId
 
-  private val id = value.id()
+  val id: AnyRef = value.id()
 
   /** convert to Database Table Information
     *
