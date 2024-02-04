@@ -4,7 +4,7 @@ import domain.table.ddl.column.ColumnList
 
 import scala.collection.View
 
-case class TableList(
+final case class TableList(
     private val value: Map[TableName, (ColumnList, TableAttributes)]
 ) extends AnyVal {
 

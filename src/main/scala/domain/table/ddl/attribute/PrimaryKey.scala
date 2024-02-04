@@ -2,7 +2,7 @@ package domain.table.ddl.attribute
 
 import domain.table.ddl.column.ColumnName
 
-case class PrimaryKey(private val value: Set[ColumnName]) extends AnyVal {
+final case class PrimaryKey(private val value: Set[ColumnName]) extends AnyVal {
 
   /** merges PrimaryKey in two primary key list into one
     *

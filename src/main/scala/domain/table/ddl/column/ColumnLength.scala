@@ -1,6 +1,6 @@
 package domain.table.ddl.column
 
-case class ColumnLength(private val value: Int) extends AnyVal {
+final case class ColumnLength(private val value: Int) extends AnyVal {
 
   private def thresholdText = math.pow(2, 16) - 1 // 65,535
 
