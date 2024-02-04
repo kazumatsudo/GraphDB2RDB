@@ -1,14 +1,13 @@
 package infrastructure
 
 import com.typesafe.scalalogging.StrictLogging
-import domain.graph.GraphVertex
+import domain.graph.{GraphEdge, GraphVertex}
 import gremlin.scala.{GremlinScala, Key}
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource
 import utils.Config
 
 import scala.collection.SeqView
 import scala.concurrent.{ExecutionContext, Future}
-import scala.util.control.NonFatal
 
 final case class VertexQuery(
     private val g: GraphTraversalSource,
@@ -22,6 +21,23 @@ final case class VertexQuery(
     */
   def countAll()(implicit ec: ExecutionContext): Future[Long] = Future {
     GremlinScala(g.V()).count().head().longValue()
+  }
+
+  /** get in Vertices List
+    *
+    * @param edge
+    *   target Edge
+    * @return
+    *   A list of Vertex
+    */
+  def getInVertexList(
+      edge: GraphEdge
+  )(implicit ec: ExecutionContext): Future[SeqView[GraphVertex]] = Future {
+    GremlinScala(g.E(edge.id))
+      .inV()
+      .toList()
+      .view
+      .map(GraphVertex(_, config))
   }
 
   /** get Vertices List
@@ -67,6 +83,23 @@ final case class VertexQuery(
 
     GremlinScala(g.V())
       .has(label, Key[Any](key), value)
+      .toList()
+      .view
+      .map(GraphVertex(_, config))
+  }
+
+  /** get out Vertices List
+    *
+    * @param edge
+    *   target Edge
+    * @return
+    *   A list of Vertex
+    */
+  def getOutVertexList(
+      edge: GraphEdge
+  )(implicit ec: ExecutionContext): Future[SeqView[GraphVertex]] = Future {
+    GremlinScala(g.E(edge.id))
+      .outV()
       .toList()
       .view
       .map(GraphVertex(_, config))
