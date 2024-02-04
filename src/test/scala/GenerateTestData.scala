@@ -11,6 +11,7 @@ import usecase.{
 import utils.{Config, FileUtility, JsonUtility}
 
 import java.util.UUID
+import scala.annotation.tailrec
 import scala.io.StdIn
 import scala.util.control.NonFatal
 import scala.util.{Random, Using}
@@ -353,7 +354,6 @@ object GenerateTestData extends StrictLogging {
 
   /** @param args
     */
-  @SuppressWarnings(Array("org.wartremover.warts.While"))
   def main(args: Array[String]): Unit = {
     val grapdbConnection = config.graphDb.remoteGraphProperties
 
@@ -362,21 +362,22 @@ object GenerateTestData extends StrictLogging {
       logger.warn(s"Check the config file of the connection.")
       logger.warn(s"config file: $grapdbConnection")
 
-      var input = ""
-      while (input.trim.isEmpty) {
+      @tailrec
+      def checkInput(): Unit = {
         logger.info("Enter [y/n]: ")
 
-        input = StdIn.readLine().trim
-        input match {
-          case "y" =>
+        StdIn.readLine().trim match {
+          case "y" => ()
           case "n" =>
             logger.info("suspend the process.")
             sys.exit(1)
           case invalidInput =>
             logger.warn(s"invalid Input: $invalidInput")
-            input = ""
+            checkInput()
         }
       }
+
+      checkInput()
     }
 
     Using(
