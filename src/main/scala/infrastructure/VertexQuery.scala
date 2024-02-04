@@ -8,7 +8,6 @@ import utils.Config
 
 import scala.collection.SeqView
 import scala.concurrent.{ExecutionContext, Future}
-import scala.util.control.NonFatal
 
 final case class VertexQuery(
     private val g: GraphTraversalSource,
@@ -84,6 +83,23 @@ final case class VertexQuery(
 
     GremlinScala(g.V())
       .has(label, Key[Any](key), value)
+      .toList()
+      .view
+      .map(GraphVertex(_, config))
+  }
+
+  /** get out Vertices List
+    *
+    * @param edge
+    *   target Edge
+    * @return
+    *   A list of Vertex
+    */
+  def getOutVertexList(
+      edge: GraphEdge
+  )(implicit ec: ExecutionContext): Future[SeqView[GraphVertex]] = Future {
+    GremlinScala(g.E(edge.id))
+      .outV()
       .toList()
       .view
       .map(GraphVertex(_, config))

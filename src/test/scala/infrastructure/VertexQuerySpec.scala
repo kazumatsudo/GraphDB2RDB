@@ -96,7 +96,25 @@ class VertexQuerySpec extends AsyncFunSpec with Matchers {
             GraphVertex(GremlinScala(graph.V()).head(), config)
           )
         }
+    }
+  }
 
+  describe("getOutVertexList") {
+    it("get outV list") {
+      val graph = TinkerFactory.createModern().traversal()
+      val vertexQuery = VertexQuery(graph, config)
+      vertexQuery
+        .getOutVertexList(
+          GraphEdge(GremlinScala(graph.E()).toList().headOption.get, config)
+        )
+        .map {
+          _.toSeq shouldBe Seq(
+            GremlinScala(graph.V())
+              .toList()
+              .headOption
+              .map(GraphVertex(_, config))
+          ).flatten
+        }
     }
   }
 }
