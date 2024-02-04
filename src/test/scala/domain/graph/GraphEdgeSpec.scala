@@ -33,38 +33,40 @@ class GraphEdgeSpec extends AsyncFunSpec with Matchers {
       val edge = edgeQuery.getList(0, 1)
 
       edge.map {
-        _.head.toDdl shouldBe TableList(
-          Map(
-            TableName("edge_knows_from_person_to_person") -> (ColumnList(
-              Map[ColumnName, ColumnType](
-                ColumnName("id") -> ColumnTypeInt(ColumnLength(1)),
-                ColumnName("id_in_v") -> ColumnTypeInt(ColumnLength(1)),
-                ColumnName("id_out_v") -> ColumnTypeInt(ColumnLength(1)),
-                ColumnName("property_weight") -> ColumnTypeDouble(
-                  ColumnLength(3)
-                )
-              )
-            ), TableAttributes(
-              PrimaryKey(Set(ColumnName("id"))),
-              ForeignKey(
-                Map(
-                  ColumnName("id_in_v") -> (TableName(
-                    "vertex_person"
-                  ), ColumnName("id")),
-                  ColumnName("id_out_v") -> (TableName(
-                    "vertex_person"
-                  ), ColumnName("id"))
-                )
-              ),
-              UniqueIndex(
-                Map(
-                  UniqueIndexName("index_id_in_v_id_out_v") -> Set(
-                    ColumnName("id_in_v"),
-                    ColumnName("id_out_v")
+        _.headOption.map(_.toDdl) shouldBe Some(
+          TableList(
+            Map(
+              TableName("edge_knows_from_person_to_person") -> (ColumnList(
+                Map[ColumnName, ColumnType](
+                  ColumnName("id") -> ColumnTypeInt(ColumnLength(1)),
+                  ColumnName("id_in_v") -> ColumnTypeInt(ColumnLength(1)),
+                  ColumnName("id_out_v") -> ColumnTypeInt(ColumnLength(1)),
+                  ColumnName("property_weight") -> ColumnTypeDouble(
+                    ColumnLength(3)
                   )
                 )
-              )
-            ))
+              ), TableAttributes(
+                PrimaryKey(Set(ColumnName("id"))),
+                ForeignKey(
+                  Map(
+                    ColumnName("id_in_v") -> (TableName(
+                      "vertex_person"
+                    ), ColumnName("id")),
+                    ColumnName("id_out_v") -> (TableName(
+                      "vertex_person"
+                    ), ColumnName("id"))
+                  )
+                ),
+                UniqueIndex(
+                  Map(
+                    UniqueIndexName("index_id_in_v_id_out_v") -> Set(
+                      ColumnName("id_in_v"),
+                      ColumnName("id_out_v")
+                    )
+                  )
+                )
+              ))
+            )
           )
         )
       }
@@ -78,16 +80,18 @@ class GraphEdgeSpec extends AsyncFunSpec with Matchers {
       val edge = edgeQuery.getList(0, 1)
 
       edge.map {
-        _.head.toDml shouldBe RecordList(
-          Map(
-            RecordKey(
-              (TableName("edge_knows_from_person_to_person"), RecordId(7))
-            ) -> RecordValue(
-              Map(
-                "id" -> 7,
-                "id_in_v" -> 2,
-                "id_out_v" -> 1,
-                "property_weight" -> 0.5
+        _.headOption.map(_.toDml) shouldBe Some(
+          RecordList(
+            Map(
+              RecordKey(
+                (TableName("edge_knows_from_person_to_person"), RecordId(7))
+              ) -> RecordValue(
+                Map(
+                  "id" -> 7,
+                  "id_in_v" -> 2,
+                  "id_out_v" -> 1,
+                  "property_weight" -> 0.5
+                )
               )
             )
           )

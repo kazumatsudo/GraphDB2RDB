@@ -27,21 +27,23 @@ class GraphVertexSpec extends AsyncFunSpec with Matchers {
       val vertex = vertexQuery.getList(0, 1)
 
       vertex.map {
-        _.head.toDdl shouldBe TableList(
-          Map(
-            TableName("vertex_person") -> (ColumnList(
-              Map[ColumnName, ColumnType](
-                ColumnName("id") -> ColumnTypeInt(ColumnLength(1)),
-                ColumnName("property_name") -> ColumnTypeString(
-                  ColumnLength(5)
-                ),
-                ColumnName("property_age") -> ColumnTypeInt(ColumnLength(2))
-              )
-            ), TableAttributes(
-              PrimaryKey(Set(ColumnName("id"))),
-              ForeignKey(Map()),
-              UniqueIndex(Map())
-            ))
+        _.headOption.map(_.toDdl) shouldBe Some(
+          TableList(
+            Map(
+              TableName("vertex_person") -> (ColumnList(
+                Map[ColumnName, ColumnType](
+                  ColumnName("id") -> ColumnTypeInt(ColumnLength(1)),
+                  ColumnName("property_name") -> ColumnTypeString(
+                    ColumnLength(5)
+                  ),
+                  ColumnName("property_age") -> ColumnTypeInt(ColumnLength(2))
+                )
+              ), TableAttributes(
+                PrimaryKey(Set(ColumnName("id"))),
+                ForeignKey(Map()),
+                UniqueIndex(Map())
+              ))
+            )
           )
         )
       }
@@ -55,13 +57,17 @@ class GraphVertexSpec extends AsyncFunSpec with Matchers {
       val vertex = vertexQuery.getList(0, 1)
 
       vertex.map {
-        _.head.toDml shouldBe RecordList(
-          Map(
-            RecordKey((TableName("vertex_person"), RecordId(1))) -> RecordValue(
-              Map(
-                "id" -> 1,
-                "property_name" -> "marko",
-                "property_age" -> 29
+        _.headOption.map(_.toDml) shouldBe Some(
+          RecordList(
+            Map(
+              RecordKey(
+                (TableName("vertex_person"), RecordId(1))
+              ) -> RecordValue(
+                Map(
+                  "id" -> 1,
+                  "property_name" -> "marko",
+                  "property_age" -> 29
+                )
               )
             )
           )
