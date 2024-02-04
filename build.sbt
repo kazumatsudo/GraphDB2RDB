@@ -21,7 +21,6 @@ wartremoverErrors ++= Warts.allBut(
   Wart.Overloading,
   Wart.PlatformDefault,
   Wart.Product,
-  Wart.Serializable,
   Wart.StringPlusAny,
   Wart.Throw
 )

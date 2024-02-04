@@ -72,7 +72,7 @@ case object ColumnTypeUnknown extends ColumnType {
 object ColumnType {
 
   def apply(value: Any): ColumnType = {
-    RecordValue.to(
+    RecordValue.to[ColumnType](
       value = value,
       callbackBoolean = _ => ColumnTypeBoolean,
       callbackByte =

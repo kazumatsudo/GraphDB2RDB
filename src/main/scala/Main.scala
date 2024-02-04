@@ -1,7 +1,7 @@
 import com.typesafe.scalalogging.StrictLogging
 import org.apache.tinkerpop.gremlin.process.traversal.AnonymousTraversalSource.traversal
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource
-import usecase.{ByExhaustiveSearch, UsingSpecificKeyList}
+import usecase.{ByExhaustiveSearch, UsecaseBase, UsingSpecificKeyList}
 import utils.{Config, FileUtility, JsonUtility}
 
 import java.util.concurrent.Executors.newFixedThreadPool
@@ -31,7 +31,7 @@ object Main extends StrictLogging {
     sealed trait UsecaseCommand
     final case class UsecaseCommandByExhausiveSearch() extends UsecaseCommand
     final case class UsecaseCommandUsingSpecificKeyList() extends UsecaseCommand
-    val usecaseCommand = config.analysysMethod.value match {
+    val usecaseCommand: UsecaseCommand = config.analysysMethod.value match {
       case "by_exhaustive_search"    => UsecaseCommandByExhausiveSearch()
       case "using_specific_key_list" => UsecaseCommandUsingSpecificKeyList()
       case value =>
@@ -39,7 +39,7 @@ object Main extends StrictLogging {
           s"analysis method must be by_exhaustive_search or using_specific_key_list. current analysis method: $value"
         )
     }
-    val usecase = usecaseCommand match {
+    val usecase: UsecaseBase = usecaseCommand match {
       case UsecaseCommandByExhausiveSearch() => ByExhaustiveSearch(g, config)
       case UsecaseCommandUsingSpecificKeyList() =>
         {

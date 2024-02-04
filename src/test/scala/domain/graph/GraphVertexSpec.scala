@@ -5,6 +5,7 @@ import domain.table.ddl.column.{
   ColumnLength,
   ColumnList,
   ColumnName,
+  ColumnType,
   ColumnTypeInt,
   ColumnTypeString
 }
@@ -29,7 +30,7 @@ class GraphVertexSpec extends AsyncFunSpec with Matchers {
         _.head.toDdl shouldBe TableList(
           Map(
             TableName("vertex_person") -> (ColumnList(
-              Map(
+              Map[ColumnName, ColumnType](
                 ColumnName("id") -> ColumnTypeInt(ColumnLength(1)),
                 ColumnName("property_name") -> ColumnTypeString(
                   ColumnLength(5)

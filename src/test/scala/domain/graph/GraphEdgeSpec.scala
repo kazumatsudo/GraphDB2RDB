@@ -10,6 +10,7 @@ import domain.table.ddl.column.{
   ColumnLength,
   ColumnList,
   ColumnName,
+  ColumnType,
   ColumnTypeDouble,
   ColumnTypeInt
 }
@@ -35,7 +36,7 @@ class GraphEdgeSpec extends AsyncFunSpec with Matchers {
         _.head.toDdl shouldBe TableList(
           Map(
             TableName("edge_knows_from_person_to_person") -> (ColumnList(
-              Map(
+              Map[ColumnName, ColumnType](
                 ColumnName("id") -> ColumnTypeInt(ColumnLength(1)),
                 ColumnName("id_in_v") -> ColumnTypeInt(ColumnLength(1)),
                 ColumnName("id_out_v") -> ColumnTypeInt(ColumnLength(1)),

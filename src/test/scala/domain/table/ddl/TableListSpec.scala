@@ -27,7 +27,7 @@ class TableListSpec extends AsyncFunSpec with Matchers {
       } yield result shouldBe TableList(
         Map(
           TableName("vertex_person") -> (ColumnList(
-            Map(
+            Map[ColumnName, ColumnType](
               ColumnName("id") -> ColumnTypeInt(ColumnLength(1)),
               ColumnName("property_name") -> ColumnTypeString(ColumnLength(5)),
               ColumnName("property_age") -> ColumnTypeInt(ColumnLength(2))
@@ -38,7 +38,7 @@ class TableListSpec extends AsyncFunSpec with Matchers {
             UniqueIndex(Map())
           )),
           TableName("vertex_software") -> (ColumnList(
-            Map(
+            Map[ColumnName, ColumnType](
               ColumnName("id") -> ColumnTypeInt(ColumnLength(1)),
               ColumnName("property_name") -> ColumnTypeString(ColumnLength(6)),
               ColumnName("property_lang") -> ColumnTypeString(ColumnLength(4))
@@ -70,7 +70,7 @@ class TableListSpec extends AsyncFunSpec with Matchers {
       } yield result shouldBe TableList(
         Map(
           TableName("vertex_person") -> (ColumnList(
-            Map(
+            Map[ColumnName, ColumnType](
               ColumnName("id") -> ColumnTypeInt(ColumnLength(1)),
               ColumnName("property_name") -> ColumnTypeString(ColumnLength(5)),
               ColumnName("property_age") -> ColumnTypeInt(ColumnLength(2))
@@ -81,7 +81,7 @@ class TableListSpec extends AsyncFunSpec with Matchers {
             UniqueIndex(Map())
           )),
           TableName("vertex_software") -> (ColumnList(
-            Map(
+            Map[ColumnName, ColumnType](
               ColumnName("id") -> ColumnTypeInt(ColumnLength(1)),
               ColumnName("property_name") -> ColumnTypeString(ColumnLength(6)),
               ColumnName("property_lang") -> ColumnTypeString(ColumnLength(4))
