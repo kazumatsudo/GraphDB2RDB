@@ -35,7 +35,7 @@ class MainSpec extends AsyncFunSpec with Matchers {
         } yield result
     }
 
-  private def assert(
+  private def testWithInitialize(
       databaseType: DatabaseType,
       database: Database,
       usecase: UsecaseBase
@@ -76,12 +76,16 @@ class MainSpec extends AsyncFunSpec with Matchers {
 
     describe("H2") {
       it("ByExhaustiveSearch") {
-        assert(DatabaseTypeH2, databaseH2, ByExhaustiveSearch(g, config))
+        testWithInitialize(
+          DatabaseTypeH2,
+          databaseH2,
+          ByExhaustiveSearch(g, config)
+        )
       }
 
       // TODO: https://github.com/kazumatsudo/GraphDB2RDB/issues/73
 //      it("UsingSpecificKeyList") {
-//        assert(
+//        testWithInitialize(
 //          DatabaseTypeH2,
 //          databaseH2,
 //          UsingSpecificKeyList(g, config, request)
@@ -91,12 +95,16 @@ class MainSpec extends AsyncFunSpec with Matchers {
 
     describe("MySQL") {
       it("ByExhaustiveSearch") {
-        assert(DatabaseTypeMysql, databaseMysql, ByExhaustiveSearch(g, config))
+        testWithInitialize(
+          DatabaseTypeMysql,
+          databaseMysql,
+          ByExhaustiveSearch(g, config)
+        )
       }
 
       // TODO: https://github.com/kazumatsudo/GraphDB2RDB/issues/73
 //      it("UsingSpecificKeyList") {
-//        assert(
+//        testWithInitialize(
 //          DatabaseTypeMysql,
 //          databaseMysql,
 //          UsingSpecificKeyList(g, config, request)
