@@ -5,7 +5,7 @@ import infrastructure.{EdgeQuery, VertexQuery}
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource
 import utils.Config
 
-import scala.collection.mutable
+import scala.collection.{SeqView, mutable}
 import scala.concurrent.{ExecutionContext, Future}
 
 final case class UsingSpecificKeyListRequestKey(
@@ -48,70 +48,65 @@ final case class UsingSpecificKeyList(
 
     @SuppressWarnings(Array("org.wartremover.warts.MutableDataStructures"))
     val verticesSet = mutable.Set.empty[GraphVertex]
+
+    def getAndStoreVertex(
+        edge: GraphEdge,
+        traverse: GraphEdge => Future[SeqView[GraphVertex]]
+    ) = for {
+      vertex <- traverse(edge)
+    } yield synchronized {
+      val needToTraverseVertices =
+        vertex.filterNot(verticesSet.contains).toIndexedSeq
+      verticesSet ++= needToTraverseVertices
+
+      needToTraverseVertices
+    }
+
     @SuppressWarnings(Array("org.wartremover.warts.MutableDataStructures"))
     val edgesSet = mutable.Set.empty[GraphEdge]
 
-    def getEdges(graphVertex: GraphVertex) = for {
-      // inEdges
-      inEdges <- edgeQuery.getInEdgeList(graphVertex)
-      needToTraverseInEdges = inEdges.filterNot(edgesSet.contains).toIndexedSeq
-
-      // outEdges
-      outEdges <- edgeQuery.getOutEdgeList(graphVertex)
-      needToTraverseOutEdges = outEdges
-        .filterNot(edgesSet.contains)
-        .toIndexedSeq
-    } yield {
-      edgesSet ++= needToTraverseInEdges
-      edgesSet ++= needToTraverseOutEdges
-
-      (needToTraverseInEdges, needToTraverseOutEdges)
-    }
-
-    def getVertices(
-        inEdges: IndexedSeq[GraphEdge],
-        outEdges: IndexedSeq[GraphEdge]
+    def getAndStoreEdge(
+        vertex: GraphVertex,
+        traverse: GraphVertex => Future[SeqView[GraphEdge]]
     ) = for {
-      // outVertices
-      outVertices <- Future.sequence {
-        inEdges.map {
-          vertexQuery.getOutVertexList
-        }
-      }
-      needToTraverseOutVertices = outVertices.flatten
-        .filterNot(verticesSet.contains)
+      edges <- traverse(vertex)
+    } yield synchronized {
+      val needToTraverseEdges = edges.filterNot(edgesSet.contains).toIndexedSeq
+      edgesSet ++= needToTraverseEdges
 
-      // inVertices
-      inVertices <- Future.sequence {
-        outEdges.map {
-          vertexQuery.getInVertexList
-        }
-      }
-      needToTraverseInVertices = inVertices.flatten
-        .filterNot(verticesSet.contains)
-    } yield {
-      verticesSet ++= needToTraverseInVertices
-      verticesSet ++= needToTraverseOutVertices
-
-      (needToTraverseInVertices, needToTraverseOutVertices)
+      needToTraverseEdges
     }
+
+    def getAndStoreVertices(edge: GraphEdge) = for {
+      inVertices <- getAndStoreVertex(edge, vertexQuery.getInVertexList)
+      outVertices <- getAndStoreVertex(edge, vertexQuery.getOutVertexList)
+    } yield (inVertices, outVertices)
+
+    def getAndStoreEdges(vertex: GraphVertex) = for {
+      inEdges <- getAndStoreEdge(vertex, edgeQuery.getInEdgeList)
+      outEdges <- getAndStoreEdge(vertex, edgeQuery.getOutEdgeList)
+    } yield (inEdges, outEdges)
 
     def getGraphByVertex(graphVertex: GraphVertex)(implicit
         ec: ExecutionContext
     ): Future[Boolean] = {
       for {
         // add edges if need
-        (needToTraverseInEdges, needToTraverseOutEdges) <- getEdges(graphVertex)
+        (needToTraverseInEdges, needToTraverseOutEdges) <-
+          getAndStoreEdges(graphVertex)
         needToTraverseEdges = needToTraverseInEdges ++ needToTraverseOutEdges
         result <-
           if (needToTraverseEdges.isEmpty) {
             Future.successful(true)
           } else {
             for {
-              (needToTraverseInVertices, needToTraverseOutVertices) <-
-                getVertices(needToTraverseInEdges, needToTraverseOutEdges)
+              vertices <- Future.sequence(
+                needToTraverseEdges.map { edge => getAndStoreVertices(edge) }
+              )
+              (needToTraverseInVertices, needToTraverseOutVertices) =
+                vertices.unzip
               needToTraverseVertices =
-                needToTraverseInVertices ++ needToTraverseOutVertices
+                (needToTraverseInVertices ++ needToTraverseOutVertices).flatten
               result <-
                 if (needToTraverseVertices.isEmpty) {
                   Future.successful(true)
