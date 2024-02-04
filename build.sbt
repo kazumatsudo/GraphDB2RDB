@@ -14,6 +14,7 @@ wartremoverErrors ++= Warts.allBut(
   Wart.Nothing,
   Wart.OptionPartial,
   Wart.PlatformDefault,
+  Wart.Recursion,
   Wart.StringPlusAny,
   Wart.Throw
 )
