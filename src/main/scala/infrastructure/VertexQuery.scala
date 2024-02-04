@@ -1,7 +1,7 @@
 package infrastructure
 
 import com.typesafe.scalalogging.StrictLogging
-import domain.graph.GraphVertex
+import domain.graph.{GraphEdge, GraphVertex}
 import gremlin.scala.{GremlinScala, Key}
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource
 import utils.Config
@@ -22,6 +22,23 @@ final case class VertexQuery(
     */
   def countAll()(implicit ec: ExecutionContext): Future[Long] = Future {
     GremlinScala(g.V()).count().head().longValue()
+  }
+
+  /** get in Vertices List
+    *
+    * @param edge
+    *   target Edge
+    * @return
+    *   A list of Vertex
+    */
+  def getInVertexList(
+      edge: GraphEdge
+  )(implicit ec: ExecutionContext): Future[SeqView[GraphVertex]] = Future {
+    GremlinScala(g.E(edge.id))
+      .inV()
+      .toList()
+      .view
+      .map(GraphVertex(_, config))
   }
 
   /** get Vertices List

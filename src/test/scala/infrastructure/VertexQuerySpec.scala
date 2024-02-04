@@ -1,6 +1,6 @@
 package infrastructure
 
-import domain.graph.GraphVertex
+import domain.graph.{GraphEdge, GraphVertex}
 import gremlin.scala.GremlinScala
 import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerFactory
 import org.scalatest.funspec.AsyncFunSpec
@@ -15,6 +15,25 @@ class VertexQuerySpec extends AsyncFunSpec with Matchers {
       val graph = TinkerFactory.createModern().traversal()
       val vertexQuery = VertexQuery(graph, config)
       vertexQuery.countAll.map { _ shouldBe 6 }
+    }
+  }
+
+  describe("getInVertexList") {
+    it("get inV list") {
+      val graph = TinkerFactory.createModern().traversal()
+      val vertexQuery = VertexQuery(graph, config)
+      vertexQuery
+        .getInVertexList(
+          GraphEdge(GremlinScala(graph.E()).toList().headOption.get, config)
+        )
+        .map {
+          _.toSeq shouldBe Seq(
+            GremlinScala(graph.V())
+              .toList()
+              .lift(1)
+              .map(GraphVertex(_, config))
+          ).flatten
+        }
     }
   }
 
