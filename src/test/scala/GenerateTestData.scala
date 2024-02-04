@@ -267,10 +267,10 @@ object GenerateTestData extends StrictLogging {
       val belongsVertexOption = person.value[Int]("age") match {
         case age if 6 <= age && age <= 18 =>
           val randomIndex = Random.nextInt(verticesSchool.length)
-          Some(verticesSchool(randomIndex))
+          verticesSchool.lift(randomIndex)
         case age if 18 < age && age <= 60 =>
           val randomIndex = Random.nextInt(verticesCompany.length)
-          Some(verticesCompany(randomIndex))
+          verticesCompany.lift(randomIndex)
         case _ => None
       }
       belongsVertexOption.map(connectEdgeBelongTo(g, person, _))

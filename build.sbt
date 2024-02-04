@@ -23,7 +23,6 @@ wartremoverErrors ++= Warts.allBut(
   Wart.Product,
   Wart.Serializable,
   Wart.StringPlusAny,
-  Wart.SeqApply,
   Wart.Throw
 )
 
