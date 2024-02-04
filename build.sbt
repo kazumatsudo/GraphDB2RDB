@@ -8,7 +8,6 @@ ThisBuild / javacOptions ++= Seq("-source", "11", "-target", "11")
 wartremoverErrors ++= Warts.allBut(
   Wart.Any,
   Wart.AnyVal,
-  Wart.AutoUnboxing,
   Wart.Equals,
   Wart.ImplicitParameter,
   Wart.NonUnitStatements,

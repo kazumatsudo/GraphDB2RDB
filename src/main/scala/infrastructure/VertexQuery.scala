@@ -21,7 +21,7 @@ final case class VertexQuery(
     *   the number of all vertices
     */
   def countAll()(implicit ec: ExecutionContext): Future[Long] = Future {
-    GremlinScala(g.V()).count().head()
+    GremlinScala(g.V()).count().head().longValue()
   }
 
   /** get Vertices List
