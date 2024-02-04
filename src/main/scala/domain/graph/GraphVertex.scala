@@ -7,8 +7,10 @@ import domain.table.dml.{RecordId, RecordKey, RecordList, RecordValue}
 import gremlin.scala._
 import utils.Config
 
-case class GraphVertex(private val value: Vertex, private val config: Config)
-    extends GraphElement {
+final case class GraphVertex(
+    private val value: Vertex,
+    private val config: Config
+) extends GraphElement {
 
   private val tableName = TableName(
     s"${config.tableName.vertex}_${value.label()}"

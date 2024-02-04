@@ -15,29 +15,32 @@ case object ColumnTypeBoolean extends ColumnType {
   override def toSqlSentence: String = "BOOLEAN"
 }
 
-case class ColumnTypeByte(private val length: ColumnLength) extends ColumnType {
+final case class ColumnTypeByte(private val length: ColumnLength)
+    extends ColumnType {
   override def toSqlSentence: String = s"TINYINT"
 }
 
-case class ColumnTypeShort(private val length: ColumnLength)
+final case class ColumnTypeShort(private val length: ColumnLength)
     extends ColumnType {
   override def toSqlSentence: String = s"SMALLINT"
 }
 
-case class ColumnTypeInt(private val length: ColumnLength) extends ColumnType {
+final case class ColumnTypeInt(private val length: ColumnLength)
+    extends ColumnType {
   override def toSqlSentence: String = s"INT"
 }
 
-case class ColumnTypeLong(private val length: ColumnLength) extends ColumnType {
+final case class ColumnTypeLong(private val length: ColumnLength)
+    extends ColumnType {
   override def toSqlSentence: String = s"INT"
 }
 
-case class ColumnTypeFloat(private val length: ColumnLength)
+final case class ColumnTypeFloat(private val length: ColumnLength)
     extends ColumnType {
   override def toSqlSentence: String = s"FLOAT"
 }
 
-case class ColumnTypeDouble(private val length: ColumnLength)
+final case class ColumnTypeDouble(private val length: ColumnLength)
     extends ColumnType {
   override def toSqlSentence: String = s"DOUBLE"
 }
@@ -47,16 +50,17 @@ case object ColumnTypeUUID extends ColumnType {
   override def toSqlSentence: String = s"CHAR(${length.toSqlSentence})"
 }
 
-case class ColumnTypeDate(private val length: ColumnLength) extends ColumnType {
+final case class ColumnTypeDate(private val length: ColumnLength)
+    extends ColumnType {
   override def toSqlSentence: String = s"DATETIME"
 }
 
-case class ColumnTypeCharacter(private val length: ColumnLength)
+final case class ColumnTypeCharacter(private val length: ColumnLength)
     extends ColumnType {
   override def toSqlSentence: String = s"CHAR(${length.toSqlSentence})"
 }
 
-case class ColumnTypeString(private val length: ColumnLength)
+final case class ColumnTypeString(private val length: ColumnLength)
     extends ColumnType {
   override def toSqlSentence: String = if (length.needToUseMediumText) {
     s"MEDIUMTEXT"
@@ -72,7 +76,7 @@ case object ColumnTypeUnknown extends ColumnType {
 object ColumnType {
 
   def apply(value: Any): ColumnType = {
-    RecordValue.to(
+    RecordValue.to[ColumnType](
       value = value,
       callbackBoolean = _ => ColumnTypeBoolean,
       callbackByte =

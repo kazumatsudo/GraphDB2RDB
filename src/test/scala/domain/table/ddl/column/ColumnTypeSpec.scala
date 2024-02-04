@@ -58,7 +58,7 @@ class ColumnTypeSpec extends AnyFunSpec with Matchers {
       val relationIdentifier =
         new RelationIdentifier(new Object(), 1, 1, new Object())
       ColumnType.apply(relationIdentifier) shouldBe ColumnTypeString(
-        ColumnLength(57)
+        ColumnLength(relationIdentifier.toString.length)
       )
 
       // the other
@@ -745,7 +745,9 @@ class ColumnTypeSpec extends AnyFunSpec with Matchers {
       // RelationalIdentifier
       val relationIdentifier =
         new RelationIdentifier(new Object(), 1, 1, new Object())
-      ColumnType.apply(relationIdentifier).toSqlSentence shouldBe "VARCHAR(57)"
+      ColumnType
+        .apply(relationIdentifier)
+        .toSqlSentence shouldBe s"VARCHAR(${relationIdentifier.toString.length})"
 
       // the others
       ColumnType.apply(Seq.empty).toSqlSentence shouldBe "TEXT"

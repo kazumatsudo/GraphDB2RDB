@@ -10,6 +10,7 @@ import domain.table.ddl.column.{
   ColumnLength,
   ColumnList,
   ColumnName,
+  ColumnType,
   ColumnTypeDouble,
   ColumnTypeInt,
   ColumnTypeString
@@ -45,7 +46,7 @@ class UsingSpecificKeyListSpec extends AsyncFunSpec with Matchers {
           TableList(
             Map(
               TableName("vertex_software") -> (ColumnList(
-                Map(
+                Map[ColumnName, ColumnType](
                   ColumnName("id") -> ColumnTypeInt(ColumnLength(1)),
                   ColumnName("property_name") -> ColumnTypeString(
                     ColumnLength(6)
@@ -60,7 +61,7 @@ class UsingSpecificKeyListSpec extends AsyncFunSpec with Matchers {
                 UniqueIndex(Map())
               )),
               TableName("vertex_person") -> (ColumnList(
-                Map(
+                Map[ColumnName, ColumnType](
                   ColumnName("id") -> ColumnTypeInt(ColumnLength(1)),
                   ColumnName("property_name") -> ColumnTypeString(
                     ColumnLength(5)
@@ -114,7 +115,7 @@ class UsingSpecificKeyListSpec extends AsyncFunSpec with Matchers {
           TableList(
             Map(
               TableName("edge_knows_from_person_to_person") -> (ColumnList(
-                Map(
+                Map[ColumnName, ColumnType](
                   ColumnName("id") -> ColumnTypeInt(ColumnLength(1)),
                   ColumnName("id_in_v") -> ColumnTypeInt(ColumnLength(1)),
                   ColumnName("id_out_v") -> ColumnTypeInt(ColumnLength(1)),
@@ -144,7 +145,7 @@ class UsingSpecificKeyListSpec extends AsyncFunSpec with Matchers {
                 )
               )),
               TableName("edge_created_from_person_to_software") -> (ColumnList(
-                Map(
+                Map[ColumnName, ColumnType](
                   ColumnName("id") -> ColumnTypeInt(ColumnLength(2)),
                   ColumnName("id_in_v") -> ColumnTypeInt(ColumnLength(1)),
                   ColumnName("id_out_v") -> ColumnTypeInt(ColumnLength(1)),

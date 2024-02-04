@@ -11,6 +11,8 @@ final case class RecordValue(private val value: Map[String, Any])
     extends AnyVal {
 
   private def notEnclose[T](value: T): String = s"$value"
+
+  @SuppressWarnings(Array("org.wartremover.warts.ToString"))
   private def enclose[T](value: T): String =
     s"'${value.toString.replace("'", "''")}'"
 

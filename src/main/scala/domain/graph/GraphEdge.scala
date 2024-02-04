@@ -14,7 +14,7 @@ import utils.Config
 
 import scala.jdk.CollectionConverters.SetHasAsScala
 
-case class GraphEdge(private val value: Edge, private val config: Config)
+final case class GraphEdge(private val value: Edge, private val config: Config)
     extends GraphElement {
 
   private val inVertex = value.inVertex()

@@ -8,28 +8,15 @@ ThisBuild / javacOptions ++= Seq("-source", "11", "-target", "11")
 wartremoverErrors ++= Warts.allBut(
   Wart.Any,
   Wart.AnyVal,
-  Wart.AutoUnboxing,
   Wart.Equals,
-  Wart.FinalCaseClass,
   Wart.ImplicitParameter,
-  Wart.IterableOps,
-  Wart.JavaSerializable,
-  Wart.LeakingSealed,
-  Wart.MutableDataStructures,
   Wart.NonUnitStatements,
   Wart.Nothing,
   Wart.OptionPartial,
-  Wart.Overloading,
   Wart.PlatformDefault,
-  Wart.Product,
   Wart.Recursion,
-  Wart.Serializable,
   Wart.StringPlusAny,
-  Wart.SeqApply,
-  Wart.Throw,
-  Wart.ToString,
-  Wart.Var,
-  Wart.While
+  Wart.Throw
 )
 
 coverageEnabled := true
@@ -50,7 +37,7 @@ libraryDependencies ++= Seq(
   "io.circe" %% "circe-parser" % "0.14.6",
   "org.apache.tinkerpop" % "gremlin-driver" % "3.7.1",
   "org.apache.tinkerpop" % "tinkergraph-gremlin" % "3.7.1",
-  "org.janusgraph" % "janusgraph-driver" % "1.1.0-20240117-115715.343f146"
+  "org.janusgraph" % "janusgraph-driver" % "1.1.0-20240201-181040.3df4f04"
 )
 
 // test
