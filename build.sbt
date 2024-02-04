@@ -14,7 +14,6 @@ wartremoverErrors ++= Warts.allBut(
   Wart.ImplicitParameter,
   Wart.IterableOps,
   Wart.JavaSerializable,
-  Wart.LeakingSealed,
   Wart.NonUnitStatements,
   Wart.Nothing,
   Wart.OptionPartial,
