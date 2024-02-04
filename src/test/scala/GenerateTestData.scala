@@ -353,6 +353,7 @@ object GenerateTestData extends StrictLogging {
 
   /** @param args
     */
+  @SuppressWarnings(Array("org.wartremover.warts.While"))
   def main(args: Array[String]): Unit = {
     val grapdbConnection = config.graphDb.remoteGraphProperties
 
