@@ -11,6 +11,7 @@ import usecase.{
 import utils.{Config, FileUtility, JsonUtility}
 
 import java.util.UUID
+import scala.annotation.tailrec
 import scala.io.StdIn
 import scala.util.control.NonFatal
 import scala.util.{Random, Using}
@@ -266,10 +267,10 @@ object GenerateTestData extends StrictLogging {
       val belongsVertexOption = person.value[Int]("age") match {
         case age if 6 <= age && age <= 18 =>
           val randomIndex = Random.nextInt(verticesSchool.length)
-          Some(verticesSchool(randomIndex))
+          verticesSchool.lift(randomIndex)
         case age if 18 < age && age <= 60 =>
           val randomIndex = Random.nextInt(verticesCompany.length)
-          Some(verticesCompany(randomIndex))
+          verticesCompany.lift(randomIndex)
         case _ => None
       }
       belongsVertexOption.map(connectEdgeBelongTo(g, person, _))
@@ -361,21 +362,22 @@ object GenerateTestData extends StrictLogging {
       logger.warn(s"Check the config file of the connection.")
       logger.warn(s"config file: $grapdbConnection")
 
-      var input = ""
-      while (input.trim.isEmpty) {
+      @tailrec
+      def checkInput(): Unit = {
         logger.info("Enter [y/n]: ")
 
-        input = StdIn.readLine().trim
-        input match {
-          case "y" =>
+        StdIn.readLine().trim match {
+          case "y" => ()
           case "n" =>
             logger.info("suspend the process.")
             sys.exit(1)
           case invalidInput =>
             logger.warn(s"invalid Input: $invalidInput")
-            input = ""
+            checkInput()
         }
       }
+
+      checkInput()
     }
 
     Using(

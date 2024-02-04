@@ -6,14 +6,14 @@ import org.scalatest.matchers.should.Matchers
 class ColumnListSpec extends AnyFunSpec with Matchers {
 
   private val columnList1 = ColumnList(
-    Map(
+    Map[ColumnName, ColumnType](
       ColumnName("id") -> ColumnTypeInt(ColumnLength(11)),
       ColumnName("name") -> ColumnTypeString(ColumnLength(30)),
       ColumnName("address") -> ColumnTypeString(ColumnLength(255))
     )
   )
   private val columnList2 = ColumnList(
-    Map(
+    Map[ColumnName, ColumnType](
       ColumnName("id") -> ColumnTypeInt(ColumnLength(11)),
       ColumnName("name") -> ColumnTypeString(ColumnLength(50)),
       ColumnName("created_at") -> ColumnTypeUnknown,
@@ -35,7 +35,7 @@ class ColumnListSpec extends AnyFunSpec with Matchers {
 
     it("success") {
       columnList1.merge(columnList2) shouldBe ColumnList(
-        Map(
+        Map[ColumnName, ColumnType](
           ColumnName("id") -> ColumnTypeInt(ColumnLength(11)),
           ColumnName("name") -> ColumnTypeString(ColumnLength(50)),
           ColumnName("address") -> ColumnTypeString(ColumnLength(255)),

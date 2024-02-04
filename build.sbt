@@ -8,26 +8,14 @@ ThisBuild / javacOptions ++= Seq("-source", "11", "-target", "11")
 wartremoverErrors ++= Warts.allBut(
   Wart.Any,
   Wart.AnyVal,
-  Wart.AutoUnboxing,
   Wart.Equals,
-  Wart.FinalCaseClass,
   Wart.ImplicitParameter,
-  Wart.IterableOps,
-  Wart.JavaSerializable,
-  Wart.LeakingSealed,
   Wart.NonUnitStatements,
   Wart.Nothing,
   Wart.OptionPartial,
-  Wart.Overloading,
   Wart.PlatformDefault,
-  Wart.Product,
-  Wart.Serializable,
   Wart.StringPlusAny,
-  Wart.SeqApply,
-  Wart.Throw,
-  Wart.ToString,
-  Wart.Var,
-  Wart.While
+  Wart.Throw
 )
 
 coverageEnabled := true

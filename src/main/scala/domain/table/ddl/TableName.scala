@@ -1,6 +1,6 @@
 package domain.table.ddl
 
-case class TableName(private val value: String) extends AnyVal {
+final case class TableName(private val value: String) extends AnyVal {
 
   // in MySQL, the length must be less than 63 (2^6 - 1)
   // for foreign_key, substring 7 characters ('_ibfk_1')

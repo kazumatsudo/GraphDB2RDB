@@ -44,6 +44,7 @@ object JsonUtility {
     deriveDecoder
 
   implicit private val anyEncoder: Encoder[Any] = new Encoder[Any] {
+    @SuppressWarnings(Array("org.wartremover.warts.ToString"))
     override def apply(value: Any): Json = {
       // encode only the types defined in domain.table.ddl.column.ColumnType
       value match {

@@ -21,7 +21,7 @@ final case class EdgeQuery(
     *   the number of all edges
     */
   def countAll()(implicit ec: ExecutionContext): Future[Long] = Future(
-    GremlinScala(g.E()).count().head()
+    GremlinScala(g.E()).count().head().longValue()
   )
 
   /** get in Edges List

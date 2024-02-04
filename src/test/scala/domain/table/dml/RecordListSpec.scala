@@ -90,32 +90,42 @@ class RecordListSpec extends AsyncFunSpec with Matchers {
         vertex <- vertexQuery.getList(0, count.toInt)
         result = vertex
           .map(_.toDml)
-          .reduce[RecordList] { case (accumulator, currentValue) =>
+          .reduceOption[RecordList] { case (accumulator, currentValue) =>
             accumulator.merge(currentValue, checkUnique = false)
           }
-      } yield result shouldBe RecordList(
-        Map(
-          RecordKey((TableName("vertex_person"), RecordId(1))) -> RecordValue(
-            Map("id" -> 1, "property_age" -> 29, "property_name" -> "marko")
-          ),
-          RecordKey((TableName("vertex_person"), RecordId(2))) -> RecordValue(
-            Map("id" -> 2, "property_age" -> 27, "property_name" -> "vadas")
-          ),
-          RecordKey((TableName("vertex_software"), RecordId(3))) -> RecordValue(
-            Map("id" -> 3, "property_lang" -> "java", "property_name" -> "lop")
-          ),
-          RecordKey((TableName("vertex_person"), RecordId(4))) -> RecordValue(
-            Map("id" -> 4, "property_age" -> 32, "property_name" -> "josh")
-          ),
-          RecordKey((TableName("vertex_software"), RecordId(5))) -> RecordValue(
-            Map(
-              "id" -> 5,
-              "property_lang" -> "java",
-              "property_name" -> "ripple"
+      } yield result shouldBe Some(
+        RecordList(
+          Map(
+            RecordKey((TableName("vertex_person"), RecordId(1))) -> RecordValue(
+              Map("id" -> 1, "property_age" -> 29, "property_name" -> "marko")
+            ),
+            RecordKey((TableName("vertex_person"), RecordId(2))) -> RecordValue(
+              Map("id" -> 2, "property_age" -> 27, "property_name" -> "vadas")
+            ),
+            RecordKey(
+              (TableName("vertex_software"), RecordId(3))
+            ) -> RecordValue(
+              Map(
+                "id" -> 3,
+                "property_lang" -> "java",
+                "property_name" -> "lop"
+              )
+            ),
+            RecordKey((TableName("vertex_person"), RecordId(4))) -> RecordValue(
+              Map("id" -> 4, "property_age" -> 32, "property_name" -> "josh")
+            ),
+            RecordKey(
+              (TableName("vertex_software"), RecordId(5))
+            ) -> RecordValue(
+              Map(
+                "id" -> 5,
+                "property_lang" -> "java",
+                "property_name" -> "ripple"
+              )
+            ),
+            RecordKey((TableName("vertex_person"), RecordId(6))) -> RecordValue(
+              Map("id" -> 6, "property_age" -> 35, "property_name" -> "peter")
             )
-          ),
-          RecordKey((TableName("vertex_person"), RecordId(6))) -> RecordValue(
-            Map("id" -> 6, "property_age" -> 35, "property_name" -> "peter")
           )
         )
       )
