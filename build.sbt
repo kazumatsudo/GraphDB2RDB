@@ -1,6 +1,6 @@
 ThisBuild / version := "0.1.0-SNAPSHOT"
 
-ThisBuild / scalaVersion := "2.13.12"
+ThisBuild / scalaVersion := "2.13.13"
 
 ThisBuild / javacOptions ++= Seq("-source", "11", "-target", "11")
 
