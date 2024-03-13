@@ -9,12 +9,17 @@ import domain.table.ddl.attribute.{
 import domain.table.ddl.column.{ColumnList, ColumnName, ColumnType}
 import domain.table.ddl.{TableAttributes, TableList, TableName}
 import domain.table.dml.{RecordId, RecordKey, RecordList, RecordValue}
-import gremlin.scala.Edge
+import gremlin.scala.{Edge, GremlinScala}
+import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource
 import utils.Config
 
-import scala.jdk.CollectionConverters.SetHasAsScala
+import scala.jdk.CollectionConverters.{CollectionHasAsScala, MapHasAsScala}
 
-final case class GraphEdge(private val value: Edge, private val config: Config)
+final case class GraphEdge(
+    private val value: Edge,
+    private val config: Config,
+    private val g: GraphTraversalSource
+)
     extends GraphElement {
 
   private val inVertex = value.inVertex()
@@ -48,15 +53,25 @@ final case class GraphEdge(private val value: Edge, private val config: Config)
         Map(ColumnName(columnNameEdgeOutVId) -> ColumnType.apply(outVertexId))
 
       // TODO: pull request for gremlin-scala
-      val propertyColumn = value
-        .keys()
-        .asScala
-        .map { key =>
-          ColumnName(s"$columnNamePrefixProperty$key") -> ColumnType.apply(
-            value.value[Any](key)
-          )
-        }
-        .toMap
+//      val propertyColumn = value
+//        .keys()
+//        .asScala
+//        .map { key =>
+//          ColumnName(s"$columnNamePrefixProperty$key") -> ColumnType.apply(
+//            value.value[Any](key)
+//          )
+//        }
+//        .toMap
+      val propertyColumn =
+        GremlinScala(g.E(value)).valueMap
+          .toList()
+          .head
+          .asScala
+          .map { case (columnName, value) =>
+            ColumnName(s"$columnNamePrefixProperty$columnName") -> ColumnType
+              .apply(value)
+          }
+          .toMap
 
       Map(
         tableName -> (
@@ -94,13 +109,22 @@ final case class GraphEdge(private val value: Edge, private val config: Config)
 
   override def toDml: RecordList = {
     // TODO: pull request for gremlin-scala
-    val propertyColumnList = value
-      .keys()
-      .asScala
-      .map { key =>
-        (s"$columnNamePrefixProperty$key", value.value[Any](key))
-      }
-      .toMap
+//    val propertyColumnList = value
+//      .keys()
+//      .asScala
+//      .map { key =>
+//        (s"$columnNamePrefixProperty$key", value.value[Any](key))
+//      }
+//      .toMap
+    val propertyColumnList =
+      GremlinScala(g.E(value)).valueMap
+        .toList()
+        .head
+        .asScala
+        .map { case (columnName, value) =>
+          (s"$columnNamePrefixProperty$columnName", value)
+        }
+        .toMap
 
     val recordValue = Map(columnNameEdgeId -> value.id()) ++
       Map(columnNameEdgeInVId -> inVertexId) ++

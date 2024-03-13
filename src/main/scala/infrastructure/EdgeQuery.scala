@@ -38,7 +38,7 @@ final case class EdgeQuery(
       .inE()
       .toList()
       .view
-      .map(GraphEdge(_, config))
+      .map(GraphEdge(_, config, g))
   }
 
   /** get Edges List
@@ -61,7 +61,7 @@ final case class EdgeQuery(
         .range(start, start + count)
         .toList()
         .view
-        .map(GraphEdge(_, config))
+        .map(GraphEdge(_, config, g))
     } catch {
       case NonFatal(e) =>
         logger.error(
@@ -86,6 +86,6 @@ final case class EdgeQuery(
       .outE()
       .toList()
       .view
-      .map(GraphEdge(_, config))
+      .map(GraphEdge(_, config, g))
   }
 }

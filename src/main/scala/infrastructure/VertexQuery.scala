@@ -37,7 +37,7 @@ final case class VertexQuery(
       .inV()
       .toList()
       .view
-      .map(GraphVertex(_, config))
+      .map(GraphVertex(_, config, g))
   }
 
   /** get Vertices List
@@ -59,7 +59,7 @@ final case class VertexQuery(
       .range(start, start + count)
       .toList()
       .view
-      .map(GraphVertex(_, config))
+      .map(GraphVertex(_, config, g))
   }
 
   /** get Vertices List searched by property key
@@ -85,7 +85,7 @@ final case class VertexQuery(
       .has(label, Key[Any](key), value)
       .toList()
       .view
-      .map(GraphVertex(_, config))
+      .map(GraphVertex(_, config, g))
   }
 
   /** get out Vertices List
@@ -102,6 +102,6 @@ final case class VertexQuery(
       .outV()
       .toList()
       .view
-      .map(GraphVertex(_, config))
+      .map(GraphVertex(_, config, g))
   }
 }
