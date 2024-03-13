@@ -79,7 +79,7 @@ class GraphVertexSpec extends AsyncFunSpec with Matchers {
       val graph = TinkerFactory.createModern().traversal()
       val vertex1 = graph.addV("testVertex1").next()
 
-      val graphVertex = GraphVertex(vertex1, config)
+      val graphVertex = GraphVertex(vertex1, config, graph)
       graphVertex.toDml shouldBe RecordList(
         Map(
           RecordKey(
