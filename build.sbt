@@ -46,6 +46,6 @@ libraryDependencies ++= Seq(
   "com.mysql" % "mysql-connector-j" % "8.3.0" % Test,
   "com.typesafe.slick" %% "slick" % "3.4.1" % Test,
   "com.typesafe.slick" %% "slick-hikaricp" % "3.4.1" % Test,
-  "io.github.etspaceman" %% "scalacheck-faker" % "8.0.2" % Test,
+  "io.github.etspaceman" %% "scalacheck-faker" % "8.0.3" % Test,
   "org.scalatest" %% "scalatest" % "3.2.18" % Test
 )
