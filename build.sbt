@@ -37,7 +37,7 @@ libraryDependencies ++= Seq(
   "io.circe" %% "circe-parser" % "0.14.6",
   "org.apache.tinkerpop" % "gremlin-driver" % "3.7.1",
   "org.apache.tinkerpop" % "tinkergraph-gremlin" % "3.7.1",
-  "org.janusgraph" % "janusgraph-driver" % "1.1.0-20240228-212357.0310ba4"
+  "org.janusgraph" % "janusgraph-driver" % "1.1.0-20240314-143324.cd91c52"
 )
 
 // test
