@@ -1,6 +1,6 @@
 ThisBuild / version := "0.1.0-SNAPSHOT"
 
-ThisBuild / scalaVersion := "2.13.12"
+ThisBuild / scalaVersion := "2.13.13"
 
 ThisBuild / javacOptions ++= Seq("-source", "11", "-target", "11")
 
@@ -29,7 +29,7 @@ lazy val root = (project in file("."))
 
 // main
 libraryDependencies ++= Seq(
-  "ch.qos.logback" % "logback-classic" % "1.4.14",
+  "ch.qos.logback" % "logback-classic" % "1.5.3",
   "com.michaelpollmeier" %% "gremlin-scala" % "3.5.3.7",
   "com.typesafe" % "config" % "1.4.3",
   "com.typesafe.scala-logging" %% "scala-logging" % "3.9.5",
@@ -45,8 +45,8 @@ libraryDependencies ++= Seq(
 libraryDependencies ++= Seq(
   "com.h2database" % "h2" % "2.2.224" % Test,
   "com.mysql" % "mysql-connector-j" % "8.3.0" % Test,
-  "com.typesafe.slick" %% "slick" % "3.4.1" % Test,
-  "com.typesafe.slick" %% "slick-hikaricp" % "3.4.1" % Test,
-  "io.github.etspaceman" %% "scalacheck-faker" % "8.0.2" % Test,
-  "org.scalatest" %% "scalatest" % "3.2.17" % Test
+  "com.typesafe.slick" %% "slick" % "3.5.0" % Test,
+  "com.typesafe.slick" %% "slick-hikaricp" % "3.5.0" % Test,
+  "io.github.etspaceman" %% "scalacheck-faker" % "8.0.3" % Test,
+  "org.scalatest" %% "scalatest" % "3.2.18" % Test
 )
