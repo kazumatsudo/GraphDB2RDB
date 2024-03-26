@@ -105,16 +105,16 @@ class GraphEdgeSpec extends AsyncFunSpec with Matchers {
       val vertex2 = graph.addV("testVertex2").next()
       val edge = graph.V(vertex1).addE("testEdge").to(V(vertex2)).next()
 
-      val graphEdge = GraphEdge(edge, config)
+      val graphEdge = GraphEdge(edge, config, graph)
       graphEdge.toDml shouldBe RecordList(
         Map(
           RecordKey(
             (
               TableName("edge_testEdge_from_testVertex1_to_testVertex2"),
-              RecordId(14)
+              RecordId(15)
             )
           ) -> RecordValue(
-            Map("id" -> 14, "id_in_v" -> 13, "id_out_v" -> 0)
+            Map("id" -> 15, "id_in_v" -> 14, "id_out_v" -> 13)
           )
         )
       )

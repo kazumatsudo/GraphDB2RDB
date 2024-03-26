@@ -22,6 +22,7 @@ import org.scalatest.funspec.AsyncFunSpec
 import org.scalatest.matchers.should.Matchers
 import utils.Config
 
+import java.util
 import scala.collection.immutable.HashMap
 
 class ByExhaustiveSearchSpec extends AsyncFunSpec with Matchers {
@@ -39,10 +40,10 @@ class ByExhaustiveSearchSpec extends AsyncFunSpec with Matchers {
               TableName("vertex_person") -> (ColumnList(
                 Map[ColumnName, ColumnType](
                   ColumnName("id") -> ColumnTypeInt(ColumnLength(1)),
+                  ColumnName("property_age") -> ColumnTypeInt(ColumnLength(2)),
                   ColumnName("property_name") -> ColumnTypeString(
                     ColumnLength(5)
-                  ),
-                  ColumnName("property_age") -> ColumnTypeInt(ColumnLength(2))
+                  )
                 )
               ), TableAttributes(
                 PrimaryKey(Set(ColumnName("id"))),
@@ -52,11 +53,11 @@ class ByExhaustiveSearchSpec extends AsyncFunSpec with Matchers {
               TableName("vertex_software") -> (ColumnList(
                 Map[ColumnName, ColumnType](
                   ColumnName("id") -> ColumnTypeInt(ColumnLength(1)),
-                  ColumnName("property_name") -> ColumnTypeString(
-                    ColumnLength(6)
-                  ),
                   ColumnName("property_lang") -> ColumnTypeString(
                     ColumnLength(4)
+                  ),
+                  ColumnName("property_name") -> ColumnTypeString(
+                    ColumnLength(6)
                   )
                 )
               ), TableAttributes(
@@ -73,38 +74,102 @@ class ByExhaustiveSearchSpec extends AsyncFunSpec with Matchers {
               ) -> RecordValue(
                 Map(
                   "id" -> 5,
-                  "property_name" -> "ripple",
-                  "property_lang" -> "java"
+                  "property_lang" -> {
+                    val propertyLangValue = new util.ArrayList[String]
+                    propertyLangValue.add("java")
+                    propertyLangValue
+                  },
+                  "property_name" -> {
+                    val propertyNameValue = new util.ArrayList[String]
+                    propertyNameValue.add("ripple")
+                    propertyNameValue
+                  }
                 )
               ),
               RecordKey(
                 (TableName("vertex_person"), RecordId(1))
               ) -> RecordValue(
-                Map("id" -> 1, "property_name" -> "marko", "property_age" -> 29)
+                Map(
+                  "id" -> 1,
+                  "property_age" -> {
+                    val propertyAgeValue = new util.ArrayList[Int]
+                    propertyAgeValue.add(29)
+                    propertyAgeValue
+                  },
+                  "property_name" -> {
+                    val propertyNameValue = new util.ArrayList[String]
+                    propertyNameValue.add("marko")
+                    propertyNameValue
+                  }
+                )
               ),
               RecordKey(
                 (TableName("vertex_software"), RecordId(3))
               ) -> RecordValue(
                 Map(
                   "id" -> 3,
-                  "property_name" -> "lop",
-                  "property_lang" -> "java"
+                  "property_lang" -> {
+                    val propertyLangValue = new util.ArrayList[String]
+                    propertyLangValue.add("java")
+                    propertyLangValue
+                  },
+                  "property_name" -> {
+                    val propertyNameValue = new util.ArrayList[String]
+                    propertyNameValue.add("lop")
+                    propertyNameValue
+                  }
                 )
               ),
               RecordKey(
                 (TableName("vertex_person"), RecordId(2))
               ) -> RecordValue(
-                Map("id" -> 2, "property_name" -> "vadas", "property_age" -> 27)
+                Map(
+                  "id" -> 2,
+                  "property_age" -> {
+                    val propertyAgeValue = new util.ArrayList[Int]
+                    propertyAgeValue.add(27)
+                    propertyAgeValue
+                  },
+                  "property_name" -> {
+                    val propertyNameValue = new util.ArrayList[String]
+                    propertyNameValue.add("vadas")
+                    propertyNameValue
+                  }
+                )
               ),
               RecordKey(
                 (TableName("vertex_person"), RecordId(6))
               ) -> RecordValue(
-                Map("id" -> 6, "property_name" -> "peter", "property_age" -> 35)
+                Map(
+                  "id" -> 6,
+                  "property_age" -> {
+                    val propertyAgeValue = new util.ArrayList[Int]
+                    propertyAgeValue.add(35)
+                    propertyAgeValue
+                  },
+                  "property_name" -> {
+                    val propertyNameValue = new util.ArrayList[String]
+                    propertyNameValue.add("peter")
+                    propertyNameValue
+                  }
+                )
               ),
               RecordKey(
                 (TableName("vertex_person"), RecordId(4))
               ) -> RecordValue(
-                Map("id" -> 4, "property_name" -> "josh", "property_age" -> 32)
+                Map(
+                  "id" -> 4,
+                  "property_age" -> {
+                    val propertyAgeValue = new util.ArrayList[Int]
+                    propertyAgeValue.add(32)
+                    propertyAgeValue
+                  },
+                  "property_name" -> {
+                    val propertyNameValue = new util.ArrayList[String]
+                    propertyNameValue.add("josh")
+                    propertyNameValue
+                  }
+                )
               )
             )
           ),

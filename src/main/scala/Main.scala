@@ -1,6 +1,12 @@
 import com.typesafe.scalalogging.StrictLogging
+import org.apache.tinkerpop.gremlin.driver.Cluster
+import org.apache.tinkerpop.gremlin.driver.remote.DriverRemoteConnection
+import org.apache.tinkerpop.gremlin.driver.ser.GraphBinaryMessageSerializerV1
 import org.apache.tinkerpop.gremlin.process.traversal.AnonymousTraversalSource.traversal
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource
+import org.apache.tinkerpop.gremlin.structure.io.binary.TypeSerializerRegistry
+import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerIoRegistryV3d0
+import org.janusgraph.graphdb.tinkerpop.JanusGraphIoRegistry
 import usecase.{ByExhaustiveSearch, UsecaseBase, UsingSpecificKeyList}
 import utils.{Config, FileUtility, JsonUtility}
 
@@ -14,7 +20,7 @@ object Main extends StrictLogging {
 
   // set gremlin server connection pool max size or less
   implicit private val ec: ExecutionContext =
-    ExecutionContext.fromExecutor(newFixedThreadPool(1))
+    ExecutionContext.fromExecutor(newFixedThreadPool(3))
 
   private val config: Config = Config.default
 
@@ -105,7 +111,23 @@ object Main extends StrictLogging {
     * @param args
     */
   def main(args: Array[String]): Unit = {
-    Using(traversal().withRemote(config.graphDb.remoteGraphProperties))(execute)
+    Using(
+      {
+        val serializer = new GraphBinaryMessageSerializerV1(
+          TypeSerializerRegistry.build
+            .addRegistry(JanusGraphIoRegistry.instance)
+            .addRegistry(TinkerIoRegistryV3d0.instance())
+        )
+
+        val cluster = Cluster.build
+          .addContactPoint("localhost")
+          .port(8182)
+          .serializer(serializer)
+          .create()
+
+        traversal().withRemote(DriverRemoteConnection.using(cluster))
+      }
+    )(execute)
       .recover { case NonFatal(e) =>
         logger.error(s"${e.getMessage}", e)
         sys.exit(1)

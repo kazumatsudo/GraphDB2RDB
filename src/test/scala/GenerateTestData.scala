@@ -1,8 +1,14 @@
 import com.typesafe.scalalogging.StrictLogging
 import faker.Faker
 import gremlin.scala.Vertex
+import org.apache.tinkerpop.gremlin.driver.Cluster
+import org.apache.tinkerpop.gremlin.driver.remote.DriverRemoteConnection
+import org.apache.tinkerpop.gremlin.driver.ser.GraphBinaryMessageSerializerV1
 import org.apache.tinkerpop.gremlin.process.traversal.AnonymousTraversalSource.traversal
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource
+import org.apache.tinkerpop.gremlin.structure.io.binary.TypeSerializerRegistry
+import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerIoRegistryV3d0
+import org.janusgraph.graphdb.tinkerpop.JanusGraphIoRegistry
 import usecase.{
   UsingSpecificKeyListRequest,
   UsingSpecificKeyListRequestKey,
@@ -381,20 +387,45 @@ object GenerateTestData extends StrictLogging {
     }
 
     Using(
-      traversal().withRemote(grapdbConnection)
-    ) { g =>
-      val (_, usingSpecificKeyListRequest) = generate(g, 100, 5, 5)
-
-      FileUtility.writeJson(
-        config.usingSpecificKeyList.outputDirectory,
-        config.usingSpecificKeyList.filename,
-        JsonUtility.writeForUsingSpecificKeyListRequest(
-          usingSpecificKeyListRequest
+      {
+        val serializer = new GraphBinaryMessageSerializerV1(
+          TypeSerializerRegistry.build
+            .addRegistry(JanusGraphIoRegistry.instance)
+            .addRegistry(TinkerIoRegistryV3d0.instance())
         )
+
+        val cluster = Cluster.build
+          .addContactPoint("localhost")
+          .port(8182)
+          .serializer(serializer)
+          .create()
+
+        traversal().withRemote(DriverRemoteConnection.using(cluster))
+      }
+    )(execute)
+      .recover { case NonFatal(e) =>
+        logger.error(s"${e.getMessage}", e)
+        sys.exit(1)
+      }
+  }
+
+  @SuppressWarnings(
+    Array(
+      "org.wartremover.warts.NonUnitStatements",
+      "org.wartremover.warts.Nothing"
+    )
+  )
+  def execute(g: GraphTraversalSource): Unit = {
+    val (_, usingSpecificKeyListRequest) = generate(g, 100, 5, 5)
+
+    FileUtility.writeJson(
+      config.usingSpecificKeyList.outputDirectory,
+      config.usingSpecificKeyList.filename,
+      JsonUtility.writeForUsingSpecificKeyListRequest(
+        usingSpecificKeyListRequest
       )
-    }.recover { case NonFatal(e) =>
-      logger.error(s"${e.getMessage}", e)
-      sys.exit(1)
-    }
+    )
+    logger.info("generate testdata complete.")
+    sys.exit(0)
   }
 }

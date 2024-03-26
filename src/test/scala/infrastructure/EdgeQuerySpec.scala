@@ -22,10 +22,10 @@ class EdgeQuerySpec extends AsyncFunSpec with Matchers {
     it("get inE list") {
       val graph = TinkerFactory.createModern().traversal()
       val edgeQuery = EdgeQuery(graph, config)
-      val edgeList = GremlinScala(graph.E()).toList().map(GraphEdge(_, config))
+      val edgeList = GremlinScala(graph.E()).toList().map(GraphEdge(_, config, graph))
       edgeQuery
         .getInEdgeList(
-          GraphVertex(GremlinScala(graph.V()).toList().lift(1).get, config)
+          GraphVertex(GremlinScala(graph.V()).toList().lift(1).get, config, graph)
         )
         .map { _.toSeq shouldBe Seq(edgeList.headOption).flatten }
     }
@@ -55,7 +55,7 @@ class EdgeQuerySpec extends AsyncFunSpec with Matchers {
       val edgeQuery = EdgeQuery(graph, config)
       edgeQuery.getList(0, 1).map {
         _.toSeq shouldBe Seq(
-          GraphEdge(GremlinScala(graph.E()).head(), config)
+          GraphEdge(GremlinScala(graph.E()).head(), config, graph)
         )
       }
     }
@@ -65,10 +65,10 @@ class EdgeQuerySpec extends AsyncFunSpec with Matchers {
     it("get outE list") {
       val graph = TinkerFactory.createModern().traversal()
       val edgeQuery = EdgeQuery(graph, config)
-      val edgeList = GremlinScala(graph.E()).toList().map(GraphEdge(_, config))
+      val edgeList = GremlinScala(graph.E()).toList().map(GraphEdge(_, config, graph))
       edgeQuery
         .getOutEdgeList(
-          GraphVertex(graph.V().next(), config)
+          GraphVertex(graph.V().next(), config, graph)
         )
         .map {
           _.toSeq shouldBe Seq(

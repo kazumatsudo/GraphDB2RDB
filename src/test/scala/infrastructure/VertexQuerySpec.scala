@@ -24,14 +24,18 @@ class VertexQuerySpec extends AsyncFunSpec with Matchers {
       val vertexQuery = VertexQuery(graph, config)
       vertexQuery
         .getInVertexList(
-          GraphEdge(GremlinScala(graph.E()).toList().headOption.get, config)
+          GraphEdge(
+            GremlinScala(graph.E()).toList().headOption.get,
+            config,
+            graph
+          )
         )
         .map {
           _.toSeq shouldBe Seq(
             GremlinScala(graph.V())
               .toList()
               .lift(1)
-              .map(GraphVertex(_, config))
+              .map(GraphVertex(_, config, graph))
           ).flatten
         }
     }
@@ -61,7 +65,7 @@ class VertexQuerySpec extends AsyncFunSpec with Matchers {
       val vertexQuery = VertexQuery(graph, config)
       vertexQuery.getList(0, 1).map {
         _.toSeq shouldBe Seq(
-          GraphVertex(GremlinScala(graph.V()).head(), config)
+          GraphVertex(GremlinScala(graph.V()).head(), config, graph)
         )
       }
     }
@@ -93,7 +97,7 @@ class VertexQuerySpec extends AsyncFunSpec with Matchers {
         .getListByPropertyKey("person", "name", "marko")
         .map {
           _.toSeq shouldBe Seq(
-            GraphVertex(GremlinScala(graph.V()).head(), config)
+            GraphVertex(GremlinScala(graph.V()).head(), config, graph)
           )
         }
     }
@@ -105,14 +109,18 @@ class VertexQuerySpec extends AsyncFunSpec with Matchers {
       val vertexQuery = VertexQuery(graph, config)
       vertexQuery
         .getOutVertexList(
-          GraphEdge(GremlinScala(graph.E()).toList().headOption.get, config)
+          GraphEdge(
+            GremlinScala(graph.E()).toList().headOption.get,
+            config,
+            graph
+          )
         )
         .map {
           _.toSeq shouldBe Seq(
             GremlinScala(graph.V())
               .toList()
               .headOption
-              .map(GraphVertex(_, config))
+              .map(GraphVertex(_, config, graph))
           ).flatten
         }
     }

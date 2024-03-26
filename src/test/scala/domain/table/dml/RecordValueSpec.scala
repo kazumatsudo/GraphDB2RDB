@@ -82,7 +82,7 @@ class RecordValueSpec extends AnyFunSpec with Matchers {
 
       // RelationIdentifier
       val relationIdentifier =
-        new RelationIdentifier(new Object(), 1, 1, new Object())
+        new RelationIdentifier(1L, 1, 1, 1L)
       RecordValue(
         Map("RelationIdentifier" -> relationIdentifier)
       ).toSqlSentence shouldBe ("RelationIdentifier", s"'${relationIdentifier.toString}'")
