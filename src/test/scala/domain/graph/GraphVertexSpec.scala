@@ -17,6 +17,8 @@ import org.scalatest.funspec.AsyncFunSpec
 import org.scalatest.matchers.should.Matchers
 import utils.Config
 
+import java.util
+
 class GraphVertexSpec extends AsyncFunSpec with Matchers {
   private val config = Config.default
 
@@ -65,8 +67,16 @@ class GraphVertexSpec extends AsyncFunSpec with Matchers {
               ) -> RecordValue(
                 Map(
                   "id" -> 1,
-                  "property_name" -> "marko",
-                  "property_age" -> 29
+                  "property_age" -> {
+                    val propertyAgeValue = new util.ArrayList[Int]
+                    propertyAgeValue.add(29)
+                    propertyAgeValue
+                  },
+                  "property_name" -> {
+                    val propertyNameValue = new util.ArrayList[String]
+                    propertyNameValue.add("marko")
+                    propertyNameValue
+                  }
                 )
               )
             )
@@ -85,7 +95,7 @@ class GraphVertexSpec extends AsyncFunSpec with Matchers {
           RecordKey(
             (TableName("vertex_testVertex1"), RecordId(vertex1.id()))
           ) -> RecordValue(
-            Map("id" -> 0)
+            Map("id" -> 13)
           )
         )
       )

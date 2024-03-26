@@ -111,10 +111,10 @@ class GraphEdgeSpec extends AsyncFunSpec with Matchers {
           RecordKey(
             (
               TableName("edge_testEdge_from_testVertex1_to_testVertex2"),
-              RecordId(14)
+              RecordId(15)
             )
           ) -> RecordValue(
-            Map("id" -> 14, "id_in_v" -> 13, "id_out_v" -> 0)
+            Map("id" -> 15, "id_in_v" -> 14, "id_out_v" -> 13)
           )
         )
       )
