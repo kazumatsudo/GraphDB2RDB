@@ -1,11 +1,6 @@
 package domain.graph
 
-import domain.table.ddl.attribute.{
-  ForeignKey,
-  PrimaryKey,
-  UniqueIndex,
-  UniqueIndexName
-}
+import domain.table.ddl.attribute.{ForeignKey, PrimaryKey, UniqueIndex}
 import domain.table.ddl.column.{ColumnList, ColumnName, ColumnType}
 import domain.table.ddl.{TableAttributes, TableList, TableName}
 import domain.table.dml.{RecordId, RecordKey, RecordList, RecordValue}
@@ -13,14 +8,13 @@ import gremlin.scala.{Edge, GremlinScala}
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource
 import utils.Config
 
-import scala.jdk.CollectionConverters.{CollectionHasAsScala, MapHasAsScala}
+import scala.jdk.CollectionConverters.MapHasAsScala
 
 final case class GraphEdge(
     private val value: Edge,
     private val config: Config,
     private val g: GraphTraversalSource
-)
-    extends GraphElement {
+) extends GraphElement {
 
   private val inVertex = value.inVertex()
   private val inVertexId = inVertex.id()
@@ -92,16 +86,7 @@ final case class GraphEdge(
                 )
               )
             ),
-            UniqueIndex(
-              Map(
-                UniqueIndexName(
-                  s"index_${columnNameEdgeInVId}_$columnNameEdgeOutVId"
-                ) -> Set(
-                  ColumnName(columnNameEdgeInVId),
-                  ColumnName(columnNameEdgeOutVId)
-                )
-              )
-            )
+            UniqueIndex(Map.empty)
           )
         )
       )

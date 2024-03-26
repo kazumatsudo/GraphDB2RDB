@@ -1,19 +1,7 @@
 package domain.graph
 
-import domain.table.ddl.attribute.{
-  ForeignKey,
-  PrimaryKey,
-  UniqueIndex,
-  UniqueIndexName
-}
-import domain.table.ddl.column.{
-  ColumnLength,
-  ColumnList,
-  ColumnName,
-  ColumnType,
-  ColumnTypeDouble,
-  ColumnTypeInt
-}
+import domain.table.ddl.attribute.{ForeignKey, PrimaryKey, UniqueIndex}
+import domain.table.ddl.column._
 import domain.table.ddl.{TableAttributes, TableList, TableName}
 import domain.table.dml.{RecordId, RecordKey, RecordList, RecordValue}
 import infrastructure.EdgeQuery
@@ -57,14 +45,7 @@ class GraphEdgeSpec extends AsyncFunSpec with Matchers {
                     ), ColumnName("id"))
                   )
                 ),
-                UniqueIndex(
-                  Map(
-                    UniqueIndexName("index_id_in_v_id_out_v") -> Set(
-                      ColumnName("id_in_v"),
-                      ColumnName("id_out_v")
-                    )
-                  )
-                )
+                UniqueIndex(Map())
               ))
             )
           )
