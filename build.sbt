@@ -30,7 +30,7 @@ lazy val root = (project in file("."))
 libraryDependencies ++= Seq(
   "ch.qos.logback" % "logback-classic" % "1.5.4",
   "com.michaelpollmeier" %% "gremlin-scala" % "3.5.3.7",
-  "com.typesafe" % "config" % "1.4.3",
+  "com.typesafe" % "config" % "1.4.9",
   "com.typesafe.scala-logging" %% "scala-logging" % "3.9.5",
   "io.circe" %% "circe-core" % "0.14.6",
   "io.circe" %% "circe-generic" % "0.14.6",
